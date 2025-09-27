@@ -3,10 +3,6 @@
 name: Process India Tickers
 
 on:
-  push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
   workflow_dispatch:
 
 jobs:
