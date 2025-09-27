@@ -1,36 +1,111 @@
-name: Process India Tickers
+name: Process Ticker Prices
 
 on:
   workflow_dispatch:
 
 jobs:
-  build:
+  build-ticker-price:
+    
     runs-on: ubuntu-latest
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        part_index: [0, 1, 2, 3, 4]
+        part_total: [5]
 
     steps:
-    - uses: actions/checkout@v3
+      - name: Print workflow start time (EDT)
+        run: echo "Workflow started at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
 
-    - name: Set up Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.12'
+      - uses: actions/checkout@v4
 
-    - name: Install dependencies
-      run: |
-        python -m pip install --upgrade pip
-        pip install pandas
+      - name: Download ticker info artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: ticker-info
+          path: data
 
-    - name: Run script
-      run: python scripts/process_tickers.py
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
 
-    - name: Commit output if changed
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git add data/ logs/ || true
-        if git diff --staged --quiet; then
-          echo "No changes to commit"
-        else
-          git commit -m "Update processed tickers JSON and logs"
-          git push
-        fi
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install yahooquery pandas tqdm
+
+      - name: Run ticker price builder (partition ${{ matrix.part_index }})
+        run: |
+          python scripts/build_ticker_price.py \
+            --part-index ${{ matrix.part_index }} \
+            --part-total ${{ matrix.part_total }} \
+            --verbose
+
+      - name: Upload price artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ticker-price-part-${{ matrix.part_index }}
+          path: data/ticker_price_part_${{ matrix.part_index }}.json
+          retention-days: 5
+
+      - name: Print workflow end time (EDT)
+        run: echo "Workflow ended at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
+
+  merge-ticker-price:
+    needs: build-ticker-price
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Print workflow start time (EDT)
+        run: echo "Workflow started at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
+
+      - uses: actions/checkout@v4
+
+      - name: Download price artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: ticker-price-part-*
+          path: data
+          merge-multiple: true
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install yahooquery pandas tqdm
+
+      - name: Merge ticker price files
+        run: python scripts/merge_ticker_price.py data --part-total 5
+
+      - name: Upload final price artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ticker-price
+          path: |
+            data/ticker_price.json
+            data/unresolved_price_tickers.txt
+            logs/build_ticker_price.log
+            logs/merge_ticker_price.log
+          retention-days: 5
+
+      - name: Commit output if changed
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add data/ logs/ || true
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+          else
+            git commit -m "Update ticker price JSON and logs [$(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')]"
+            git push
+          fi
+
+      - name: Print workflow end time (EDT)
+        run: echo "Workflow ended at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
