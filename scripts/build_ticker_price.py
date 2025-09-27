@@ -10,10 +10,11 @@ from tqdm import tqdm
 from datetime import datetime
 import time
 import random
+import argparse
 
 OUTPUT_DIR = "data"
-TICKER_PRICE_FILE = os.path.join(OUTPUT_DIR, "ticker_price.json")
-UNRESOLVED_PRICE_TICKERS = os.path.join(OUTPUT_DIR, "unresolved_price_tickers.txt")
+TICKER_PRICE_PART_FILE = os.path.join(OUTPUT_DIR, "ticker_price_part_%d.json")
+UNRESOLVED_PRICE_TICKERS_PART = os.path.join(OUTPUT_DIR, "unresolved_price_tickers_part_%d.txt")
 LOG_PATH = "logs/build_ticker_price.log"
 BATCH_SIZE = 250
 BATCH_DELAY_RANGE = (20, 30)
@@ -53,6 +54,12 @@ def load_ticker_info():
         return None
     df = pd.read_csv(input_path)
     return df
+
+def partition_tickers(tickers, part_index, part_total):
+    per_part = len(tickers) // part_total
+    start = part_index * per_part
+    end = start + per_part if part_index < part_total - 1 else len(tickers)
+    return tickers[start:end]
 
 def yahoo_symbol(symbol: str) -> str:
     return symbol.replace(".", "-")
@@ -132,7 +139,7 @@ def process_batch(batch, ticker_df):
                             "Price": round(price, 2),
                             "industry": ticker_row['Industry'] if pd.notna(ticker_row['Industry']) else "n/a",
                             "sector": ticker_row['Sector'] if pd.notna(ticker_row['Sector']) else "n/a",
-                            "type": "Unknown",  # Not in test.csv; set to Unknown
+                            "type": "Unknown",
                             "DVol": volume,
                             "AvgVol": avg_volume,
                             "AvgVol10": avg_volume_10days,
@@ -165,13 +172,13 @@ def process_batch(batch, ticker_df):
                 break
     return 0, batch, []
 
-def main(verbose=False):
+def main(part_index, part_total, verbose=False):
     start_time = time.time()
     ensure_dirs()
     setup_logging(verbose)
 
     start_time_str = datetime.now().strftime("%I:%M %p EDT on %A, %B %d, %Y")
-    logging.info(f"Starting price build at {start_time_str}")
+    logging.info(f"Starting price build for part {part_index}/{part_total} at {start_time_str}")
 
     ticker_df = load_ticker_info()
     if ticker_df is None:
@@ -181,11 +188,14 @@ def main(verbose=False):
     tickers = ticker_df['Ticker'].tolist()
     logging.info(f"Found {len(tickers)} tickers from test.csv.")
 
-    batches = [tickers[i:i + BATCH_SIZE] for i in range(0, len(tickers), BATCH_SIZE)]
+    part_tickers = partition_tickers(tickers, part_index, part_total)
+    logging.info(f"Processing part {part_index}/{part_total} with {len(part_tickers)} tickers.")
+
+    batches = [part_tickers[i:i + BATCH_SIZE] for i in range(0, len(part_tickers), BATCH_SIZE)]
     all_prices = []
     all_failed = []
 
-    for idx, batch in enumerate(tqdm(batches, desc="Processing Price Batches"), 1):
+    for idx, batch in enumerate(tqdm(batches, desc=f"Processing Price Batches (Part {part_index})"), 1):
         updated, failed_tickers, prices = process_batch(batch, ticker_df)
         all_prices.extend(prices)
         all_failed.extend(failed_tickers)
@@ -201,7 +211,7 @@ def main(verbose=False):
         unresolved_unique = sorted(set(all_failed))
         logging.info(f"Retry sub-pass for {len(unresolved_unique)} unresolved tickers...")
         retry_batches = [unresolved_unique[i:i + BATCH_SIZE] for i in range(0, len(unresolved_unique), BATCH_SIZE)]
-        for idx, batch in enumerate(tqdm(retry_batches, desc="Retry Price Batches"), 1):
+        for idx, batch in enumerate(tqdm(retry_batches, desc=f"Retry Price Batches (Part {part_index})"), 1):
             updated, failed_tickers, prices = process_batch(batch, ticker_df)
             all_prices.extend(prices)
             logging.info(f"Retry Batch {idx}/{len(retry_batches)} - Fetched data for {updated} tickers")
@@ -210,20 +220,24 @@ def main(verbose=False):
             time.sleep(random.uniform(5, 10))
 
     unresolved_final = sorted(set(all_failed))
-    with open(UNRESOLVED_PRICE_TICKERS, "w") as f:
+    unresolved_file = UNRESOLVED_PRICE_TICKERS_PART % part_index
+    with open(unresolved_file, "w") as f:
         f.write("\n".join(unresolved_final))
-    logging.info(f"Saved {len(unresolved_final)} unresolved tickers to {UNRESOLVED_PRICE_TICKERS}")
+    logging.info(f"Saved {len(unresolved_final)} unresolved tickers to {unresolved_file}")
 
-    with open(TICKER_PRICE_FILE, "w", encoding="utf-8") as f:
+    output_file = TICKER_PRICE_PART_FILE % part_index
+    with open(output_file, "w", encoding="utf-8") as f:
         json.dump(all_prices, f, indent=2)
-    logging.info(f"Saved {len(all_prices)} entries to {TICKER_PRICE_FILE}")
+    logging.info(f"Saved {len(all_prices)} entries to {output_file}")
 
     elapsed = time.time() - start_time
-    logging.info("Price build completed. Elapsed: %.1fs", elapsed)
+    logging.info(f"Price build for part {part_index} completed. Elapsed: %.1fs", elapsed)
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Build ticker_price.json from test.csv.")
+    parser = argparse.ArgumentParser(description="Build ticker_price_part_X.json from test.csv.")
+    parser.add_argument("--part-index", type=int, required=True)
+    parser.add_argument("--part-total", type=int, required=True)
     parser.add_argument("--verbose", action="store_true")
     args = parser.parse_args()
 
-    main(verbose=args.verbose)
+    main(part_index=args.part_index, part_total=args.part_total, verbose=args.verbose)
