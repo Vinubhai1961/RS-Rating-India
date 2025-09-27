@@ -12,8 +12,13 @@ os.makedirs(output_dir, exist_ok=True)
 # Read the input CSV
 df = pd.read_csv(input_path)
 
-# Filter out unwanted tickers (e.g., Segregated Portfolio)
-df = df[~df['Description'].str.contains("Segregated Portfolio", case=False, na=False)]
+# Filter out unwanted tickers:
+# 1. Description containing "Segregated Portfolio" or "Segerated Portfolio"
+# 2. Symbols starting with a digit
+df = df[
+    ~df['Description'].str.contains("Segregated Portfolio|Segerated Portfolio", case=False, na=False) &
+    ~df['Symbol'].str.match(r'^\d')
+]
 
 # Clean numerical columns: strip '%' if present and convert to float
 def clean_percentage(col):
@@ -65,6 +70,9 @@ output_df = df_unique[[
 columns_to_round = ['Price', '52WKH', '52WKL', 'FF', '1YR_Per']
 for col in columns_to_round:
     output_df[col] = output_df[col].round(2)
+
+# Sort by Ticker for consistent output
+output_df = output_df.sort_values('Ticker')
 
 # Write to output CSV
 output_df.to_csv(output_path, index=False)
