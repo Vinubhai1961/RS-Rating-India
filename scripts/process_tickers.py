@@ -1,10 +1,11 @@
 import pandas as pd
 import os
+import json
 
 # Define paths based on repo structure
 input_path = 'source/India_Tickers_All.csv'
 output_dir = 'data'
-output_path = os.path.join(output_dir, 'test.csv')
+output_json_path = os.path.join(output_dir, 'ticker_info.json')
 
 # Ensure output directory exists
 os.makedirs(output_dir, exist_ok=True)
@@ -75,7 +76,29 @@ for col in columns_to_round:
 # Sort by Ticker for consistent output
 output_df = output_df.sort_values('Ticker')
 
-# Write to output CSV
-output_df.to_csv(output_path, index=False)
+# Prepare JSON output
+json_data = []
+for _, row in output_df.iterrows():
+    ticker_entry = {
+        "ticker": row['Ticker'],
+        "info": {
+            "Ticker Name": row['Ticker Name'],
+            "Price": row['Price'],
+            "DVol": row['DVol'],
+            "RVol": row['RVol'],
+            "Sector": row['Sector'],
+            "Industry": row['Industry'],
+            "52WKH": row['52WKH'],
+            "52WKL": row['52WKL'],
+            "Exchange": row['Exchange'],
+            "FF": row['FF'],
+            "1YR_Per": row['1YR_Per']
+        }
+    }
+    json_data.append(ticker_entry)
 
-print(f"Output CSV created at {output_path}")
+# Write to output JSON
+with open(output_json_path, 'w') as f:
+    json.dump(json_data, f, indent=2)
+
+print(f"Output JSON created at {output_json_path}")
