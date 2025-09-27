@@ -29,6 +29,6 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
-        git add data/test.csv || true
+        git add data/ticker_info.json || true
         git commit -m "Update processed tickers CSV" || echo "No changes to commit"
         git push || echo "No push needed"
