@@ -13,11 +13,12 @@ os.makedirs(output_dir, exist_ok=True)
 df = pd.read_csv(input_path)
 
 # Filter out unwanted tickers:
-# 1. Description containing "Segregated Portfolio" or "Segerated Portfolio"
-# 2. Symbols starting with a digit
+# Description containing "Segregated Portfolio", "Segerated Portfolio", or "Nippon India Equity Savings Fund"
 df = df[
-    ~df['Description'].str.contains("Segregated Portfolio|Segerated Portfolio", case=False, na=False) &
-    ~df['Symbol'].str.match(r'^\d')
+    ~df['Description'].str.contains(
+        "Segregated Portfolio|Segerated Portfolio|Nippon India Equity Savings Fund",
+        case=False, na=False
+    )
 ]
 
 # Clean numerical columns: strip '%' if present and convert to float
