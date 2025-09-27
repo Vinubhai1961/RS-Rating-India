@@ -1,0 +1,158 @@
+name: Build Tickers and Price Data
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "45 19 * * 1-5"  # 3:45 PM EDT (19:45 UTC) Monday through Friday
+
+jobs:
+  build-tickers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Print workflow start time (EDT)
+        run: |
+          echo "Workflow started at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
+
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas
+
+      - name: Run process_tickers.py
+        run: python scripts/process_tickers.py
+
+      - name: Upload test.csv artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-csv
+          path: data/test.csv
+          retention-days: 5
+
+  build-ticker-price:
+    needs: build-tickers
+    strategy:
+      fail-fast: false
+      matrix:
+        part_index: [0, 1, 2, 3, 4]
+        part_total: [5]
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+
+    steps:
+      - name: Print workflow start time (EDT)
+        run: |
+          echo "Workflow started at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
+
+      - uses: actions/checkout@v4
+
+      - name: Download test.csv artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: test-csv
+          path: data
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas yahooquery tqdm
+
+      - name: Run build_ticker_price.py
+        run: |
+          python scripts/build_ticker_price.py \
+            --part-index ${{ matrix.part_index }} \
+            --part-total ${{ matrix.part_total }} \
+            --verbose
+
+      - name: Upload partition artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ticker-price-part-${{ matrix.part_index }}
+          path: |
+            data/ticker_price_part_${{ matrix.part_index }}.json
+            data/unresolved_price_tickers_part_${{ matrix.part_index }}.txt
+            logs/build_ticker_price.log
+          retention-days: 5
+
+      - name: Print workflow end time (EDT)
+        run: |
+          echo "Workflow ended at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
+
+  merge-ticker-price:
+    needs: build-ticker-price
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Print workflow start time (EDT)
+        run: |
+          echo "Workflow started at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
+
+      - uses: actions/checkout@v4
+
+      - name: Download partition artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+          pattern: ticker-price-part-*
+          merge-multiple: false
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas
+
+      - name: Prepare files for merge
+        run: |
+          mkdir -p data logs
+          find artifacts -type f -name "ticker_price_part_*.json" -exec cp {} data/ \; || true
+          find artifacts -type f -name "unresolved_price_tickers_part_*.txt" -exec cp {} data/ \; || true
+          ls -l data/ | grep -E "ticker_price_part_|unresolved_price_tickers_part_" || echo "No partition files copied"
+
+      - name: Merge ticker price files
+        run: |
+          python scripts/merge_ticker_price.py data --part-total 5
+
+      - name: Commit merged outputs
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add data/test.csv data/ticker_price.json data/unresolved_price_tickers.txt logs/*
+          edt_time=$(date -u -d "4 hours ago" +"%I:%M %p EDT on %A, %B %d, %Y")
+          git commit -m "Update tickers and price data [${edt_time}]" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git || echo "Push failed, possibly no changes"
+
+      - name: Upload final artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ticker-outputs
+          path: |
+            data/test.csv
+            data/ticker_price.json
+            data/unresolved_price_tickers.txt
+            logs/process_tickers.log
+            logs/build_ticker_price.log
+            logs/merge_ticker_price.log
+          retention-days: 5
+
+      - name: Print workflow end time (EDT)
+        run: |
+          echo "Workflow ended at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
