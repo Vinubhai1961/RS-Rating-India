@@ -1,0 +1,38 @@
+# .github/workflows/process_tickers.yml
+
+name: Process India Tickers
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.12'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pandas
+
+    - name: Run script
+      run: python scripts/process_tickers.py
+
+    - name: Commit output if changed
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add data/test.csv || true
+        git commit -m "Update processed tickers CSV" || echo "No changes to commit"
+        git push || echo "No push needed"
