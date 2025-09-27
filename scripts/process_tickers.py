@@ -1,5 +1,3 @@
-# scripts/process_tickers.py
-
 import pandas as pd
 import os
 
@@ -13,6 +11,9 @@ os.makedirs(output_dir, exist_ok=True)
 
 # Read the input CSV
 df = pd.read_csv(input_path)
+
+# Filter out unwanted tickers (e.g., Segregated Portfolio)
+df = df[~df['Description'].str.contains("Segregated Portfolio", case=False, na=False)]
 
 # Clean numerical columns: strip '%' if present and convert to float
 def clean_percentage(col):
