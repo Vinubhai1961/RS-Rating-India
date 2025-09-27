@@ -1,17 +1,29 @@
 import pandas as pd
 import os
 import json
+from datetime import datetime
 
 # Define paths based on repo structure
 input_path = 'source/India_Tickers_All.csv'
 output_dir = 'data'
+logs_dir = 'logs'
 output_json_path = os.path.join(output_dir, 'ticker_info.json')
+log_file = f"ticker_info_{datetime.now().strftime('%Y-%m-%d')}.log"
+log_path = os.path.join(logs_dir, log_file)
 
-# Ensure output directory exists
+# Ensure output and logs directories exist
 os.makedirs(output_dir, exist_ok=True)
+os.makedirs(logs_dir, exist_ok=True)
 
 # Read the input CSV
 df = pd.read_csv(input_path)
+
+# Log initial total tickers
+initial_total_tickers = len(df)
+
+# Count tickers by exchange before filtering
+nse_tickers = len(df[df['Exchange'] == 'NSE'])
+bse_tickers = len(df[df['Exchange'] == 'BSE'])
 
 # Filter out unwanted tickers:
 # Description containing "Segregated Portfolio", "Segerated Portfolio", or "Nippon India Equity Savings Fund"
@@ -39,6 +51,9 @@ df['exchange_priority'] = df['Exchange'].map(exchange_priority).fillna(99)
 # Sort and drop duplicates, keeping the first (highest priority)
 df = df.sort_values(['Symbol', 'exchange_priority'])
 df_unique = df.drop_duplicates(subset=['Symbol'], keep='first')
+
+# Count unique tickers in final output
+unique_tickers = len(df_unique)
 
 # Drop the temporary column
 df_unique = df_unique.drop(columns=['exchange_priority'])
@@ -132,4 +147,13 @@ for _, row in output_df.iterrows():
 with open(output_json_path, 'w') as f:
     json.dump(json_data, f, indent=2)
 
+# Write to log file
+with open(log_path, 'w') as f:
+    f.write(f"Log generated on {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+    f.write(f"Initial total tickers from source: {initial_total_tickers}\n")
+    f.write(f"Total tickers from NSE: {nse_tickers}\n")
+    f.write(f"Total tickers from BSE: {bse_tickers}\n")
+    f.write(f"Unique tickers in final output: {unique_tickers}\n")
+
 print(f"Output JSON created at {output_json_path}")
+print(f"Log file created at {log_path}")
