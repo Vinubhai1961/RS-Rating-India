@@ -1,5 +1,22 @@
 [
   {
+    "ticker": "^CRSLDX",
+    "info": {
+      "Ticker Name": "NIFTY 500",
+      "Price": "",
+      "DVol": "",
+      "RVol": "",
+      "Sector": "",
+      "Industry": "",
+      "52WKH": null,
+      "52WKL": null,
+      "Exchange": "",
+      "FF": null,
+      "1YR_Per": null,
+      "DPChange": null
+    }
+  },
+  {
     "ticker": "1STCUS.BO",
     "info": {
       "Ticker Name": "First Custodian Fund India Ltd.",
