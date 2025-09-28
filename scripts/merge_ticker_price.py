@@ -4,6 +4,7 @@ import json
 import argparse
 import logging
 import time
+import re
 from datetime import datetime
 
 logging.basicConfig(
@@ -30,6 +31,9 @@ def merge_price_files(artifacts_dir, expected_parts=None):
     if expected_parts is not None and len(part_files) < expected_parts:
         logging.warning(f"Expected {expected_parts} part files, but found only {len(part_files)}")
 
+    # Regex to validate volume formats (e.g., "102.45K", "7.80M", "7.80B")
+    volume_pattern = r"^\d+\.?\d{0,2}[KMB]?$"
+
     for filename in part_files:
         file_path = os.path.join(artifacts_dir, filename)
         try:
@@ -42,7 +46,7 @@ def merge_price_files(artifacts_dir, expected_parts=None):
                         continue
                     info = item["info"]
                     required_fields = [
-                        "Ticker Name", "Price", "DVol", "RVol", "sector", "industry", "type",
+                        "Ticker Name", "Price", "DVol", "RVol", "Sector", "Industry", "type",
                         "52WKL", "52WKH", "MCAP", "AvgVol", "AvgVol10", "Exchange", "FF", "1YR_Per", "DPChange"
                     ]
                     missing_fields = [f for f in required_fields if f not in info]
@@ -54,22 +58,19 @@ def merge_price_files(artifacts_dir, expected_parts=None):
                     if not isinstance(info["Price"], (int, float)) or info["Price"] <= 0:
                         logging.warning(f"Invalid Price for {item['ticker']} in {filename}: {info['Price']}")
                         continue
-                    if info["DVol"] is not None and (not isinstance(info["DVol"], int) or info["DVol"] < 0):
-                        logging.warning(f"Invalid DVol for {item['ticker']} in {filename}: {info['DVol']}")
-                        continue
-                    if info["AvgVol"] is not None and (not isinstance(info["AvgVol"], int) or info["AvgVol"] < 0):
-                        logging.warning(f"Invalid AvgVol for {item['ticker']} in {filename}: {info['AvgVol']}")
-                        continue
-                    if info["AvgVol10"] is not None and (not isinstance(info["AvgVol10"], int) or info["AvgVol10"] < 0):
-                        logging.warning(f"Invalid AvgVol10 for {item['ticker']} in {filename}: {info['AvgVol10']}")
-                        continue
                     if info["52WKL"] is not None and (not isinstance(info["52WKL"], (int, float)) or info["52WKL"] <= 0):
                         logging.warning(f"Invalid 52WKL for {item['ticker']} in {filename}: {info['52WKL']}")
                         continue
                     if info["52WKH"] is not None and (not isinstance(info["52WKH"], (int, float)) or info["52WKH"] <= 0):
                         logging.warning(f"Invalid 52WKH for {item['ticker']} in {filename}: {info['52WKH']}")
                         continue
-                    if info["MCAP"] is not None and (not isinstance(info["MCAP"], (int, float)) or info["MCAP"] < 0):
+                    
+                    # Validate formatted volume and market cap fields
+                    for field in ["DVol", "AvgVol", "AvgVol10"]:
+                        if info[field] is not None and (not isinstance(info[field], str) or not re.match(volume_pattern, info[field])):
+                            logging.warning(f"Invalid {field} for {item['ticker']} in {filename}: {info[field]}")
+                            continue
+                    if info["MCAP"] is not None and (not isinstance(info["MCAP"], str) or not re.match(volume_pattern, info["MCAP"])):
                         logging.warning(f"Invalid MCAP for {item['ticker']} in {filename}: {info['MCAP']}")
                         continue
                     
@@ -77,11 +78,11 @@ def merge_price_files(artifacts_dir, expected_parts=None):
                     if not isinstance(info["Ticker Name"], str):
                         logging.warning(f"Invalid Ticker Name for {item['ticker']} in {filename}: {info['Ticker Name']}")
                         continue
-                    if not isinstance(info["sector"], str):
-                        logging.warning(f"Invalid sector for {item['ticker']} in {filename}: {info['sector']}")
+                    if not isinstance(info["Sector"], str):
+                        logging.warning(f"Invalid Sector for {item['ticker']} in {filename}: {info['Sector']}")
                         continue
-                    if not isinstance(info["industry"], str):
-                        logging.warning(f"Invalid industry for {item['ticker']} in {filename}: {info['industry']}")
+                    if not isinstance(info["Industry"], str):
+                        logging.warning(f"Invalid Industry for {item['ticker']} in {filename}: {info['Industry']}")
                         continue
                     if not isinstance(info["type"], str):
                         logging.warning(f"Invalid type for {item['ticker']} in {filename}: {info['type']}")
