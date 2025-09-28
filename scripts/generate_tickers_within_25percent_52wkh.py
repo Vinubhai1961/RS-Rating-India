@@ -6,7 +6,7 @@ from pathlib import Path
 input_path = "data/ticker_price.json"
 output_dir = "25%_52WKH"
 current_date = datetime.datetime.now().strftime("%Y%m%d")
-output_path = f"{output_dir}/name_{current_date}.txt"
+output_path = f"{output_dir}/25%_52wkh_{current_date}.txt"
 
 # Ensure output directory exists
 Path(output_dir).mkdir(parents=True, exist_ok=True)
