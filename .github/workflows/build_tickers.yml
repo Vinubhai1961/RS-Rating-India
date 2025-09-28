@@ -36,6 +36,21 @@ jobs:
           name: ticker-info
           path: data/ticker_info.json
           retention-days: 5
+      - name: Commit merged outputs
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git stash push --include-untracked
+          git pull --rebase origin main
+          git stash pop || echo "No stash to pop"
+          git add data/ticker_info.json logs/*
+          edt_time=$(date -u -d "4 hours ago" +"%I:%M %p EDT on %A, %B %d, %Y")
+          git commit -m "Update tickers info data [${edt_time}]" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git || echo "Push failed, possibly no changes"
+
+      - name: Print workflow end time (EDT)
+        run: |
+          echo "Workflow ended at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
 
   build-ticker-price:
     needs: build-tickers
