@@ -82,6 +82,23 @@ def partition_tickers(tickers, part_index, part_total):
     end = start + per_part if part_index < part_total - 1 else len(tickers)
     return tickers[start:end]
 
+def yahoo_symbol(symbol: str) -> str:
+    return symbol.replace(".", "-")
+
+def format_volume(value):
+    """Format volume as a string with 'K' suffix for thousands."""
+    if value is None:
+        return None
+    return f"{value / 1000:.2f}K"
+
+def format_market_cap(value):
+    """Format market cap as a string with 'M' for millions or 'B' for billions."""
+    if value is None:
+        return None
+    if value >= 1_000_000_000:
+        return f"{value / 1_000_000_000:.2f}B"
+    return f"{value / 1_000_000:.2f}M"
+
 def process_batch(batch, ticker_info):
     start_time = time.time()
     total_wait = 0
@@ -89,17 +106,18 @@ def process_batch(batch, ticker_info):
         try:
             prices = []
             failure_reasons = {"no_price": 0, "below_threshold": 0, "error": 0}
-            # Pass tickers as they are from ticker_info.json
-            yq = Ticker(batch)
+            yahoo_symbols = [yahoo_symbol(symbol) for symbol in batch]
+            yq = Ticker(yahoo_symbols)
             hist = yq.history(period="1d")
             summary_details = yq.summary_detail
             
             for symbol in batch:
+                yahoo_sym = yahoo_symbol(symbol)
                 try:
                     # Extract price from history
                     price = None
-                    if symbol in hist.index.get_level_values(0):
-                        price = hist.loc[symbol]['close'].iloc[-1] if not hist.loc[symbol].empty else None
+                    if yahoo_sym in hist.index.get_level_values(0):
+                        price = hist.loc[yahoo_sym]['close'].iloc[-1] if not hist.loc[yahoo_sym].empty else None
                     
                     # Validate price
                     if price is None or not isinstance(price, (int, float)):
@@ -112,7 +130,7 @@ def process_batch(batch, ticker_info):
                         continue
                     
                     # Extract summary details, set to None if missing or invalid
-                    summary = summary_details.get(symbol, {}) if isinstance(summary_details, dict) else {}
+                    summary = summary_details.get(yahoo_sym, {}) if isinstance(summary_details, dict) else {}
                     none_fields = []
                     
                     volume = summary.get("volume")
@@ -156,22 +174,22 @@ def process_batch(batch, ticker_info):
                     if volume is not None and avg_volume_10days is not None and avg_volume_10days > 0:
                         rvol = f"{volume / avg_volume_10days:.2f}"
                     
-                    # Combine data with preserved and updated fields
+                    # Combine data with preserved and updated fields, applying formatting
                     prices.append({
                         "ticker": symbol,
                         "info": {
                             "Ticker Name": info.get("Ticker Name", "n/a"),
                             "Price": round(price, 2),
-                            "DVol": volume,
+                            "DVol": format_volume(volume),
                             "RVol": rvol,
-                            "sector": info.get("Sector", "n/a").lower(),
-                            "industry": info.get("Industry", "n/a").lower(),
+                            "Sector": info.get("Sector", "n/a").title(),
+                            "Industry": info.get("Industry", "n/a").title(),
                             "type": "Stock",
                             "52WKL": round(fifty_two_week_low, 2) if fifty_two_week_low is not None else None,
                             "52WKH": round(fifty_two_week_high, 2) if fifty_two_week_high is not None else None,
-                            "MCAP": round(market_cap, 2) if market_cap is not None else None,
-                            "AvgVol": avg_volume,
-                            "AvgVol10": avg_volume_10days,
+                            "MCAP": format_market_cap(market_cap),
+                            "AvgVol": format_volume(avg_volume),
+                            "AvgVol10": format_volume(avg_volume_10days),
                             "Exchange": info.get("Exchange", "n/a"),
                             "FF": info.get("FF", None),
                             "1YR_Per": info.get("1YR_Per", None),
