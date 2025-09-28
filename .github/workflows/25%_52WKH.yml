@@ -16,6 +16,8 @@ jobs:
       # Checkout the repository
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history for accurate commits
 
       # Set up Python environment
       - name: Set up Python
@@ -34,6 +36,17 @@ jobs:
       # Run the Python script
       - name: Run Python script
         run: python scripts/generate_tickers_within_25percent_52wkh.py
+
+      # Commit the output file to the 25%_52WKH folder
+      - name: Commit output file
+        run: |
+          git config --global user.name "GitHub Action"
+          git config --global user.email "action@github.com"
+          git add 25%_52WKH/name_*.txt
+          git commit -m "Add tickers within 25% of 52-week high for $(date +%Y%m%d)" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # Upload the output file as an artifact
       - name: Upload output artifact
