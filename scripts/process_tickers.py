@@ -95,6 +95,26 @@ output_df = output_df.sort_values('Ticker')
 
 # Prepare JSON output
 json_data = []
+
+# Add NIFTY 500 benchmark ticker as the first record
+json_data.append({
+    "ticker": "^CRSLDX",
+    "info": {
+        "Ticker Name": "NIFTY 500",
+        "Price": "",
+        "DVol": "",
+        "RVol": "",
+        "Sector": "",
+        "Industry": "",
+        "52WKH": None,
+        "52WKL": None,
+        "Exchange": "",
+        "FF": None,
+        "1YR_Per": None,
+        "DPChange": None
+    }
+})
+
 for _, row in output_df.iterrows():
     # Format DVol based on magnitude
     dvol_value = row['DVol']
