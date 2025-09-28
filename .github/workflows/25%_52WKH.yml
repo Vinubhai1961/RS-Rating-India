@@ -1,0 +1,44 @@
+name: Generate Tickers Within 25% of 52-Week High
+
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: '0 0 * * *' # Run daily at midnight UTC
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  generate-tickers:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Set up Python environment
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      # Verify input file exists
+      - name: Check input file
+        run: |
+          if [ ! -f "data/ticker_price.json" ]; then
+            echo "Error: Input file data/ticker_price.json not found"
+            exit 1
+          fi
+
+      # Run the Python script
+      - name: Run Python script
+        run: python scripts/generate_tickers_within_25percent_52wkh.py
+
+      # Upload the output file as an artifact
+      - name: Upload output artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: tickers-output
+          path: 25%_52WKH/name_*.txt
+          retention-days: 7
