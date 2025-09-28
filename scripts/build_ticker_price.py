@@ -14,7 +14,7 @@ import random
 OUTPUT_DIR = "data"
 TICKER_INFO_FILE = os.path.join(OUTPUT_DIR, "ticker_info.json")
 TICKER_PRICE_PART_FILE = os.path.join(OUTPUT_DIR, "ticker_price_part_%d.json")
-UNRESOLVED_PRICE_TICKERS = os.path.join(OUTPUT_DIR, "unresolved_price_tickers.txt")
+UNRESOLVED_PRICE_TICKERS = os.path.join(OUTPUT_DIR, "unresolved_price_tickers_part_%d.txt")
 LOG_PATH = "logs/build_ticker_price.log"
 BATCH_SIZE = 250
 BATCH_DELAY_RANGE = (20, 30)  # Increased for two API calls
@@ -82,9 +82,6 @@ def partition_tickers(tickers, part_index, part_total):
     end = start + per_part if part_index < part_total - 1 else len(tickers)
     return tickers[start:end]
 
-def yahoo_symbol(symbol: str) -> str:
-    return symbol.replace(".", "-")
-
 def format_volume(value):
     """Format volume as a string with 'K' suffix for thousands."""
     if value is None:
@@ -106,18 +103,17 @@ def process_batch(batch, ticker_info):
         try:
             prices = []
             failure_reasons = {"no_price": 0, "below_threshold": 0, "error": 0}
-            yahoo_symbols = [yahoo_symbol(symbol) for symbol in batch]
-            yq = Ticker(yahoo_symbols)
+            # Use original symbols directly without modification
+            yq = Ticker(batch)
             hist = yq.history(period="1d")
             summary_details = yq.summary_detail
             
             for symbol in batch:
-                yahoo_sym = yahoo_symbol(symbol)
                 try:
                     # Extract price from history
                     price = None
-                    if yahoo_sym in hist.index.get_level_values(0):
-                        price = hist.loc[yahoo_sym]['close'].iloc[-1] if not hist.loc[yahoo_sym].empty else None
+                    if symbol in hist.index.get_level_values(0):
+                        price = hist.loc[symbol]['close'].iloc[-1] if not hist.loc[symbol].empty else None
                     
                     # Validate price
                     if price is None or not isinstance(price, (int, float)):
@@ -130,7 +126,7 @@ def process_batch(batch, ticker_info):
                         continue
                     
                     # Extract summary details, set to None if missing or invalid
-                    summary = summary_details.get(yahoo_sym, {}) if isinstance(summary_details, dict) else {}
+                    summary = summary_details.get(symbol, {}) if isinstance(summary_details, dict) else {}
                     none_fields = []
                     
                     volume = summary.get("volume")
@@ -268,9 +264,9 @@ def main(part_index=None, part_total=None, verbose=False):
             time.sleep(random.uniform(5, 10))
 
     unresolved_final = sorted(set(all_failed))
-    with open(UNRESOLVED_PRICE_TICKERS, "w") as f:
+    with open(UNRESOLVED_PRICE_TICKERS % part_index, "w") as f:
         f.write("\n".join(unresolved_final))
-    logging.info(f"Saved {len(unresolved_final)} unresolved tickers to {UNRESOLVED_PRICE_TICKERS}")
+    logging.info(f"Saved {len(unresolved_final)} unresolved tickers to {UNRESOLVED_PRICE_TICKERS % part_index}")
 
     output_file = TICKER_PRICE_PART_FILE % part_index
     with open(output_file, "w", encoding="utf-8") as f:
