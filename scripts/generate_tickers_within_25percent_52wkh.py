@@ -38,10 +38,14 @@ try:
             print(f"Skipping ticker {item.get('ticker', 'unknown')}: Invalid data - {e}")
             continue
 
-    # Write the tickers to the output file
+    # Write the tickers to the output file, with up to 995 tickers per line
     with open(output_path, 'w') as file:
         if tickers_within_25percent:
-            file.write(', '.join(tickers_within_25percent))
+            # Split tickers into chunks of 995
+            chunk_size = 995
+            for i in range(0, len(tickers_within_25percent), chunk_size):
+                chunk = tickers_within_25percent[i:i + chunk_size]
+                file.write(', '.join(chunk) + '\n')
         else:
             file.write("No tickers found within 25% of 52-week high.")
 
