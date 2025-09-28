@@ -36,6 +36,13 @@ jobs:
           name: ticker-info
           path: data/ticker_info.json
           retention-days: 5
+
+      - name: Determine log filename
+        id: log_filename
+        run: |
+          log_file=$(ls logs/ticker_info_*.log | head -1)
+          echo "log_path=${log_file:-logs/process_tickers.log}" >> $GITHUB_OUTPUT
+
       - name: Commit merged outputs
         run: |
           git config --global user.name "github-actions"
@@ -43,7 +50,7 @@ jobs:
           git stash push --include-untracked
           git pull --rebase origin main
           git stash pop || echo "No stash to pop"
-          git add data/ticker_info.json logs/*
+          git add data/ticker_info.json logs/${{ steps.log_filename.outputs.log_path }}
           edt_time=$(date -u -d "4 hours ago" +"%I:%M %p EDT on %A, %B %d, %Y")
           git commit -m "Update tickers info data [${edt_time}]" || echo "No changes to commit"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git || echo "Push failed, possibly no changes"
@@ -125,6 +132,11 @@ jobs:
           pattern: ticker-price-part-*
           merge-multiple: false
 
+      - name: Verify downloaded artifacts
+        run: |
+          echo "Listing downloaded artifacts:"
+          find artifacts -type f
+
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
@@ -141,6 +153,10 @@ jobs:
           find artifacts -type f -name "ticker_price_part_*.json" -exec cp {} data/ \; || true
           find artifacts -type f -name "unresolved_price_tickers_part_*.txt" -exec cp {} data/ \; || true
           ls -l data/ | grep -E "ticker_price_part_|unresolved_price_tickers_part_" || echo "No partition files copied"
+
+      - name: Merge unresolved tickers
+        run: |
+          cat data/unresolved_price_tickers_part_*.txt > data/unresolved_price_tickers.txt || echo "No unresolved files to merge"
 
       - name: Merge ticker price files
         run: |
