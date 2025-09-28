@@ -47,11 +47,3 @@ jobs:
           git push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      # Upload the output file as an artifact
-      - name: Upload output artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: tickers-output
-          path: 25%_52WKH/25%_52wkh_*.txt
-          retention-days: 7
