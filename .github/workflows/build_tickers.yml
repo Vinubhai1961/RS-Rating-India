@@ -131,15 +131,6 @@ jobs:
         run: |
           python scripts/merge_ticker_price.py data --part-total 5
 
-      - name: Commit merged outputs
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-          git add data/ticker_info.json data/ticker_price.json data/unresolved_price_tickers.txt logs/*
-          edt_time=$(date -u -d "4 hours ago" +"%I:%M %p EDT on %A, %B %d, %Y")
-          git commit -m "Update tickers and price data [${edt_time}]" || echo "No changes to commit"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git || echo "Push failed, possibly no changes"
-
       - name: Upload final artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -152,6 +143,15 @@ jobs:
             logs/build_ticker_price.log
             logs/merge_ticker_price.log
           retention-days: 5
+        
+      - name: Commit merged outputs
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+          git add data/ticker_info.json data/ticker_price.json data/unresolved_price_tickers.txt logs/*
+          edt_time=$(date -u -d "4 hours ago" +"%I:%M %p EDT on %A, %B %d, %Y")
+          git commit -m "Update tickers and price data [${edt_time}]" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git || echo "Push failed, possibly no changes"
 
       - name: Print workflow end time (EDT)
         run: |
