@@ -30,11 +30,11 @@ jobs:
       - name: Run process_tickers.py
         run: python scripts/process_tickers.py
 
-      - name: Upload test.csv artifact
+      - name: Upload ticker_info.json artifact
         uses: actions/upload-artifact@v4
         with:
-          name: test-csv
-          path: data/test.csv
+          name: ticker-info
+          path: data/ticker_info.json
           retention-days: 5
 
   build-ticker-price:
@@ -54,10 +54,10 @@ jobs:
 
       - uses: actions/checkout@v4
 
-      - name: Download test.csv artifact
+      - name: Download ticker_info.json artifact
         uses: actions/download-artifact@v4
         with:
-          name: test-csv
+          name: ticker-info
           path: data
 
       - name: Set up Python
@@ -135,7 +135,7 @@ jobs:
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
-          git add data/test.csv data/ticker_price.json data/unresolved_price_tickers.txt logs/*
+          git add data/ticker_info.json data/ticker_price.json data/unresolved_price_tickers.txt logs/*
           edt_time=$(date -u -d "4 hours ago" +"%I:%M %p EDT on %A, %B %d, %Y")
           git commit -m "Update tickers and price data [${edt_time}]" || echo "No changes to commit"
           git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git || echo "Push failed, possibly no changes"
@@ -145,7 +145,7 @@ jobs:
         with:
           name: ticker-outputs
           path: |
-            data/test.csv
+            data/ticker_info.json
             data/ticker_price.json
             data/unresolved_price_tickers.txt
             logs/process_tickers.log
