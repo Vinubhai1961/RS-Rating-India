@@ -40,8 +40,13 @@ jobs:
       - name: Determine log filename
         id: log_filename
         run: |
-          log_file=$(ls logs/ticker_info_*.log | head -1)
-          echo "log_path=${log_file:-logs/process_tickers.log}" >> $GITHUB_OUTPUT
+          log_file=$(ls logs/ticker_info_*.log | head -1 2>/dev/null || echo "process_tickers.log")
+          if [ -f "logs/$log_file" ]; then
+            echo "log_path=$log_file" >> $GITHUB_OUTPUT
+          else
+            echo "log_path=process_tickers.log" >> $GITHUB_OUTPUT
+            echo "Warning: No ticker_info_*.log found, using default log_path" >&2
+          fi
 
       - name: Commit merged outputs
         run: |
