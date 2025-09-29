@@ -23,9 +23,23 @@ try:
     for item in data:
         try:
             ticker = item['ticker']
-            price = float(item['info']['Price'])
-            wk_high = float(item['info']['52WKH'])
-            rvol = float(item['info']['RVol'])
+            price = item['info']['Price']
+            wk_high = item['info']['52WKH']
+            rvol = item['info']['RVol']
+            
+            # Check for None or invalid values
+            if price is None or wk_high is None or rvol is None:
+                print(f"Skipping ticker {ticker}: Missing Price, 52WKH, or RVol")
+                continue
+            
+            # Convert to float and handle potential conversion errors
+            try:
+                price = float(price)
+                wk_high = float(wk_high)
+                rvol = float(rvol)
+            except (ValueError, TypeError) as e:
+                print(f"Skipping ticker {ticker}: Invalid data - {e}")
+                continue
             
             # Calculate 75% of 52-week high (threshold for being within 25%)
             threshold = wk_high * 0.75
@@ -35,8 +49,8 @@ try:
                 # Remove .NS or .BO from ticker
                 clean_ticker = ticker.replace('.NS', '').replace('.BO', '')
                 tickers_within_25percent.append(clean_ticker)
-        except (KeyError, ValueError) as e:
-            print(f"Skipping ticker {item.get('ticker', 'unknown')}: Invalid data - {e}")
+        except KeyError as e:
+            print(f"Skipping ticker {item.get('ticker', 'unknown')}: Missing key - {e}")
             continue
 
     # Write the tickers to the output file, with up to 995 tickers per line
