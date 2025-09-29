@@ -11,7 +11,7 @@ output_path = f"{output_dir}/25%_52wkh_{current_date}.txt"
 # Ensure output directory exists
 Path(output_dir).mkdir(parents=True, exist_ok=True)
 
-# Initialize list for tickers within 25% of 52-week high
+# Initialize list for tickers within 25% of 52-week high and RVol > 1
 tickers_within_25percent = []
 
 try:
@@ -25,12 +25,13 @@ try:
             ticker = item['ticker']
             price = float(item['info']['Price'])
             wk_high = float(item['info']['52WKH'])
+            rvol = float(item['info']['RVol'])
             
             # Calculate 75% of 52-week high (threshold for being within 25%)
             threshold = wk_high * 0.75
             
-            # Check if current price is within 25% of 52-week high
-            if price >= threshold:
+            # Check if current price is within 25% of 52-week high and RVol > 1
+            if price >= threshold and rvol > 1:
                 # Remove .NS or .BO from ticker
                 clean_ticker = ticker.replace('.NS', '').replace('.BO', '')
                 tickers_within_25percent.append(clean_ticker)
@@ -47,7 +48,7 @@ try:
                 chunk = tickers_within_25percent[i:i + chunk_size]
                 file.write(', '.join(chunk) + '\n')
         else:
-            file.write("No tickers found within 25% of 52-week high.")
+            file.write("No tickers found within 25% of 52-week high with RVol > 1.")
 
     print(f"Output written to {output_path}")
 
