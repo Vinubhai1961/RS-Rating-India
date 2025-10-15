@@ -45,7 +45,7 @@ try:
             threshold = wk_high * 0.75
             
             # Check if current price is within 25% of 52-week high and RVol > 1
-            if price >= threshold and rvol > 1:
+            if price >= threshold and rvol > 0.9:
                 # Remove .NS or .BO from ticker
                 clean_ticker = ticker.replace('.NS', '').replace('.BO', '')
                 tickers_within_25percent.append(clean_ticker)
