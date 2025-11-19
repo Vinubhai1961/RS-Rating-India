@@ -4,11 +4,15 @@ import sys
 import json
 import argparse
 import logging
+import warnings
 from datetime import datetime, timedelta
 import pandas as pd
 import numpy as np
 import arcticdb as adb
 from tqdm.auto import tqdm
+
+# Silence the annoying FutureWarning from pct_change()
+warnings.filterwarnings("ignore", category=FutureWarning, message=".*fill_method.*pct_change.*")
 
 try:
     from pandas_market_calendars import get_calendar
@@ -16,7 +20,7 @@ except ImportError:
     get_calendar = None
     logging.warning("pandas_market_calendars not installed → RSRATING.csv will use consecutive days")
 
-# === RS CORE FUNCTIONS (unchanged – perfect as-is) ===
+# === YOUR ORIGINAL RS LOGIC (PERFECT) ===
 def quarters_perf(closes: pd.Series, n: int) -> float:
     days = n * 63
     available_data = closes[-min(len(closes), days):]
@@ -61,7 +65,7 @@ def load_arctic_db(data_dir):
         print(f"ArcticDB error: {str(e)}")
         return None
 
-# FIXED: Now uses NSE → XBOM → consecutive days
+# FIXED: India NSE/XBOM calendar
 def generate_tradingview_csv(df_stocks, output_dir, ref_data, percentile_values=None):
     if percentile_values is None:
         percentile_values = [98, 89, 69, 49, 29, 9, 1]
@@ -84,13 +88,11 @@ def generate_tradingview_csv(df_stocks, output_dir, ref_data, percentile_values=
                     break
             except Exception as e:
                 logging.debug(f"{cal_name} calendar failed: {e}")
-                continue
 
     if len(dates) < 5:
         dates = [(latest_date - timedelta(days=i)).strftime('%Y%m%dT') for i in range(4, -1, -1)]
         logging.info(f"Using consecutive dates → {', '.join(dates)}")
 
-    # Percentile mapping
     rs_map = {}
     for p in percentile_values:
         rows = df_stocks[df_stocks["RS Percentile"] == p]
@@ -104,15 +106,28 @@ def generate_tradingview_csv(df_stocks, output_dir, ref_data, percentile_values=
 
     with open(os.path.join(output_dir, "RSRATING.csv"), "w") as f:
         f.write(''.join(lines))
-
     logging.info(f"RSRATING.csv generated → {len(lines)} lines")
-    print(f"RSRATING.csv ready for TradingView (India dates)")
+
+# NEW: Safe MCAP converter for "7.33B", "1.2T", etc.
+def mcap_to_float(val):
+    if pd.isna(val) or val in ["", None]:
+        return 0.0
+    s = str(val).strip().upper()
+    multipliers = {'B': 1e9, 'T': 1e12, 'M': 1e6}
+    for suffix, mult in multipliers.items():
+        if s.endswith(suffix):
+            try:
+                return float(s[:-1]) * mult
+            except:
+                return 0.0
+    try:
+        return float(s)
+    except:
+        return 0.0
 
 def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=None, percentiles=None):
     os.makedirs(os.path.dirname(log_file), exist_ok=True)
-    logging.basicConfig(filename=log_file, level=logging.INFO,
-                        format="%(asctime)s | %(message)s")
-
+    logging.basicConfig(filename=log_file, level=logging.INFO, format="%(asctime)s | %(message)s")
     logging.info("=== INDIA RS CALCULATION STARTED ===")
     logging.info(f"Benchmark: {reference_ticker}")
 
@@ -123,25 +138,23 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
 
     if reference_ticker not in tickers:
         logging.error(f"BENCHMARK {reference_ticker} NOT FOUND!")
-        print(f"CRITICAL ERROR: {reference_ticker} missing from database!")
+        print(f"CRITICAL ERROR: {reference_ticker} missing!")
         sys.exit(1)
 
     ref_data = lib.read(reference_ticker).data
-    ref_closes = pd.Series(ref_data["close"].values,
-                           index=pd.to_datetime(ref_data["datetime"], unit='s'))
-    logging.info(f"Benchmark {reference_ticker}: {len(ref_closes)} days of data")
+    ref_closes = pd.Series(ref_data["close"].values, index=pd.to_datetime(ref_data["datetime"], unit='s'))
 
-    # Load metadata (your 67k list format)
+    # Load metadata
     metadata_df = pd.DataFrame()
     if metadata_file and os.path.exists(metadata_file):
         try:
             with open(metadata_file) as f:
                 data = json.load(f)
             if isinstance(data, list):
-                metadata = []
+                records = []
                 for item in data:
                     info = item.get("info", {})
-                    metadata.append({
+                    records.append({
                         "Ticker": item["ticker"],
                         "Price": info.get("Price"),
                         "DVol": info.get("DVol", ""),
@@ -154,7 +167,7 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
                         "MCAP": info.get("MCAP"),
                         "Type": info.get("type", "Stock")
                     })
-                metadata_df = pd.DataFrame(metadata)
+                metadata_df = pd.DataFrame(records)
                 logging.info(f"Metadata loaded: {len(metadata_df):,} tickers")
         except Exception as e:
             logging.warning(f"Metadata failed: {e}")
@@ -168,8 +181,7 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
             continue
         try:
             data = lib.read(ticker).data
-            closes = pd.Series(data["close"].values,
-                               index=pd.to_datetime(data["datetime"], unit='s'))
+            closes = pd.Series(data["close"].values, index=pd.to_datetime(data["datetime"], unit='s'))
             if len(closes) < 2:
                 rs_results.append((ticker, np.nan, np.nan, np.nan, np.nan))
                 continue
@@ -197,39 +209,53 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
 
     df = df.sort_values("RS", ascending=False).reset_index(drop=True)
     df["Rank"] = df.index + 1
+
+    # IPO flag
     df["IPO"] = "No"
     if "Type" in df.columns:
         df.loc[df["Type"] == "ETF", ["Industry", "Sector"]] = "ETF"
 
-    # Save outputs
     os.makedirs(output_dir, exist_ok=True)
 
+    # Save stocks
     df[["Rank", "Ticker", "Price", "DVol", "Sector", "Industry",
         "RS Percentile", "1M_RS Percentile", "3M_RS Percentile", "6M_RS Percentile",
         "AvgVol", "AvgVol10", "52WKH", "52WKL", "MCAP", "IPO"]].to_csv(
         os.path.join(output_dir, "rs_stocks.csv"), index=False, na_rep="")
 
-    # Industries
-    ind = df.groupby("Industry").agg({
-        "RS Percentile": "mean", "1M_RS Percentile": "mean",
-        "3M_RS Percentile": "mean", "6M_RS Percentile": "mean",
+    # FIXED: Industry aggregation with MCAP parsing
+    df_industries = df.groupby("Industry").agg({
+        "RS Percentile": "mean",
+        "1M_RS Percentile": "mean",
+        "3M_RS Percentile": "mean",
+        "6M_RS Percentile": "mean",
         "Sector": "first",
-        "Ticker": lambda x: ",".join(sorted(x, key=lambda t: float(df[df["Ticker"]==t]["MCAP"].iloc[0] or 0), reverse=True))
-    }).round(0).astype({"RS Percentile": int, "1M_RS Percentile": int,
-                       "3M_RS Percentile": int, "6M_RS Percentile": int}).fillna(0)
-    ind = ind.sort_values("RS Percentile", ascending=False).reset_index()
-    ind["Rank"] = ind.index + 1
-    ind.rename(columns={"RS Percentile": "RS", "1M_RS Percentile": "1 M_RS",
-                        "3M_RS Percentile": "3M_RS", "6M_RS Percentile": "6M_RS"},
-               inplace=True)
-    ind[["Rank", "Industry", "Sector", "RS", "1 M_RS", "3M_RS", "6M_RS", "Ticker"]].to_csv(
+        "Ticker": lambda x: ",".join(sorted(
+            x,
+            key=lambda t: mcap_to_float(df.loc[df["Ticker"] == t, "MCAP"].iloc[0] if not df.loc[df["Ticker"] == t, "MCAP"].empty else 0),
+            reverse=True
+        ))
+    }).reset_index()
+
+    for col in ["RS Percentile", "1M_RS Percentile", "3M_RS Percentile", "6M_RS Percentile"]:
+        df_industries[col] = df_industries[col].fillna(0).round().astype(int)
+
+    df_industries = df_industries.sort_values("RS Percentile", ascending=False).reset_index(drop=True)
+    df_industries["Rank"] = df_industries.index + 1
+    df_industries.rename(columns={
+        "RS Percentile": "RS",
+        "1M_RS Percentile": "1 M_RS",
+        "3M_RS Percentile": "3M_RS",
+        "6M_RS Percentile": "6M_RS"
+    }, inplace=True)
+
+    df_industries[["Rank", "Industry", "Sector", "RS", "1 M_RS", "3M_RS", "6M_RS", "Ticker"]].to_csv(
         os.path.join(output_dir, "rs_industries.csv"), index=False)
 
     generate_tradingview_csv(df, output_dir, ref_data, percentiles)
 
-    print(f"\nINDIA RS COMPLETE!")
-    print(f"Valid RS: {valid_count:,} / {len(df):,}")
-    print(f"Files → {output_dir}/")
+    print(f"\nINDIA RS COMPLETE! Valid RS: {valid_count:,} / {len(df):,}")
+    print(f"Files saved to: {output_dir}/")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="India RS Rating vs NIFTYMIDSML400.NS")
