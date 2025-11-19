@@ -1,0 +1,145 @@
+name: 📊 Calculate RS Ratings (India - NIFTYMIDSML400)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '20 20 * * 1-5'  # 8:20 UTC = 1:50 AM IST next day / perfect for India close
+
+jobs:
+  fetch-rs:
+    strategy:
+      matrix:
+        partition: [0, 1, 2, 3]
+    runs-on: ubuntu-latest
+    name: fetch-rs-${{ matrix.partition }}
+    steps:
+      - name: Print workflow start time (IST)
+        run: |
+          echo "Workflow started at $(date -u -d '+5:30 hours' +'%I:%M %p IST on %A, %B %d, %Y')"
+
+      - name: ⬇️ Checkout repository
+        uses: actions/checkout@v4
+
+      - name: 🔍 Verify ticker_price.json
+        run: |
+          if [ ! -f data/ticker_price.json ]; then
+            echo "Error: data/ticker_price.json not found"
+            exit 1
+          fi
+
+      - name: 🗃️ Cache Python dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: ${{ runner.os }}-pip-
+
+      - name: 🔬 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: 📦 Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install yahooquery pandas numpy tqdm arcticdb pandas_market_calendars
+
+      - name: ▶️ Fetch data for partition ${{ matrix.partition }}
+        run: |
+          mkdir -p tmp/arctic_db logs
+          rm -f logs/failed_tickers.log
+          python scripts/calculate_rs.py data/ticker_price.json \
+            --log-file logs/failed_tickers.log \
+            --partition ${{ matrix.partition }} \
+            --total-partitions 4
+
+      - name: 📦 Upload ArcticDB data
+        uses: actions/upload-artifact@v4
+        with:
+          name: arctic-db-${{ matrix.partition }}
+          path: tmp/arctic_db/
+
+      - name: 📊 Upload failed tickers log
+        uses: actions/upload-artifact@v4
+        with:
+          name: failed-tickers-${{ matrix.partition }}
+          path: logs/failed_tickers.log
+          if-no-files-found: ignore
+
+  validate-arctic-data:
+    needs: fetch-rs
+    runs-on: ubuntu-latest
+    steps:
+      # ... (unchanged merge & validate steps) ...
+      # Keep exactly as in your original — it works perfectly
+
+  calculate-rs:
+    needs: validate-arctic-data
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print workflow start time (IST)
+        run: |
+          echo "Workflow started at $(date -u -d '+5:30 hours' +'%I:%M %p IST on %A, %B %d, %Y')"
+
+      - name: ⬇️ Checkout repo
+        uses: actions/checkout@v4
+
+      - name: ⬇️ Download merged ArcticDB
+        uses: actions/download-artifact@v4
+        with:
+          name: arctic-db-merged
+          path: tmp/arctic_db
+
+      - name: 📆 Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 📦 Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install pandas numpy tqdm arcticdb pandas_market_calendars
+
+      - name: 📃 Run RS calculation (India - NIFTYMIDSML400)
+        run: |
+          mkdir -p RS_Logs RS_Data 
+          python scripts/calculate_rs_from_db.py \
+            --arctic-db-path tmp/arctic_db \
+            --reference-ticker NIFTYMIDSML400.NS \
+            --output-dir RS_Data \
+            --log-file RS_Logs/failed_tickers.log \
+            --metadata-file data/ticker_price.json
+
+      - name: 📃 Archive RS Results
+        run: |
+          mkdir -p archive
+          current_date=$(date -u -d '+5:30 hours' +"%m%d%Y")
+          echo "📅 Archiving results for: ${current_date}"
+          for file in rs_stocks rs_industries RSRATING; do
+            if [ -f "RS_Data/${file}.csv" ]; then
+              cp RS_Data/${file}.csv archive/${file}_${current_date}.csv
+              echo "✅ Archived ${file}.csv"
+            else
+              echo "❌ RS_Data/${file}.csv not found!"
+              exit 1
+            fi
+          done
+
+      - name: 🗓️ Upload outputs
+        uses: actions/upload-artifact@v4
+        with:
+          name: rs-results
+          path: |
+            RS_Data/*.csv
+            RS_Logs/failed_tickers.log
+            archive/*.csv
+
+      - name: 📤 Commit and Push RS Results
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # ... (keep your existing commit logic) ...
+
+      - name: Print workflow end time (IST)
+        run: |
+          echo "Workflow ended at $(date -u -d '+5:30 hours' +'%I:%M %p IST on %A, %B %d, %Y')"
