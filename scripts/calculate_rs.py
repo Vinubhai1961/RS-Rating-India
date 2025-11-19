@@ -32,15 +32,15 @@ def fetch_historical_data(tickers, arctic, log_file):
                 break
             except Exception as e:
                 if attempt == max_retries - 1:
-                    logging.error(f"Batch {i//batch_size + 1} failed: {str(e)}")
+                    logging.error(f"Batch {i//batch_size + 1} failed after {max_retries} attempts: {str(e)}")
                     failed_tickers.extend([(t, str(e)) for t in batch])
                     data = None
                 else:
                     logging.warning(f"Retrying batch {i//batch_size + 1} (attempt {attempt+2}/{max_retries}) after error: {str(e)}")
-                    time.sleep(2)
+                    time.sleep(2 ** attempt)  # exponential backoff
 
         if data is None:
-            continue  # skip this batch
+            continue
 
         for ticker in batch:
             try:
@@ -56,7 +56,6 @@ def fetch_historical_data(tickers, arctic, log_file):
                     batch_skipped += 1
                     continue
 
-                # Convert date column to Unix timestamp in seconds
                 df = df.rename(columns={"date": "datetime"})
                 df["datetime"] = pd.to_datetime(df["datetime"], utc=True).astype(int) // 10**9
 
@@ -68,70 +67,71 @@ def fetch_historical_data(tickers, arctic, log_file):
                 failed_tickers.append((ticker, str(e)))
 
         batch_time = time.time() - batch_start_time
-        logging.info(f"✅ Completed batch {i//batch_size + 1}/{total_batches} - {batch_success} success, {batch_skipped} skipped, in {batch_time:.2f}s")
+        logging.info(f"✅ Batch {i//batch_size + 1}/{total_batches} | Success: {batch_success} | Skipped: {batch_skipped} | Time: {batch_time:.2f}s")
 
-    # Write failed/skipped tickers to log
+    # Final summary
     with open(log_file, "a") as f:
+        f.write("\n=== FINAL SUMMARY ===\n")
+        f.write(f"Successful: {len(success_tickers)}\n")
+        f.write(f"Skipped: {len(skipped_tickers)}\n")
+        f.write(f"Failed: {len(failed_tickers)}\n")
         if skipped_tickers:
             f.write("\n--- Skipped Tickers ---\n")
-            for ticker, reason in skipped_tickers:
-                f.write(f"{ticker}: {reason}\n")
+            for t, r in skipped_tickers[:200]:  # limit log spam
+                f.write(f"{t}: {r}\n")
         if failed_tickers:
             f.write("\n--- Failed Tickers ---\n")
-            for ticker, error in failed_tickers:
-                f.write(f"{ticker}: {error}\n")
+            for t, e in failed_tickers[:200]:
+                f.write(f"{t}: {e}\n")
 
-    logging.info("\n=== Fetch Summary ===")
-    logging.info(f"Successful: {len(success_tickers)}")
-    logging.info(f"Skipped: {len(skipped_tickers)}")
-    logging.info(f"Failed: {len(failed_tickers)}")
-    print(f"\n✅ Fetch complete! Success: {len(success_tickers)}, Skipped: {len(skipped_tickers)}, Failed: {len(failed_tickers)}")
+    print(f"\n🎉 Fetch complete! → {len(success_tickers)} stored | {len(skipped_tickers)} skipped | {len(failed_tickers)} failed")
 
 
 def load_ticker_list(file_path, partition=None, total_partitions=None):
     with open(file_path, "r") as f:
         data = json.load(f)
 
-    # Support both formats: list of objects OR single object (your current file)
+    # Your file has 67,517 lines → it's a list of objects
     if isinstance(data, list):
         tickers = [item["ticker"] for item in data if isinstance(item, dict) and "ticker" in item]
-    elif isinstance(data, dict) and "ticker" in data:
-        tickers = [data["ticker"]]
-        logging.info("Loaded single ticker from ticker_price.json")
     else:
-        raise ValueError("ticker_price.json must be a list of objects or a single ticker object")
+        raise ValueError("Expected ticker_price.json to be a list of ticker objects")
 
-    # CRITICAL: Always prioritize the Indian benchmark so it's NEVER skipped
+    total_tickers = len(tickers)
+    logging.info(f"Loaded {total_tickers:,} tickers from ticker_price.json")
+
+    # ABSOLUTELY CRITICAL FOR 67K+ TICKERS:
+    # Force NIFTYMIDSML400.NS to be FIRST → always in partition 0 → never missed
     BENCHMARK = "NIFTYMIDSML400.NS"
     if BENCHMARK in tickers:
         tickers.remove(BENCHMARK)
         tickers.insert(0, BENCHMARK)
-        logging.info(f"🔒 Prioritized benchmark ticker {BENCHMARK} → moved to position 0 (always in first partition)")
+        logging.info(f"🔥 BENCHMARK {BENCHMARK} PRIORITIZED → now at position 0 (partition 0 guaranteed)")
 
-    total = len(tickers)
     if partition is not None and total_partitions:
-        chunk_size = total // total_partitions
+        chunk_size = total_tickers // total_partitions
         start = partition * chunk_size
+        # Last partition gets the remainder
         end = None if partition == total_partitions - 1 else start + chunk_size
-        tickers = tickers[start:end]
-        logging.info(f"Partition {partition}/{total_partitions}: {len(tickers)} tickers (total: {total})")
+        partition_tickers = tickers[start:end]
+        logging.info(f"Partition {partition}/{total_partitions} → {len(partition_tickers):,} tickers (indices {start} to {end or 'end'})")
+        return partition_tickers
 
     return tickers
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Fetch Yahoo historical data and store in ArcticDB")
-    parser.add_argument("input_file", help="Path to ticker_price.json")
-    parser.add_argument("--log-file", default="logs/fetch_log.log", help="Path to log file")
-    parser.add_argument("--arctic-db-path", default="tmp/arctic_db", help="Directory for ArcticDB")
-    parser.add_argument("--partition", type=int, default=None, help="Partition index (0-based)")
-    parser.add_argument("--total-partitions", type=int, default=None, help="Total number of partitions")
+    parser = argparse.ArgumentParser(description="Fetch 2Y data for ~67,500 Indian tickers → ArcticDB")
+    parser.add_argument("input_file", help="Path to data/ticker_price.json")
+    parser.add_argument("--log-file", default="logs/fetch_log.log", help="Log file")
+    parser.add_argument("--arctic-db-path", default="tmp/arctic_db", help="ArcticDB path")
+    parser.add_argument("--partition", type=int, default=None)
+    parser.add_argument("--total-partitions", type=int, default=None)
     args = parser.parse_args()
 
     os.makedirs(os.path.dirname(args.log_file), exist_ok=True)
     os.makedirs(args.arctic_db_path, exist_ok=True)
-
-    logging.basicConfig(filename=args.log_file, level=logging.INFO, format="%(asctime)s - %(message)s")
+    logging.basicConfig(filename=args.log_file, level=logging.INFO, format="%(asctime)s | %(message)s")
 
     tickers = load_ticker_list(args.input_file, args.partition, args.total_partitions)
     arctic = adb.Arctic(f"lmdb://{args.arctic_db_path}")
