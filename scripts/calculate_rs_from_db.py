@@ -253,6 +253,20 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
         os.path.join(output_dir, "rs_industries.csv"), index=False)
 
     generate_tradingview_csv(df, output_dir, ref_data, percentiles)
+    
+    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
+    # ADD YOUR DEBUG CODE EXACTLY HERE
+    print("\n=== DEBUG RS VALUES ===")
+    for t in ["RELIANCE.NS", "TATASTEEL.NS", "HDFCBANK.NS", "INFY.NS", "TCS.NS"]:
+        if t in df["Ticker"].values:
+            row = df[df["Ticker"] == t].iloc[0]
+            rs = row['RS']
+            percentile = row.get('RS Percentile', 'N/A')
+            rank = row.get('Rank', 'N/A')
+            print(f"{t:15} RS = {rs:6.2f} | Rank = {rank:4} | Percentile = {percentile}")
+        else:
+            print(f"{t:15} → Not found in results")
+    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
 
     print(f"\nINDIA RS COMPLETE! Valid RS: {valid_count:,} / {len(df):,}")
     print(f"Files saved to: {output_dir}/")
