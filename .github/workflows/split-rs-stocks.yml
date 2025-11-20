@@ -8,14 +8,9 @@ on:
   workflow_dispatch:   # allow manual run
 
 jobs:
-  run-only-if-calculate-succeeded:
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    runs-on: ubuntu-latest
-    steps:
-      - run: echo "Calculate RS succeeded → now splitting stocks"
 
   split-stocks:
-    needs: run-only-if-calculate-succeeded
+    needs: Calculate RS
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
