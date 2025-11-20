@@ -1,73 +1,72 @@
 name: Split RS Stocks by Exchange
 
 on:
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["📊 Calculate RS Ratings (India - NIFTY)"]
+    types:
+      - completed
+    branches:
+      - main                  # change if your default branch is different
+
+  workflow_dispatch:        # still allows manual run
 
 jobs:
   split-stocks:
+    # Only run when the Calculate RS workflow succeeded
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository (with push permissions)
+      - name: Checkout the exact commit from Calculate RS
         uses: actions/checkout@v4
         with:
+          ref: ${{ github.event.workflow_run.head_sha }}   # ← guarantees rs_stocks.csv exists
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Install Python
+      - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: "3.x"
-      
+          python-version: "3.12"
+
       - name: Install pandas
+        run: pip install pandas
+
+      - name: Split rs_stocks.csv using Ticker suffix (.BO / .NS)
         run: |
-          python -m pip install --upgrade pip
-          pip install pandas
-
-      - name: Split rs_stocks.csv by Exchange
-        run: |
-          echo "Checking for RS_Data/rs_stocks.csv..."
-          if [ ! -f RS_Data/rs_stocks.csv ]; then
-            echo "❌ ERROR: RS_Data/rs_stocks.csv not found."
-            echo "Workflow stopped — no file to split."
-            exit 0
-          fi
-
-          echo "File found. Starting split process..."
-
-          python3 << 'EOF'
+          python << 'EOF'
           import pandas as pd
-          
-          # Load original CSV
-          df = pd.read_csv("RS_Data/rs_stocks.csv")
-          
-          # Clean column names defensively
-          df.columns = [c.strip().lower() for c in df.columns]
-          
-          # Identify exchange column
-          exchange_col = None
-          for c in df.columns:
-              if "exchange" in c:
-                  exchange_col = c
-                  break
-          
-          if exchange_col is None:
-              raise Exception("Exchange column not found — cannot split file.")
-          
-          # Split by exchange values
-          bse = df[df[exchange_col].str.contains("BSE", case=False, na=False)]
-          nse = df[df[exchange_col].str.contains("NSE", case=False, na=False)]
-          
-          # Save into RS_Data/
+          import os
+
+          file_path = "rs_stocks.csv"          # your Calculate RS workflow saves it at root
+          if not os.path.exists(file_path):
+              print("rs_stocks.csv not found in repository root!")
+              exit(1)
+
+          df = pd.read_csv(file_path)
+
+          # Make sure Ticker column exists and is string
+          if 'Ticker' not in df.columns:
+              print("Column 'Ticker' not found!")
+              print("Available columns:", list(df.columns))
+              exit(1)
+
+          df['Ticker'] = df['Ticker'].astype(str).str.upper()
+
+          # Split by suffix
+          bse = df[df['Ticker'].str.endswith('.BO')]
+          nse = df[df['Ticker'].str.endswith('.NS')]
+
+          os.makedirs("RS_Data", exist_ok=True)
+
           bse.to_csv("RS_Data/rs_stocks_BSE.csv", index=False)
           nse.to_csv("RS_Data/rs_stocks_NSE.csv", index=False)
-          
-          print("✔ Split complete:")
-          print(f"  BSE rows: {len(bse)}")
-          print(f"  NSE rows: {len(nse)}")
-          
+
+          print(f"Split completed")
+          print(f"  → BSE (.BO): {len(bse)} stocks")
+          print(f"  → NSE (.NS): {len(nse)} stocks")
           EOF
 
-      - name: Commit changes (only if updated)
+      - name: Commit & push split files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -75,11 +74,11 @@ jobs:
           git add RS_Data/rs_stocks_BSE.csv RS_Data/rs_stocks_NSE.csv
 
           if git diff --staged --quiet; then
-            echo "No changes detected — nothing to commit."
+            echo "No changes in split files"
             exit 0
           fi
 
-          git commit -m "Auto-split RS stocks ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+          git commit -m "Auto-split: rs_stocks_BSE + rs_stocks_NSE ($(date -u '+%Y-%m-%d %H:%M UTC'))"
           git push
 
-          echo "✔ Files committed successfully."
+          echo "Split files pushed successfully!"
