@@ -43,27 +43,22 @@ jobs:
             data/ticker_info.json
             logs/*.log
 
-      - name: Configure Git
+      - name: Commit & Push Changes (Force Commit)
         run: |
           git config user.email "actions@github.com"
           git config user.name "github-actions"
 
-      - name: Commit & Push Changes If Any
-        run: |
-          git add data/ticker_info.json
-          git add logs/*.log
+          git add -A
 
-          # Determine time for commit message
           edt_time=$(date -u -d "4 hours ago" +"%I:%M %p EDT on %A, %B %d, %Y")
 
-          # Check if anything staged changed
-          if ! git diff --cached --quiet; then
-            git commit -m "Update ticker_info.json and logs [${edt_time}]"
-            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
-            echo "Changes detected & pushed!"
-          else
-            echo "No changes in ticker_info.json — nothing to commit."
-          fi
+          # Force commit even if nothing changed
+          git commit --allow-empty -m "Force update of ticker_info.json and logs [${edt_time}]"
+
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
+
+          echo "Force commit pushed."
+
 
       - name: Print workflow end time (EDT)
         run: |
