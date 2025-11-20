@@ -3,11 +3,7 @@ name: Split RS Stocks by Exchange
 
 on:
   workflow_run:
-    workflows: ["📊 Calculate RS Ratings (India - NIFTY)"]   # ← exact name with emoji
-    types:
-      - completed
-    branches:
-      - main                  # change if your default branch is master
+
 
   workflow_dispatch:          # manual trigger still works
 
