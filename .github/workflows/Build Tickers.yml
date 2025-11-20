@@ -1,9 +1,9 @@
-name: Build Tickers and Price Data
+name: Build Tickers
 
 on:
   workflow_dispatch:
   #schedule:
-    #- cron: "45 19 * * 1-5"  # 3:45 PM EDT (19:45 UTC) Monday through Friday
+  #  - cron: "45 19 * * 1-5"  # 3:45 PM EDT (19:45 UTC)
 
 jobs:
   build-tickers:
@@ -15,65 +15,55 @@ jobs:
         run: |
           echo "Workflow started at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
 
-      - uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0   # REQUIRED for proper Git diffs
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
-          python-version: "3.12"
+          python-version: "3.x"
 
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install pandas
+          pip install -r requirements.txt
 
-      - name: Run process_tickers.py
-        run: python scripts/process_tickers.py
+      - name: Run ticker processing script
+        run: |
+          python scripts/process_tickers.py
+        continue-on-error: false
 
-      - name: Upload ticker_info.json artifact
+      - name: Upload artifact (ticker-info)
         uses: actions/upload-artifact@v4
         with:
           name: ticker-info
-          path: data/ticker_info.json
-          retention-days: 5
+          path: |
+            data/ticker_info.json
+            logs/*.log
 
-      - name: Determine log filename
-        id: log_filename
+      - name: Configure Git
         run: |
-          log_file=$(ls logs/ticker_info_*.log | head -1 2>/dev/null || echo "process_tickers.log")
-          if [ -f "logs/$log_file" ]; then
-            echo "log_path=$log_file" >> $GITHUB_OUTPUT
-          else
-            echo "log_path=process_tickers.log" >> $GITHUB_OUTPUT
-            echo "Warning: No ticker_info_*.log found, using default log_path" >&2
-          fi
+          git config user.email "actions@github.com"
+          git config user.name "github-actions"
 
-      - name: Commit and push ticker info (PERFECT FINAL VERSION)
+      - name: Commit & Push Changes If Any
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
+          git add data/ticker_info.json
+          git add logs/*.log
 
-          # 1. Start from latest remote (eliminates all races)
-          git fetch origin main
-          git reset --hard origin/main
-
-          # 2. Our fresh files are still in the runner's filesystem from earlier steps
-          #    → just re-add them forcefully (no cp needed!)
-          git add -f data/ticker_info.json
-          git add -f logs/ 2>/dev/null || true
-          git add -A   # catches any surprise files
-
+          # Determine time for commit message
           edt_time=$(date -u -d "4 hours ago" +"%I:%M %p EDT on %A, %B %d, %Y")
 
-          # 3. Commit & push only if something actually changed
-          if git status --porcelain | grep -q .; then
-            git commit -m "Update tickers info data [${edt_time}]"
+          # Check if anything staged changed
+          if ! git diff --cached --quiet; then
+            git commit -m "Update ticker_info.json and logs [${edt_time}]"
             git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
-            echo "Successfully pushed updated ticker_info.json and logs"
+            echo "Changes detected & pushed!"
           else
-            echo "No changes in ticker_info.json since last run"
+            echo "No changes in ticker_info.json — nothing to commit."
           fi
-          
+
       - name: Print workflow end time (EDT)
         run: |
           echo "Workflow ended at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
