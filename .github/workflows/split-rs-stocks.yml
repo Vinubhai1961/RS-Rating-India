@@ -1,0 +1,64 @@
+name: Split RS Stocks by Exchange   # ← This exact name is used below
+
+on:
+  workflow_run:
+    workflows: ["Calculate RS"]     # ← Exact name of your Calculate RS workflow
+    types:
+      - completed
+    branches:
+      - main                        # or whatever your default branch is
+
+jobs:
+  run-only-if-calculate-succeeded:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Calculate RS succeeded → now splitting stocks"
+
+  split-stocks:
+    needs: run-only-if-calculate-succeeded
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pandas
+        run: pip install pandas
+
+      - name: Split rs_stocks.csv into BSE & NSE
+        run: |
+          python - <<EOF
+          import pandas as pd
+          import os
+
+          os.makedirs("RS_Data", exist_ok=True)
+          df = pd.read_csv("rs_stocks.csv")
+          df['Ticker'] = df['Ticker'].astype(str)
+
+          bse = df[df['Ticker'].str.endswith('.BO')]
+          nse = df[df['Ticker'].str.endswith('.NS')]
+
+          bse.to_csv("RS_Data/rs_stocks_BSE.csv", index=False)
+          nse.to_csv("RS_Data/rs_stocks_NSE.csv", index=False)
+
+          print(f"Split done → BSE: {len(bse)}, NSE: {len(nse)}")
+          EOF
+
+      - name: Commit & push split files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add RS_Data/rs_stocks_BSE.csv RS_Data/rs_stocks_NSE.csv
+          
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          
+          git commit -m "Auto-split: rs_stocks_BSE.csv + rs_stocks_NSE.csv [$(date +'%Y-%m-%d %H:%M')]"
+          git push
