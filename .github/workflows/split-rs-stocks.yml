@@ -1,19 +1,12 @@
 name: Split RS Stocks by Exchange
 
 on:
-  workflow_run:
-    workflows: ["📊 Calculate RS Ratings (India - NIFTY)"]
-    types:
-      - completed
-    branches:
-      - main                  # change if your default branch is different
-
+ 
   workflow_dispatch:        # still allows manual run
 
 jobs:
   split-stocks:
-    # Only run when the Calculate RS workflow succeeded
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+  
     runs-on: ubuntu-latest
 
     steps:
