@@ -3,10 +3,9 @@ name: Split RS Stocks by Exchange   # ← This exact name is used below
 on:
   workflow_run:
     workflows: ["Calculate RS"]     # ← Exact name of your Calculate RS workflow
-    types:
-      - completed
-    branches:
-      - main                        # or whatever your default branch is
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:   # allow manual run
 
 jobs:
   run-only-if-calculate-succeeded:
