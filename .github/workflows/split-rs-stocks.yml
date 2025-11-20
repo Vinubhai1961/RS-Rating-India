@@ -1,20 +1,32 @@
-name: Split RS Stocks by Exchange   # ← This exact name is used below
+name: Split RS Stocks by Exchange
 
 on:
   workflow_run:
-    workflows: ["Calculate RS"]     # ← Exact name of your Calculate RS workflow
-    types: [completed]
-    branches: [main]
-  workflow_dispatch:   # allow manual run
+    workflows: ["Calculate RS"]   # ← Must match the EXACT name of your Calculate RS workflow
+    types:
+      - completed
+    branches:
+      - main                      # ← Change to your default branch if it's "master"
+  workflow_dispatch:            # Allows you to run it manually anytime
 
 jobs:
+  # This job ensures we only proceed if the upstream "Calculate RS" workflow succeeded
+  check-upstream:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    outputs:
+      should_run: true
+    steps:
+      - run: echo "Calculate RS succeeded → proceeding with split"
 
   split-stocks:
-    needs: Calculate RS
+    needs: check-upstream          # Only runs if the above job exists (i.e., upstream succeeded)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}   # Required for pushing back
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -40,19 +52,20 @@ jobs:
           bse.to_csv("RS_Data/rs_stocks_BSE.csv", index=False)
           nse.to_csv("RS_Data/rs_stocks_NSE.csv", index=False)
 
-          print(f"Split done → BSE: {len(bse)}, NSE: {len(nse)}")
+          print(f"Split completed → BSE: {len(bse)} stocks | NSE: {len(nse)} stocks")
           EOF
 
       - name: Commit & push split files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
+          
           git add RS_Data/rs_stocks_BSE.csv RS_Data/rs_stocks_NSE.csv
           
           if git diff --staged --quiet; then
-            echo "No changes to commit"
+            echo "No changes detected in split files"
             exit 0
           fi
           
-          git commit -m "Auto-split: rs_stocks_BSE.csv + rs_stocks_NSE.csv [$(date +'%Y-%m-%d %H:%M')]"
+          git commit -m "Auto-split: Update rs_stocks_BSE.csv & rs_stocks_NSE.csv $(date +'%Y-%m-%d %H:%M')"
           git push
