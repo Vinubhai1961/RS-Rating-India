@@ -182,26 +182,16 @@ jobs:
         
       - name: Commit merged outputs
         run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "actions@github.com"
-
-          # Fetch latest changes
-          git fetch origin main
-
-          # Reset to exactly match remote main (in case someone else pushed)
-          git reset --hard origin/main
-
-          # Now apply our changes on top
-          git add data/ticker_info.json data/ticker_price.json data/unresolved_price_tickers.txt logs/* || true
-
+          git config user.name "github-actions"
+          git config user.email "actions@users.noreply.github.com"
+          git stash push --include-untracked
+          git pull --rebase origin main
+          git stash pop || echo "No stash to pop"
+          git add data/ticker_info.json data/ticker_price.json logs/ data/partition_summary.json data/unresolved_tickers.txt
           edt_time=$(date -u -d "4 hours ago" +"%I:%M %p EDT on %A, %B %d, %Y")
+          git commit -m "Update ticker info and price (auto) [${edt_time}]" || echo "No changes to commit"
+          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git || echo "Push failed, possibly no changes"
 
-          if git commit -m "Update tickers and price data [${edt_time}]"; then
-            # Only push if we actually created a commit
-            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
-          else
-            echo "No changes to commit"
-          fi
           
       - name: Print workflow end time (EDT)
         run: |
