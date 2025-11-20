@@ -204,7 +204,7 @@ jobs:
           mkdir -p RS_Logs RS_Data 
           python scripts/calculate_rs_from_db.py \
             --arctic-db-path tmp/arctic_db \
-            --reference-ticker NIFTYMIDSML400.NS \
+            --reference-ticker ^NSEI \
             --output-dir RS_Data \
             --log-file RS_Logs/failed_tickers.log \
             --metadata-file data/ticker_price.json
