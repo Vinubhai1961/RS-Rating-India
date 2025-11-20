@@ -108,7 +108,7 @@ def generate_tradingview_csv(df_stocks, output_dir, ref_data, percentile_values=
         f.write(''.join(lines))
     logging.info(f"RSRATING.csv generated → {len(lines)} lines")
 
-# NEW: Safe MCAP converter for "7.33B", "1.2T", etc.
+# NEW: Safe MCAP converter (kept from previous fix)
 def mcap_to_float(val):
     if pd.isna(val) or val in ["", None]:
         return 0.0
@@ -223,18 +223,18 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
         "AvgVol", "AvgVol10", "52WKH", "52WKL", "MCAP", "IPO"]].to_csv(
         os.path.join(output_dir, "rs_stocks.csv"), index=False, na_rep="")
 
-    # FIXED: Industry aggregation with MCAP parsing
+    # === UPDATED: Tickers now sorted by RS (highest first) ===
     df_industries = df.groupby("Industry").agg({
         "RS Percentile": "mean",
         "1M_RS Percentile": "mean",
         "3M_RS Percentile": "mean",
         "6M_RS Percentile": "mean",
         "Sector": "first",
-        "Ticker": lambda x: ",".join(sorted(
-            x,
-            key=lambda t: mcap_to_float(df.loc[df["Ticker"] == t, "MCAP"].iloc[0] if not df.loc[df["Ticker"] == t, "MCAP"].empty else 0),
-            reverse=True
-        ))
+        "Ticker": lambda x: ",".join(
+            df[df["Ticker"].isin(x)]
+            .sort_values("RS", ascending=False)["Ticker"]
+            .tolist()
+        )
     }).reset_index()
 
     for col in ["RS Percentile", "1M_RS Percentile", "3M_RS Percentile", "6M_RS Percentile"]:
@@ -254,8 +254,7 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
 
     generate_tradingview_csv(df, output_dir, ref_data, percentiles)
     
-    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
-    # ADD YOUR DEBUG CODE EXACTLY HERE
+    # DEBUG PRINTS
     print("\n=== DEBUG RS VALUES ===")
     for t in ["RELIANCE.NS", "TATASTEEL.NS", "HDFCBANK.NS", "INFY.NS", "TCS.NS"]:
         if t in df["Ticker"].values:
@@ -266,7 +265,6 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
             print(f"{t:15} RS = {rs:6.2f} | Rank = {rank:4} | Percentile = {percentile}")
         else:
             print(f"{t:15} → Not found in results")
-    # ←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←←
 
     print(f"\nINDIA RS COMPLETE! Valid RS: {valid_count:,} / {len(df):,}")
     print(f"Files saved to: {output_dir}/")
