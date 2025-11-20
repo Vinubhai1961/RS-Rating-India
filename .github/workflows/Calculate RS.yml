@@ -212,8 +212,9 @@ jobs:
       - name: 📃 Archive RS Results
         run: |
           mkdir -p archive
-          current_date=$(date -u -d '+5:30 hours' +"%m%d%Y")
+          current_date=$(TZ=Asia/Kolkata date +"%m%d%Y")
           echo "📅 Archiving results for: ${current_date}"
+          
           for file in rs_stocks rs_industries RSRATING; do
             if [ -f "RS_Data/${file}.csv" ]; then
               cp RS_Data/${file}.csv archive/${file}_${current_date}.csv
