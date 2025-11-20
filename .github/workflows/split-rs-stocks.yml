@@ -2,9 +2,6 @@
 name: Split RS Stocks by Exchange
 
 on:
-  workflow_run:
-
-
   workflow_dispatch:          # manual trigger still works
 
 jobs:
