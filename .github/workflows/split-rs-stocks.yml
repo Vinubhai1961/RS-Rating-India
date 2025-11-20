@@ -6,8 +6,7 @@ on:
 
 jobs:
   split-stocks:
-    # ← THIS IS THE KEY FIX: direct if condition on the job itself
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    
     runs-on: ubuntu-latest
 
     steps:
