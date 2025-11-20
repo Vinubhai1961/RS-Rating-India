@@ -30,7 +30,7 @@ jobs:
           import pandas as pd
           import os
 
-          file_path = "rs_stocks.csv"          # your Calculate RS workflow saves it at root
+          file_path = "RS_Data/rs_stocks.csv"          # your Calculate RS workflow saves it at root
           if not os.path.exists(file_path):
               print("rs_stocks.csv not found in repository root!")
               exit(1)
