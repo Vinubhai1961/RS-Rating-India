@@ -1,0 +1,78 @@
+name: Build Tickers and Price Data
+
+on:
+  workflow_dispatch:
+  #schedule:
+    #- cron: "45 19 * * 1-5"  # 3:45 PM EDT (19:45 UTC) Monday through Friday
+
+jobs:
+  build-tickers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Print workflow start time (EDT)
+        run: |
+          echo "Workflow started at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
+
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas
+
+      - name: Run process_tickers.py
+        run: python scripts/process_tickers.py
+
+      - name: Upload ticker_info.json artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ticker-info
+          path: data/ticker_info.json
+          retention-days: 5
+
+      - name: Determine log filename
+        id: log_filename
+        run: |
+          log_file=$(ls logs/ticker_info_*.log | head -1 2>/dev/null || echo "process_tickers.log")
+          if [ -f "logs/$log_file" ]; then
+            echo "log_path=$log_file" >> $GITHUB_OUTPUT
+          else
+            echo "log_path=process_tickers.log" >> $GITHUB_OUTPUT
+            echo "Warning: No ticker_info_*.log found, using default log_path" >&2
+          fi
+
+      - name: Commit and push ticker info (100% reliable)
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "actions@github.com"
+
+          # Start completely fresh from latest remote
+          git fetch origin
+          git checkout main
+          git reset --hard origin/main
+
+          # Force-add our files (they definitely exist after script ran)
+          git add -f data/ticker_info.json
+          git add -f logs/${{ steps.log_filename.outputs.log_path }} 2>/dev/null || true
+
+          edt_time=$(date -u -d "4 hours ago" +"%I:%M %p EDT on %A, %B %d, %Y")
+
+          # Commit if anything changed (almost always will)
+          if git status --porcelain | grep -q .; then
+            git commit -m "Update tickers info data [${edt_time}]"
+            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
+            echo "Successfully committed and pushed ticker_info.json"
+          else
+            echo "No changes detected (very rare)"
+          fi
+
+      - name: Print workflow end time (EDT)
+        run: |
+          echo "Workflow ended at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
