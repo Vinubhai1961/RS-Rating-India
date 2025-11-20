@@ -98,9 +98,9 @@ json_data = []
 
 # Add NIFTY 500 benchmark ticker as the first record
 json_data.append({
-    "ticker": "^CRSLDX",
+    "ticker": "^NSEI",
     "info": {
-        "Ticker Name": "NIFTY 500",
+        "Ticker Name": "NIFTY 50",
         "Price": "",
         "DVol": "",
         "RVol": "",
