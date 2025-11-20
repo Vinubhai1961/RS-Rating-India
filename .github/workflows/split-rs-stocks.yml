@@ -1,34 +1,35 @@
+# .github/workflows/split-rs-stocks.yml
 name: Split RS Stocks by Exchange
 
 on:
   workflow_run:
-    workflows: ["Calculate RS"]   # ← Must match the EXACT name of your Calculate RS workflow
+    workflows: ["📊 Calculate RS Ratings (India - NIFTY)"]   # ← Exact workflow name (including the emoji)
     types:
       - completed
     branches:
-      - main                      # ← Change to your default branch if it's "master"
-  workflow_dispatch:            # Allows you to run it manually anytime
+      - main                        # change to master or your default branch if needed
+
+  workflow_dispatch:                # allows manual trigger anytime
 
 jobs:
-  # This job ensures we only proceed if the upstream "Calculate RS" workflow succeeded
+  # Gate job – only runs if the upstream workflow succeeded
   check-upstream:
     runs-on: ubuntu-latest
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    outputs:
-      should_run: true
     steps:
-      - run: echo "Calculate RS succeeded → proceeding with split"
+      - run: echo "📊 Calculate RS Ratings completed successfully → starting split"
 
+  # Actual split job – only executes when the gate job above runs
   split-stocks:
-    needs: check-upstream          # Only runs if the above job exists (i.e., upstream succeeded)
+    needs: check-upstream
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}   # Required for pushing back
+          token: ${{ secrets.GITHUB_TOKEN }}   # needed to push back
 
-      - name: Set up Python
+      - name: Setup Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -36,7 +37,7 @@ jobs:
       - name: Install pandas
         run: pip install pandas
 
-      - name: Split rs_stocks.csv into BSE & NSE
+      - name: Split rs_stocks.csv into BSE (.BO) & NSE (.NS)
         run: |
           python - <<EOF
           import pandas as pd
@@ -44,7 +45,7 @@ jobs:
 
           os.makedirs("RS_Data", exist_ok=True)
           df = pd.read_csv("rs_stocks.csv")
-          df['Ticker'] = df['Ticker'].astype(str)
+          df['Ticker'] = df['Ticker'].astype(str).str.upper()
 
           bse = df[df['Ticker'].str.endswith('.BO')]
           nse = df[df['Ticker'].str.endswith('.NS')]
@@ -59,13 +60,15 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
+
           git add RS_Data/rs_stocks_BSE.csv RS_Data/rs_stocks_NSE.csv
-          
+
           if git diff --staged --quiet; then
-            echo "No changes detected in split files"
+            echo "No changes in split files"
             exit 0
           fi
-          
-          git commit -m "Auto-split: Update rs_stocks_BSE.csv & rs_stocks_NSE.csv $(date +'%Y-%m-%d %H:%M')"
+
+          git commit -m "Auto-split: rs_stocks_BSE.csv + rs_stocks_NSE.csv $(date -u +'%Y-%m-%d %H:%M UTC')"
           git push
+
+          echo "Split files updated and pushed successfully"
