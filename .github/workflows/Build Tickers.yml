@@ -48,30 +48,35 @@ jobs:
             echo "Warning: No ticker_info_*.log found, using default log_path" >&2
           fi
 
-      - name: Commit and push ticker info (100% reliable)
+      # ←←← THIS IS THE ONLY PART THAT CHANGED →→→
+      - name: Commit and push ticker info (bullet-proof)
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
 
-          # Start completely fresh from latest remote
-          git fetch origin
-          git checkout main
+          # Always start from the absolute latest remote state
+          git fetch origin main
           git reset --hard origin/main
 
-          # Force-add our files (they definitely exist after script ran)
+          # Force-add the files we know exist
           git add -f data/ticker_info.json
           git add -f logs/${{ steps.log_filename.outputs.log_path }} 2>/dev/null || true
+          git add -A  # catches any extra logs or unexpected files
 
           edt_time=$(date -u -d "4 hours ago" +"%I:%M %p EDT on %A, %B %d, %Y")
 
-          # Commit if anything changed (almost always will)
+          # Commit only if something actually changed
           if git status --porcelain | grep -q .; then
             git commit -m "Update tickers info data [${edt_time}]"
-            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
-            echo "Successfully committed and pushed ticker_info.json"
+            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
+            echo "Successfully pushed ticker_info.json and log"
           else
-            echo "No changes detected (very rare)"
+            echo "No changes to ticker_info.json or logs — nothing to commit"
           fi
+
+      - name: Print workflow end time (EDT)
+        run: |
+          echo "Workflow ended at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
 
       - name: Print workflow end time (EDT)
         run: |
