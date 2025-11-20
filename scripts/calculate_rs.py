@@ -101,12 +101,12 @@ def load_ticker_list(file_path, partition=None, total_partitions=None):
     logging.info(f"Loaded {total_tickers:,} tickers from ticker_price.json")
 
     # ABSOLUTELY CRITICAL FOR 67K+ TICKERS:
-    # Force NIFTYMIDSML400.NS to be FIRST → always in partition 0 → never missed
-    BENCHMARK = "NIFTYMIDSML400.NS"
+    # Force NIFTY 50 to be fetched first (critical for full-market RS)
+    BENCHMARK = "^NSEI"
     if BENCHMARK in tickers:
         tickers.remove(BENCHMARK)
         tickers.insert(0, BENCHMARK)
-        logging.info(f"🔥 BENCHMARK {BENCHMARK} PRIORITIZED → now at position 0 (partition 0 guaranteed)")
+        logging.info(f"Prioritized benchmark {BENCHMARK} → always in partition 0")
 
     if partition is not None and total_partitions:
         chunk_size = total_tickers // total_partitions
