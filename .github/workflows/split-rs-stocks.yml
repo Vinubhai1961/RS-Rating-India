@@ -1,46 +1,68 @@
-# .github/workflows/split-rs-stocks.yml
 name: Split RS Stocks by Exchange
 
 on:
-  workflow_dispatch:          # manual trigger still works
+  workflow_dispatch:
 
 jobs:
   split-stocks:
-    
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository (with push permission)
+      - name: Checkout repository (with push permissions)
         uses: actions/checkout@v4
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: Install Python
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.12'
+          python-version: "3.x"
 
-      - name: Install pandas
-        run: pip install pandas
-
-      - name: Split rs_stocks.csv → BSE + NSE
+      - name: Split rs_stocks.csv by Exchange
         run: |
-          python - <<EOF
-          import pandas as pd, os
-          os.makedirs("RS_Data", exist_ok=True)
-          df = pd.read_csv("rs_stocks.csv")
-          df['Ticker'] = df['Ticker'].astype(str)
+          echo "Checking for RS_Data/rs_stocks.csv..."
+          if [ ! -f RS_Data/rs_stocks.csv ]; then
+            echo "❌ ERROR: RS_Data/rs_stocks.csv not found."
+            echo "Workflow stopped — no file to split."
+            exit 0
+          fi
 
-          bse = df[df['Ticker'].str.endswith('.BO')]
-          nse = df[df['Ticker'].str.endswith('.NS')]
+          echo "File found. Starting split process..."
 
-          bse.to_csv("RS_Data/rs_stocks_BSE.csv", index=False)
-          nse.to_csv("RS_Data/rs_stocks_NSE.csv", index=False)
+          python3 << 'EOF'
+import pandas as pd
 
-          print(f"Split completed → BSE: {len(bse)} | NSE: {len(nse)} stocks")
-          EOF
+# Load original CSV
+df = pd.read_csv("RS_Data/rs_stocks.csv")
 
-      - name: Commit & push if changed
+# Clean column names defensively
+df.columns = [c.strip().lower() for c in df.columns]
+
+# Identify exchange column
+exchange_col = None
+for c in df.columns:
+    if "exchange" in c:
+        exchange_col = c
+        break
+
+if exchange_col is None:
+    raise Exception("Exchange column not found — cannot split file.")
+
+# Split by exchange values
+bse = df[df[exchange_col].str.contains("BSE", case=False, na=False)]
+nse = df[df[exchange_col].str.contains("NSE", case=False, na=False)]
+
+# Save into RS_Data/
+bse.to_csv("RS_Data/rs_stocks_BSE.csv", index=False)
+nse.to_csv("RS_Data/rs_stocks_NSE.csv", index=False)
+
+print("✔ Split complete:")
+print(f"  BSE rows: {len(bse)}")
+print(f"  NSE rows: {len(nse)}")
+
+EOF
+
+      - name: Commit changes (only if updated)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -48,11 +70,11 @@ jobs:
           git add RS_Data/rs_stocks_BSE.csv RS_Data/rs_stocks_NSE.csv
 
           if git diff --staged --quiet; then
-            echo "No changes in split files → nothing to commit"
+            echo "No changes detected — nothing to commit."
             exit 0
           fi
 
-          git commit -m "Auto-split: rs_stocks_BSE + rs_stocks_NSE $(date -u '+%Y-%m-%d %H:%M UTC')"
+          git commit -m "Auto-split RS stocks ($(date -u '+%Y-%m-%d %H:%M UTC'))"
           git push
 
-          echo "Split files successfully updated and pushed"
+          echo "✔ Files committed successfully."
