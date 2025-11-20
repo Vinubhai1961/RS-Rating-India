@@ -7,28 +7,21 @@ on:
     types:
       - completed
     branches:
-      - main                  # change to master if your repo uses master
+      - main                  # change if your default branch is master
 
-  workflow_dispatch:          # optional – you can still run it manually
+  workflow_dispatch:          # manual trigger still works
 
 jobs:
-  # This tiny job acts as a gate – it ONLY runs when the upstream workflow succeeded
-  gate:
-    runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-    steps:
-      - name: Upstream succeeded
-        run: echo "📊 Calculate RS Ratings finished successfully → starting split"
-
-  # The real split job – depends on the gate job above
   split-stocks:
-    needs: gate                                   # ← this is the only correct way
+    # ← THIS IS THE KEY FIX: direct if condition on the job itself
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout repository
+      - name: Checkout repository (with push permission)
         uses: actions/checkout@v4
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}      # required for push
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -38,7 +31,7 @@ jobs:
       - name: Install pandas
         run: pip install pandas
 
-      - name: Split rs_stocks.csv → BSE (.BO) + NSE (.NS)
+      - name: Split rs_stocks.csv → BSE + NSE
         run: |
           python - <<EOF
           import pandas as pd, os
@@ -52,10 +45,10 @@ jobs:
           bse.to_csv("RS_Data/rs_stocks_BSE.csv", index=False)
           nse.to_csv("RS_Data/rs_stocks_NSE.csv", index=False)
 
-          print(f"Split done → BSE: {len(bse)} stocks | NSE: {len(nse)} stocks")
+          print(f"Split completed → BSE: {len(bse)} | NSE: {len(nse)} stocks")
           EOF
 
-      - name: Commit & push split files
+      - name: Commit & push if changed
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
@@ -63,11 +56,11 @@ jobs:
           git add RS_Data/rs_stocks_BSE.csv RS_Data/rs_stocks_NSE.csv
 
           if git diff --staged --quiet; then
-            echo "No changes → nothing to commit"
+            echo "No changes in split files → nothing to commit"
             exit 0
           fi
 
           git commit -m "Auto-split: rs_stocks_BSE + rs_stocks_NSE $(date -u '+%Y-%m-%d %H:%M UTC')"
           git push
 
-          echo "Split files pushed successfully"
+          echo "Split files successfully updated and pushed"
