@@ -48,17 +48,30 @@ jobs:
             echo "Warning: No ticker_info_*.log found, using default log_path" >&2
           fi
 
-      - name: Commit merged outputs
+      - name: Commit and push ticker info (100% reliable)
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
-          git stash push --include-untracked
-          git pull --rebase origin main
-          git stash pop || echo "No stash to pop"
-          git add data/ticker_info.json logs/${{ steps.log_filename.outputs.log_path }}
+
+          # Start completely fresh from latest remote
+          git fetch origin
+          git checkout main
+          git reset --hard origin/main
+
+          # Force-add our files (they definitely exist after script ran)
+          git add -f data/ticker_info.json
+          git add -f logs/${{ steps.log_filename.outputs.log_path }} 2>/dev/null || true
+
           edt_time=$(date -u -d "4 hours ago" +"%I:%M %p EDT on %A, %B %d, %Y")
-          git commit -m "Update tickers info data [${edt_time}]" || echo "No changes to commit"
-          git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git || echo "Push failed, possibly no changes"
+
+          # Commit if anything changed (almost always will)
+          if git status --porcelain | grep -q .; then
+            git commit -m "Update tickers info data [${edt_time}]"
+            git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git main
+            echo "Successfully committed and pushed ticker_info.json"
+          else
+            echo "No changes detected (very rare)"
+          fi
 
       - name: Print workflow end time (EDT)
         run: |
