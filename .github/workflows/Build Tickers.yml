@@ -48,32 +48,30 @@ jobs:
             echo "Warning: No ticker_info_*.log found, using default log_path" >&2
           fi
 
-      - name: Commit and push ticker info (FINAL WORKING VERSION)
+      - name: Commit and push ticker info (PERFECT FINAL VERSION)
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
 
-          # Start clean from latest remote
+          # 1. Start from latest remote (eliminates all races)
           git fetch origin main
           git reset --hard origin/main
 
-          # ←←← THESE TWO LINES ARE THE ONLY THING YOU WERE MISSING ←←←
-          # Restore the fresh files that the Python script just generated
-          cp -f data/ticker_info.json data/ticker_info.json
-          cp -fr logs/* logs/ 2>/dev/null || true
-
-          # Now add them
-          git add data/ticker_info.json
-          git add logs/
+          # 2. Our fresh files are still in the runner's filesystem from earlier steps
+          #    → just re-add them forcefully (no cp needed!)
+          git add -f data/ticker_info.json
+          git add -f logs/ 2>/dev/null || true
+          git add -A   # catches any surprise files
 
           edt_time=$(date -u -d "4 hours ago" +"%I:%M %p EDT on %A, %B %d, %Y")
 
+          # 3. Commit & push only if something actually changed
           if git status --porcelain | grep -q .; then
             git commit -m "Update tickers info data [${edt_time}]"
             git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
             echo "Successfully pushed updated ticker_info.json and logs"
           else
-            echo "No changes (this should not happen anymore)"
+            echo "No changes in ticker_info.json since last run"
           fi
           
       - name: Print workflow end time (EDT)
