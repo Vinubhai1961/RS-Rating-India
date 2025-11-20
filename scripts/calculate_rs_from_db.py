@@ -272,9 +272,9 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
     print(f"Files saved to: {output_dir}/")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="India RS Rating vs NIFTYMIDSML400.NS")
+    parser = argparse.ArgumentParser(description="India RS Rating vs NIFTY 50 (^NSEI) - Full Market")
     parser.add_argument("--arctic-db-path", default="tmp/arctic_db")
-    parser.add_argument("--reference-ticker", default="NIFTYMIDSML400.NS")
+    parser.add_argument("--reference-ticker", default="^NSEI")
     parser.add_argument("--output-dir", default="RS_Data")
     parser.add_argument("--log-file", default="RS_Logs/calc.log")
     parser.add_argument("--metadata-file", default="data/ticker_price.json")
