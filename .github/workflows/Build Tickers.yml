@@ -48,32 +48,35 @@ jobs:
             echo "Warning: No ticker_info_*.log found, using default log_path" >&2
           fi
 
-      # ←←← THIS IS THE ONLY PART THAT CHANGED →→→
-      - name: Commit and push ticker info (bullet-proof)
+      - name: Commit and push ticker info (bullet-proof – now really includes ticker_info.json)
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "actions@github.com"
 
-          # Always start from the absolute latest remote state
+          # Start from latest remote
           git fetch origin main
           git reset --hard origin/main
 
-          # Force-add the files we know exist
-          git add -f data/ticker_info.json
-          git add -f logs/${{ steps.log_filename.outputs.log_path }} 2>/dev/null || true
-          git add -A  # catches any extra logs or unexpected files
+          # ←←← THESE TWO LINES ARE THE ONLY ADDITION YOU NEED ←←←
+          # Force our freshly generated files back into the clean tree
+          cp -f data/ticker_info.json data/ticker_info.json 2>/dev/null || true
+          cp -fr logs/* logs/ 2>/dev/null || true
+
+          # Now add everything
+          git add data/ticker_info.json
+          git add logs/
+          git add -A  # catches anything else
 
           edt_time=$(date -u -d "4 hours ago" +"%I:%M %p EDT on %A, %B %d, %Y")
 
-          # Commit only if something actually changed
           if git status --porcelain | grep -q .; then
             git commit -m "Update tickers info data [${edt_time}]"
             git push https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git HEAD:main
-            echo "Successfully pushed ticker_info.json and log"
+            echo "Successfully pushed ticker_info.json and logs"
           else
-            echo "No changes to ticker_info.json or logs — nothing to commit"
+            echo "No changes detected"
           fi
-
+          
       - name: Print workflow end time (EDT)
         run: |
           echo "Workflow ended at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
