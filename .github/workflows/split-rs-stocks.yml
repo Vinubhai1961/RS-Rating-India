@@ -63,15 +63,12 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-
+      
           git add RS_Data/rs_stocks_BSE.csv RS_Data/rs_stocks_NSE.csv
-
-          if git diff --staged --quiet; then
-            echo "No changes in split files"
-            exit 0
-          fi
-
-          git commit -m "Auto-split: rs_stocks_BSE + rs_stocks_NSE ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+      
+          # Always commit — even if no changes (empty commit allowed)
+          git commit --allow-empty -m "Split files update ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+      
           git push
-
+      
           echo "Split files pushed successfully!"
