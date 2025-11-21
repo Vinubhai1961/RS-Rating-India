@@ -1,7 +1,7 @@
 name: Split RS Stocks by Exchange
 
 on:
- 
+  workflow_call:
   workflow_dispatch:        # still allows manual run
 
 jobs:
