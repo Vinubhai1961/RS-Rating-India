@@ -255,7 +255,8 @@ jobs:
           cat RS_Logs/git_modified_files.log
 
           echo "➕ Staging all relevant result files..."
-          git add archive/*.csv RS_Data/*.csv
+          # git add archive/*.csv RS_Data/*.csv
+          git add -A
 
           # ✅ Skip commit if nothing is staged
           if git diff --cached --quiet; then
