@@ -267,7 +267,7 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
             print(f"{t:15} → Not found in results")
 
     print(f"\nINDIA RS COMPLETE! Valid RS: {valid_count:,} / {len(df):,}")
-    print(f"Files saved to: {output_dir}/")
+    print(f"Files saved to: {output_dir}/debug-rs.txt")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="India RS Rating vs NIFTY 50 (^NSEI) - Full Market")
