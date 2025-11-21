@@ -274,7 +274,7 @@ if __name__ == "__main__":
     parser.add_argument("--arctic-db-path", default="tmp/arctic_db")
     parser.add_argument("--reference-ticker", default="^NSEI")
     parser.add_argument("--output-dir", default="RS_Data")
-    parser.add_argument("--log-file", default="RS_Logs/calc.log")
+    parser.add_argument("--log-file", default="logs/calc.log")
     parser.add_argument("--metadata-file", default="data/ticker_price.json")
     parser.add_argument("--percentiles", default="98,89,69,49,29,9,1")
     args = parser.parse_args()
