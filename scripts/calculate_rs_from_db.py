@@ -65,15 +65,15 @@ def load_arctic_db(data_dir):
         print(f"ArcticDB error: {str(e)}")
         return None
 
-# FIXED: India NSE/XBOM calendar
 def generate_tradingview_csv(df_stocks, output_dir, ref_data, percentile_values=None):
     if percentile_values is None:
-        percentile_values = [98, 89, 69, 49, 29, 9, 1]
+        percentile_values = [98, 89, 69, 49, 29, 9, 1]   # TradingView expects these exact values
 
     latest_ts = ref_data["datetime"].max()
     latest_date = datetime.fromtimestamp(latest_ts).date()
-    logging.info(f"Latest market date: {latest_date} (India)")
+    logging.info(f"Latest market date for RSRATING.csv: {latest_date}")
 
+    # === Generate last 5 trading dates (same as your old code) ===
     dates = []
     if get_calendar:
         for cal_name in ['NSE', 'XBOM']:
@@ -84,29 +84,48 @@ def generate_tradingview_csv(df_stocks, output_dir, ref_data, percentile_values=
                 valid_dates = [d.date() for d in sched.index if d.date() <= latest_date]
                 dates = [d.strftime('%Y%m%dT') for d in valid_dates[-5:]]
                 if len(dates) >= 5:
-                    logging.info(f"Using {cal_name} calendar → {', '.join(dates)}")
                     break
-            except Exception as e:
-                logging.debug(f"{cal_name} calendar failed: {e}")
-
+            except:
+                pass
     if len(dates) < 5:
         dates = [(latest_date - timedelta(days=i)).strftime('%Y%m%dT') for i in range(4, -1, -1)]
-        logging.info(f"Using consecutive dates → {', '.join(dates)}")
+
+    # === CORRECT WAY: Take the MINIMUM RS value that still belongs to that percentile ===
+    valid_rs = df_stocks["RS"].dropna().sort_values(ascending=False).reset_index(drop=True)
+    total_stocks = len(valid_rs)
 
     rs_map = {}
     for p in percentile_values:
-        rows = df_stocks[df_stocks["RS Percentile"] == p]
-        rs_map[p] = rows.iloc[0]["RS"] if not rows.empty else 0.0
+        if total_stocks == 0:
+            rs_map[p] = 50.0
+            continue
 
+        # How many stocks are in the top X%
+        if p == 99 or p == 98:                     # 99th percentile ≈ top 1%
+            top_n = max(1, round(total_stocks * 0.01))
+        else:
+            top_n = round(total_stocks * (100 - p) / 100.0)
+            top_n = max(1, top_n)
+
+        threshold_rs = valid_rs.iloc[top_n - 1]     # this is the cutoff value
+        rs_map[p] = round(float(threshold_rs), 2)
+
+    # === Write RSRATING.csv ===
     lines = []
-    for p in sorted(percentile_values, reverse=True):
+    for p in sorted(percentile_values, reverse=True):    # 98,89,69,… descending
         rs_val = rs_map[p]
         for d in dates:
             lines.append(f"{d},0,1000,0,{rs_val},0\n")
 
-    with open(os.path.join(output_dir, "RSRATING.csv"), "w") as f:
+    os.makedirs(output_dir, exist_ok=True)
+    rating_path = os.path.join(output_dir, "RSRATING.csv")
+    with open(rating_path, "w") as f:
         f.write(''.join(lines))
-    logging.info(f"RSRATING.csv generated → {len(lines)} lines")
+
+    logging.info(f"RSRATING.csv generated → {rating_path}")
+    print("RSRATING.csv thresholds (correct now):")
+    for p in sorted(percentile_values, reverse=True):
+        print(f"  {p:2}th percentile → Raw RS ≥ {rs_map[p]:6.2f}")
 
 # NEW: Safe MCAP converter (kept from previous fix)
 def mcap_to_float(val):
