@@ -2,18 +2,17 @@ name: Split RS Stocks by Exchange
 
 on:
   workflow_call:
-  workflow_dispatch:        # still allows manual run
+  workflow_dispatch:
 
 jobs:
   split-stocks:
-  
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout the exact commit from Calculate RS
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}   # ← guarantees rs_stocks.csv exists
+          ref: ${{ github.event.workflow_run.head_sha }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Python
@@ -24,51 +23,62 @@ jobs:
       - name: Install pandas
         run: pip install pandas
 
-      - name: Split rs_stocks.csv using Ticker suffix (.BO / .NS)
+      - name: Split rs_stocks.csv and create filtered NSE file
         run: |
           python << 'EOF'
           import pandas as pd
           import os
 
-          file_path = "RS_Data/rs_stocks.csv"          # your Calculate RS workflow saves it at root
+          file_path = "RS_Data/rs_stocks.csv"          # Adjust if the file is saved in root or elsewhere
           if not os.path.exists(file_path):
-              print("rs_stocks.csv not found in repository root!")
+              print("rs_stocks.csv not found!")
               exit(1)
 
           df = pd.read_csv(file_path)
 
-          # Make sure Ticker column exists and is string
-          if 'Ticker' not in df.columns:
-              print("Column 'Ticker' not found!")
+          required_cols = ['Ticker', 'RS Percentile', 'Price']
+          missing = [col for col in required_cols if col not in df.columns]
+          if missing:
+              print(f"Missing columns: {missing}")
               print("Available columns:", list(df.columns))
               exit(1)
 
           df['Ticker'] = df['Ticker'].astype(str).str.upper()
 
-          # Split by suffix
+          # Split by exchange
           bse = df[df['Ticker'].str.endswith('.BO')]
           nse = df[df['Ticker'].str.endswith('.NS')]
 
+          # Additional filter for NSE: RS Percentile > 75 and Price > 30
+          nse_75 = nse[
+              (nse['RS Percentile'] > 75) &
+              (nse['Price'] > 30)
+          ]
+
           os.makedirs("RS_Data", exist_ok=True)
 
+          # Save original splits
           bse.to_csv("RS_Data/rs_stocks_BSE.csv", index=False)
           nse.to_csv("RS_Data/rs_stocks_NSE.csv", index=False)
 
-          print(f"Split completed")
-          print(f"  → BSE (.BO): {len(bse)} stocks")
-          print(f"  → NSE (.NS): {len(nse)} stocks")
+          # Save the new filtered file
+          nse_75.to_csv("RS_Data/rs_stocks_NSE_75.csv", index=False)
+
+          print("Split & filtering completed")
+          print(f"  → BSE (.BO)           : {len(bse)} stocks")
+          print(f"  → NSE (.NS)           : {len(nse)} stocks")
+          print(f"  → NSE RS>75 & Price>30: {len(nse_75)} stocks → RS_Data/rs_stocks_NSE_75.csv")
           EOF
 
-      - name: Commit & push split files
+      - name: Commit & push all files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-      
-          git add -f RS_Data/rs_stocks_BSE.csv RS_Data/rs_stocks_NSE.csv
-      
-          # Always commit — even if no changes (empty commit allowed)
-          git commit --allow-empty -m "Split files update ($(date -u '+%Y-%m-%d %H:%M UTC'))"
-      
+
+          git add -f RS_Data/rs_stocks_BSE.csv RS_Data/rs_stocks_NSE.csv RS_Data/rs_stocks_NSE_75.csv
+
+          git commit --allow-empty -m "Update split files + NSE_75 filtered (RS>75 & Price>30) ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+
           git push
-      
-          echo "Split files pushed successfully!"
+
+          echo "All files pushed successfully!"
