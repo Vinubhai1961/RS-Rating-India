@@ -23,7 +23,7 @@ jobs:
       - name: Install pandas
         run: pip install pandas
 
-      - name: Split, filter NSE >75 and add %Dist_52H column
+      - name: Split, filter NSE >75, add %Dist_52H and keep only desired columns
         run: |
           python << 'EOF'
           import pandas as pd
@@ -36,16 +36,16 @@ jobs:
 
           df = pd.read_csv(file_path)
 
-          required_cols = ['Ticker', 'RS Percentile', 'Price', '52WKH']
-          missing = [col for col in required_cols if col not in df.columns]
+          # Basic required columns check
+          required = ['Ticker', 'RS Percentile', 'Price', '52WKH']
+          missing = [col for col in required if col not in df.columns]
           if missing:
-              print(f"Missing required columns: {missing}")
-              print("Available columns:", list(df.columns))
+              print(f"Missing columns: {missing}")
               exit(1)
 
           df['Ticker'] = df['Ticker'].astype(str).str.upper()
 
-          # Split by exchange
+          # Split
           bse = df[df['Ticker'].str.endswith('.BO')]
           nse = df[df['Ticker'].str.endswith('.NS')]
 
@@ -55,27 +55,46 @@ jobs:
               (nse['Price'] > 30)
           ].copy()
 
-          # === NEW COLUMN: % Distance from 52-Week High ===
-          # Negative = below 52WH, Positive = above (rare but possible due to data lag)
+          # === Add %Dist_52H ===
           nse_75['%Dist_52H'] = ((nse_75['Price'] - nse_75['52WKH']) / nse_75['52WKH']) * 100
-
-          # Round to 2 decimals for cleaner output
           nse_75['%Dist_52H'] = nse_75['%Dist_52H'].round(2)
+
+          # === Rename columns ===
+          rename_map = {
+              'RS Percentile'       : 'RS',
+              '1M_RS Percentile'    : '1M_RS',
+              '3M_RS Percentile'    : '3M_RS',
+              '6M_RS Percentile'    : '6M_RS',
+          }
+          nse_75.rename(columns=rename_map, inplace=True)
+
+          # === Keep ONLY the columns you want, in exact order ===
+          final_columns = [
+              'Rank', 'Ticker', 'Price', 'DVol', 'Sector', 'Industry',
+              'RS', '1M_RS', '3M_RS', '6M_RS',
+              'AvgVol', 'AvgVol10', '52WKH', '52WKL', '%Dist_52H'
+          ]
+
+          # Ensure all required columns exist (add missing as NaN if somehow absent)
+          for col in final_columns:
+              if col not in nse_75.columns and col != '%Dist_52H':
+                  nse_75[col] = None
+
+          nse_75 = nse_75[final_columns]
 
           os.makedirs("RS_Data", exist_ok=True)
 
-          # Save original splits (unchanged)
+          # Save regular splits (unchanged)
           bse.to_csv("RS_Data/rs_stocks_BSE.csv", index=False)
           nse.to_csv("RS_Data/rs_stocks_NSE.csv", index=False)
 
-          # Save filtered + new column
+          # Save the clean, filtered, renamed version
           nse_75.to_csv("RS_Data/rs_stocks_NSE_75.csv", index=False)
 
-          print("Processing completed successfully!")
-          print(f"  → BSE stocks          : {len(bse)}")
-          print(f"  → NSE stocks          : {len(nse)}")
-          print(f"  → NSE RS>75 & Price>30: {len(nse_75)} → rs_stocks_NSE_75.csv")
-          print(f"  → New column added    : %Dist_52H (e.g. -12.34 means 12.34% below 52WH)")
+          print("Success!")
+          print(f"  → BSE stocks               : {len(bse)}")
+          print(f"  → NSE full                 : {len(nse)}")
+          print(f"  → NSE_75 (RS>75, Price>30) : {len(nse_75)} → clean columns + %Dist_52H")
           EOF
 
       - name: Commit & push all files
@@ -85,8 +104,8 @@ jobs:
 
           git add -f RS_Data/rs_stocks_BSE.csv RS_Data/rs_stocks_NSE.csv RS_Data/rs_stocks_NSE_75.csv
 
-          git commit --allow-empty -m "Update splits + NSE_75 with %Dist_52H column ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+          git commit --allow-empty -m "NSE_75: clean columns, renamed RS, added %Dist_52H ($(date -u '+%Y-%m-%d %H:%M UTC'))"
 
           git push
 
-          echo "All files (including %Dist_52H column) pushed successfully!"
+          echo "Clean NSE_75 file with exact columns pushed!"
