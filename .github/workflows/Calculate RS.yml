@@ -207,7 +207,7 @@ jobs:
             --arctic-db-path tmp/arctic_db \
             --reference-ticker ^NSEI \
             --output-dir RS_Data \
-            --log-file RS_Logs/failed_tickers.log \
+            --log-file logs/failed_tickers.log \
             --metadata-file data/ticker_price.json
 
       - name: 📃 Archive RS Results
