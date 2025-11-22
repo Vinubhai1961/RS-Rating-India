@@ -23,23 +23,23 @@ jobs:
       - name: Install pandas
         run: pip install pandas
 
-      - name: Split rs_stocks.csv and create filtered NSE file
+      - name: Split, filter NSE >75 and add %Dist_52H column
         run: |
           python << 'EOF'
           import pandas as pd
           import os
 
-          file_path = "RS_Data/rs_stocks.csv"          # Adjust if the file is saved in root or elsewhere
+          file_path = "RS_Data/rs_stocks.csv"
           if not os.path.exists(file_path):
               print("rs_stocks.csv not found!")
               exit(1)
 
           df = pd.read_csv(file_path)
 
-          required_cols = ['Ticker', 'RS Percentile', 'Price']
+          required_cols = ['Ticker', 'RS Percentile', 'Price', '52WKH']
           missing = [col for col in required_cols if col not in df.columns]
           if missing:
-              print(f"Missing columns: {missing}")
+              print(f"Missing required columns: {missing}")
               print("Available columns:", list(df.columns))
               exit(1)
 
@@ -49,25 +49,33 @@ jobs:
           bse = df[df['Ticker'].str.endswith('.BO')]
           nse = df[df['Ticker'].str.endswith('.NS')]
 
-          # Additional filter for NSE: RS Percentile > 75 and Price > 30
+          # Filter NSE: RS Percentile > 75 and Price > 30
           nse_75 = nse[
               (nse['RS Percentile'] > 75) &
               (nse['Price'] > 30)
-          ]
+          ].copy()
+
+          # === NEW COLUMN: % Distance from 52-Week High ===
+          # Negative = below 52WH, Positive = above (rare but possible due to data lag)
+          nse_75['%Dist_52H'] = ((nse_75['Price'] - nse_75['52WKH']) / nse_75['52WKH']) * 100
+
+          # Round to 2 decimals for cleaner output
+          nse_75['%Dist_52H'] = nse_75['%Dist_52H'].round(2)
 
           os.makedirs("RS_Data", exist_ok=True)
 
-          # Save original splits
+          # Save original splits (unchanged)
           bse.to_csv("RS_Data/rs_stocks_BSE.csv", index=False)
           nse.to_csv("RS_Data/rs_stocks_NSE.csv", index=False)
 
-          # Save the new filtered file
+          # Save filtered + new column
           nse_75.to_csv("RS_Data/rs_stocks_NSE_75.csv", index=False)
 
-          print("Split & filtering completed")
-          print(f"  → BSE (.BO)           : {len(bse)} stocks")
-          print(f"  → NSE (.NS)           : {len(nse)} stocks")
-          print(f"  → NSE RS>75 & Price>30: {len(nse_75)} stocks → RS_Data/rs_stocks_NSE_75.csv")
+          print("Processing completed successfully!")
+          print(f"  → BSE stocks          : {len(bse)}")
+          print(f"  → NSE stocks          : {len(nse)}")
+          print(f"  → NSE RS>75 & Price>30: {len(nse_75)} → rs_stocks_NSE_75.csv")
+          print(f"  → New column added    : %Dist_52H (e.g. -12.34 means 12.34% below 52WH)")
           EOF
 
       - name: Commit & push all files
@@ -77,8 +85,8 @@ jobs:
 
           git add -f RS_Data/rs_stocks_BSE.csv RS_Data/rs_stocks_NSE.csv RS_Data/rs_stocks_NSE_75.csv
 
-          git commit --allow-empty -m "Update split files + NSE_75 filtered (RS>75 & Price>30) ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+          git commit --allow-empty -m "Update splits + NSE_75 with %Dist_52H column ($(date -u '+%Y-%m-%d %H:%M UTC'))"
 
           git push
 
-          echo "All files pushed successfully!"
+          echo "All files (including %Dist_52H column) pushed successfully!"
