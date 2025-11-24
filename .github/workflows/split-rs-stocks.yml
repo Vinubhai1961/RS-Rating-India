@@ -31,7 +31,7 @@ jobs:
       # ---------------------------------------------------------------
       - name: Run Split Script
         run: |
-          python split_rs_script.py    # (replace with your actual script)
+          python scripts/split_rs_script.py    # (replace with your actual script)
 
       # ---------------------------------------------------------------
       # 4. Prepare Git for pushing new files
