@@ -115,10 +115,13 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
 
+          # Pull remote changes first (rebase to keep history clean)
+          git pull --rebase origin main
+
           git add -f RS_Data/rs_stocks_BSE.csv RS_Data/rs_stocks_NSE.csv RS_Data/rs_stocks_NSE_75.csv archive/
 
           git commit --allow-empty -m "Daily update + archived rs_stocks_NSE_75_$(date -u '+%Y-%m-%d') ($(date -u '+%Y-%m-%d %H:%M UTC'))"
 
-          git push
+          git push origin main
 
           echo "Latest file + archive pushed successfully!"
