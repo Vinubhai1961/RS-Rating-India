@@ -9,58 +9,104 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      # ---------------------------------------------------------------
-      # 1. Checkout repo (normal checkout, no ref override)
-      # ---------------------------------------------------------------
-      - name: Checkout repo
+      - name: Checkout the exact commit from Calculate RS
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           clean: false
+             
 
-      # ---------------------------------------------------------------
-      # 2. Setup Python (or whatever tools your script uses)
-      # ---------------------------------------------------------------
       - name: Set up Python
-        uses: actions/setup-python@v4
+        uses: actions/setup-python@v5
         with:
-          python-version: '3.x'
+          python-version: "3.12"
 
-      # ---------------------------------------------------------------
-      # 3. Run your script that creates RS split output files
-      # ---------------------------------------------------------------
-      - name: Run Split Script
+      - name: Install pandas
+        run: pip install pandas
+
+      - name: Split, filter, clean columns + archive previous NSE_75 file
         run: |
-          python scripts/split_rs_script.py    # (replace with your actual script)
-
-      # ---------------------------------------------------------------
-      # 4. Prepare Git for pushing new files
-      # ---------------------------------------------------------------
-      - name: Configure Git and sync before commit
+          python << 'EOF'
+          import pandas as pd
+          import os
+          from datetime import date
+          today = date.today().strftime("%Y-%m-%d")   # e.g. 2025-11-21
+          archive_dir = "archive"
+          old_file = "RS_Data/rs_stocks_NSE_75.csv"
+          archive_file = f"{archive_dir}/rs_stocks_NSE_75_{today}.csv"
+          
+          # === Archive existing file (if exists) ===
+          os.makedirs(archive_dir, exist_ok=True)
+          if os.path.exists(old_file):
+              # Copy old file to archive with today's date
+              pd.read_csv(old_file).to_csv(archive_file, index=False)
+              print(f"Archived previous file → {archive_file}")
+          else:
+              print("No previous rs_stocks_NSE_75.csv found – first run or cleaned")
+              
+          # === Main processing (same as before) ===
+          file_path = "RS_Data/rs_stocks.csv"
+          if not os.path.exists(file_path):
+              print("rs_stocks.csv not found!")
+              exit(1)
+          df = pd.read_csv(file_path)
+          required = ['Ticker', 'RS Percentile', 'Price', '52WKH']
+          missing = [col for col in required if col not in df.columns]
+          if missing:
+              print(f"Missing columns: {missing}")
+              exit(1)
+          df['Ticker'] = df['Ticker'].astype(str).str.upper()
+          bse = df[df['Ticker'].str.endswith('.BO')]
+          nse = df[df['Ticker'].str.endswith('.NS')]
+          nse_75 = nse[
+              (nse['RS Percentile'] > 75) &
+              (nse['Price'] > 30)
+          ].copy()
+          # Add %Dist_52H
+          nse_75['%Dist_52H'] = ((nse_75['Price'] - nse_75['52WKH']) / nse_75['52WKH']) * 100
+          nse_75['%Dist_52H'] = nse_75['%Dist_52H'].round(2)
+          # Rename RS columns
+          nse_75.rename(columns={
+              'RS Percentile'     : 'RS',
+              '1M_RS Percentile'  : '1M_RS',
+              '3M_RS Percentile'  : '3M_RS',
+              '6M_RS Percentile'  : '6M_RS',
+          }, inplace=True)
+          # Final columns in exact order
+          final_columns = [
+              'Rank', 'Ticker', 'Price', 'DVol', 'Sector', 'Industry',
+              'RS', '1M_RS', '3M_RS', '6M_RS',
+              'AvgVol', 'AvgVol10', '52WKH', '52WKL', '%Dist_52H'
+          ]
+          for col in final_columns:
+              if col not in nse_75.columns and col != '%Dist_52H':
+                  nse_75[col] = None
+          nse_75 = nse_75[final_columns]
+          os.makedirs("RS_Data", exist_ok=True)
+          # Save regular files
+          bse.to_csv("RS_Data/rs_stocks_BSE.csv", index=False)
+          nse.to_csv("RS_Data/rs_stocks_NSE.csv", index=False)
+          # Save new filtered file (overwrites the old one – already archived above)
+          nse_75.to_csv("RS_Data/rs_stocks_NSE_75.csv", index=False)
+          print("All processing completed!")
+          print(f"  → BSE stocks               : {len(bse)}")
+          print(f"  → NSE full                 : {len(nse)}")
+          print(f"  → NSE_75 filtered          : {len(nse_75)} stocks")
+          print(f"  → Latest file              : RS_Data/rs_stocks_NSE_75.csv")
+          print(f"  → Archived as              : {archive_file}")
+          EOF
+          
+      - name: Commit & push (including archive folder)
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-
-          # 🔥 CRITICAL FIX:
-          # Bring repo up to date with REMOTE before creating new commit.
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          # Always sync with latest remote before committing
           git fetch origin main
-
-          # Soft reset → keeps your newly generated files but updates repo to latest main
           git reset --soft origin/main
-
-      # ---------------------------------------------------------------
-      # 5. Commit + Push results safely
-      # ---------------------------------------------------------------
-      - name: Commit and Push
-        run: |
-          # Stage only expected output files
-          git add -f RS_Data/rs_stocks_BSE.csv \
-                   RS_Data/rs_stocks_NSE.csv \
-                   RS_Data/rs_stocks_NSE_75.csv \
-                   archive/
-
-          # Commit only if changes exist
-          git commit -m "Daily update + archived results $(date -u '+%Y-%m-%d %H:%M UTC')" || exit 0
-
-          # Push (will NEVER be rejected now)
+          git add -f RS_Data/rs_stocks_BSE.csv RS_Data/rs_stocks_NSE.csv RS_Data/rs_stocks_NSE_75.csv archive/
+          git commit --allow-empty -m "Daily update + archived rs_stocks_NSE_75_$(date -u '+%Y-%m-%d') ($(date -u '+%Y-%m-%d %H:%M UTC'))"
           git push origin main
+          echo "Latest file + archive pushed successfully!"
+
+
+
