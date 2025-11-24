@@ -118,6 +118,9 @@ jobs:
           # Pull remote changes first (rebase to keep history clean)
           git pull --rebase origin main
 
+          # Restore generated files
+          git stash pop || git stash drop  # Pop if possible, drop if conflict (rare)
+
           git add -f RS_Data/rs_stocks_BSE.csv RS_Data/rs_stocks_NSE.csv RS_Data/rs_stocks_NSE_75.csv archive/
 
           git commit --allow-empty -m "Daily update + archived rs_stocks_NSE_75_$(date -u '+%Y-%m-%d') ($(date -u '+%Y-%m-%d %H:%M UTC'))"
