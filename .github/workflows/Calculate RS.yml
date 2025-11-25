@@ -213,7 +213,7 @@ jobs:
       - name: 📃 Archive RS Results
         run: |
           mkdir -p archive
-          current_date=$(TZ=Asia/Kolkata date +"%m%d%Y")
+          current_date=$(date +"%m%d%Y")
           echo "📅 Archiving results for: ${current_date}"
           
           for file in rs_stocks rs_industries RSRATING; do
@@ -260,7 +260,7 @@ jobs:
           git add -f logs/*.log
           
           echo "➕ commit all relevant result files..."
-          current_date=$(TZ=Asia/Kolkata date +"%m%d%Y")
+          current_date=$(date +"%m%d%Y")
           git commit -m "Add RS results for ${current_date}"
 
           echo "🔄 Pulling latest changes from origin/main (rebase)..."
