@@ -23,11 +23,10 @@ except ImportError:
 # === YOUR ORIGINAL RS LOGIC (PERFECT) ===
 def quarters_perf(closes: pd.Series, n: int) -> float:
     days = n * 63
-    available_data = closes[-min(len(closes), days):]
-    if len(available_data) < 1:
-        return np.nan
-    elif len(available_data) == 1:
-        return 0.0
+    slice_len = min(len(closes), days + 1)  # +1 for n intervals
+    available_data = closes[-slice_len:]
+    if len(available_data) < 2:  # Need at least 2 for ratio
+        return 0.0 if len(available_data) == 1 else np.nan
     pct_change = available_data.pct_change().dropna()
     return (pct_change + 1).cumprod().iloc[-1] - 1 if not pct_change.empty else np.nan
 
