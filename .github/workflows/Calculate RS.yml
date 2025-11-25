@@ -264,7 +264,7 @@ jobs:
             echo "⚠️ No changes to commit. Skipping commit & push."
           else
             current_date=$(TZ=Asia/Kolkata date +"%m%d%Y")
-            git commit -m "Add RS results for ${commit_date}"
+            git commit -m "Add RS results for ${current_date}"
 
             echo "🔄 Pulling latest changes from origin/main (rebase)..."
             git pull --rebase origin main
