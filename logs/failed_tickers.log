@@ -16,3 +16,9 @@
 2025-11-25 03:35:01,022 | Metadata loaded: 3,215 tickers
 2025-11-25 03:35:17,176 | Latest market date for RSRATING.csv: 2025-11-24
 2025-11-25 03:35:17,184 | RSRATING.csv generated → RS_Data/RSRATING.csv
+2025-11-25 03:55:09,504 | === INDIA RS CALCULATION STARTED ===
+2025-11-25 03:55:09,504 | Benchmark: ^NSEI
+2025-11-25 03:55:09,508 | Loaded 3,215 symbols from ArcticDB
+2025-11-25 03:55:09,529 | Metadata loaded: 3,215 tickers
+2025-11-25 03:55:25,552 | Latest market date for RSRATING.csv: 2025-11-25
+2025-11-25 03:55:25,560 | RSRATING.csv generated → RS_Data/RSRATING.csv
