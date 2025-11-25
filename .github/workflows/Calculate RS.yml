@@ -255,9 +255,9 @@ jobs:
           cat logs/git_modified_files.log
 
           echo "➕ Staging all relevant result files..."
-          git add -f archive/*.csv 
-          git add -f RS_Data/*.csv
-          git add -f logs/*.log
+          git add -A archive/*.csv 
+          git add -A RS_Data/*.csv
+          git add -A logs/*.log
           
           echo "➕ commit all relevant result files..."
           current_date=$(date +"%m%d%Y")
