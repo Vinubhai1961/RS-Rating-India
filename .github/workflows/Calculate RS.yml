@@ -234,6 +234,8 @@ jobs:
             RS_Data/*.csv
             logs/failed_tickers.log
             archive/*.csv
+            logs/debug_rs/*.log
+            logs/debug_rs/*.csv
 
       - name: 📤 Commit and Push RS Results
         env:
@@ -246,7 +248,7 @@ jobs:
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
 
           echo "📌 Repo status before commit:"
-          git status
+          git status --porcelain
 
           # 📥 Save list of modified files
           mkdir -p logs
@@ -255,20 +257,27 @@ jobs:
           cat logs/git_modified_files.log
 
           echo "➕ Staging all relevant result files..."
-          git add -A archive/*.csv 
-          git add -A RS_Data/*.csv
-          git add -A logs/*.log
+          git add archive/*.csv RS_Data/*.csv
+
+          # NEW: Stage the full debug export (split files)
+          git add logs/debug_rs/*.csv 2>/dev/null || true
+          git add logs/debug_rs/*.log 2>/dev/null || true
+
+          # Optional: also commit the main log if you want to keep history of failures
+          git add logs/failed_tickers.log || true
           
-          echo "➕ commit all relevant result files..."
-          current_date=$(date +"%m%d%Y")
-          git commit -m "Add RS results for ${current_date}"
+          # ✅ Skip commit if nothing is staged
+          if git diff --cached --quiet; then
+            echo "⚠️ No changes to commit. Skipping commit & push."
+          else
+            commit_date=$(date -u -d '4 hours ago' +'%m%d%Y')
+            git commit -m "Add RS results for ${commit_date}"
 
-          echo "🔄 Pulling latest changes from origin/main (rebase)..."
-          git pull --rebase origin main
+            echo "🔄 Pulling latest changes from origin/main (rebase)..."
+            git pull origin main
 
-          echo "🚀 Pushing committed results to GitHub..."
-          git push origin main
-          git status
+            echo "🚀 Pushing committed results to GitHub..."
+            git push origin main
           fi
 
       - name: Print workflow end time (EDT)
