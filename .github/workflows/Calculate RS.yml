@@ -238,36 +238,37 @@ jobs:
             logs/debug_rs/*.log
             logs/debug_rs/*.csv
 
-      - name: 📤 Commit and Push RS Results
+      - name: Commit and Push RS Results
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-
-          # Use the token for push
           git remote set-url origin https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}
 
-          # Stage everything we want
-          git add archive/*.csv RS_Data/*.csv
+          # ——— Correct IST date (works on Ubuntu) ———
+          current_date=$(TZ=Asia/Kolkata date +"%m%d%Y")
+          echo "Results date (IST): $current_date"
+
+          # ——— Stage all files we care about ———
+          git add archive/*.csv RS_Data/*.csv 2>/dev/null || true
           git add logs/debug_rs/*.csv logs/debug_rs/*.log 2>/dev/null || true
           git add logs/failed_tickers.log 2>/dev/null || true
 
-          # Commit only if there are changes
+          # ——— Commit only if something changed ———
           if git diff --cached --quiet; then
-            echo "No changes to commit. Skipping."
+            echo "No changes to commit – nothing to push."
             exit 0
           fi
 
-          commit_date=$(date -u -d '+5:30 hours' +'%m%d%Y')  # Use IST date
-          git commit -m "Add RS results for ${commit_date} [skip ci]"
+          git commit -m "Add RS results for ${current_date} [skip ci]"
 
-          # THIS IS THE KEY FIX:
-          echo "Pushing with force-with-lease (safe even if branch moved)..."
+          # ——— Safe force-push (no pull, no merge conflicts) ———
+          echo "Pushing with --force-with-lease..."
           git push origin main --force-with-lease || git push origin main --force-with-lease
-          
-          echo "Push successful!"
 
+          echo "Successfully pushed RS results for $current_date"
+          
       - name: Print workflow end time (EDT)
         run: |
           echo "Workflow ended at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
