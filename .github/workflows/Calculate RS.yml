@@ -254,34 +254,11 @@ jobs:
           git add archive/*.csv RS_Data/*.csv 2>/dev/null || true
           git add logs/debug_rs/*.csv logs/debug_rs/*.log 2>/dev/null || true
           git add logs/failed_tickers.log 2>/dev/null || true
+        
 
-          # Commit only if changes exist
-          if git diff --cached --quiet; then
-            echo "No changes detected – nothing to push."
-            exit 0
-          fi
-
-          git commit -m "Add RS results for ${current_date} [skip ci]"
-
-          # The ultimate safe push sequence (works even with concurrent runs)
-          echo "Attempting safe push with force-with-lease..."
-          if git push origin main --force-with-lease; then
-            echo "Push succeeded on first try"
-            exit 0
-          fi
-
-          echo "First push failed (someone else pushed) – fetching latest and retrying..."
-          git fetch origin main
-          git reset --hard origin/main   # Throw away our local commits temporarily
-          git add archive/*.csv RS_Data/*.csv 2>/dev/null || true
-          git add logs/debug_rs/*.csv logs/debug_rs/*.log 2>/dev/null || true
-          git add logs/failed_tickers.log 2>/dev/null || true
-
-          # Re-commit on top of the latest main
-          git commit -m "Add RS results for ${current_date} [skip ci]" || echo "No changes after reset"
-
-          echo "Final push..."
-          git push origin main --force-with-lease
+          #commit 
+          git commit -m "Add RS results for ${current_date}"
+          git push origin main
           
           echo "Successfully pushed RS results for $current_date"
           
