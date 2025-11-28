@@ -6,6 +6,7 @@ import argparse
 import logging
 from datetime import datetime, timedelta
 import pandas as pd
+print(f"Using pandas {pd.__version__}")   # should print 2.3.3
 import numpy as np
 import arcticdb as adb
 from tqdm.auto import tqdm
@@ -30,7 +31,8 @@ def quarters_perf(closes: pd.Series, n: int) -> float:
     available_data = closes[-slice_len:]
     if len(available_data) < 2:
         return 0.0 if len(available_data) == 1 else np.nan
-    pct_change = available_data.pct_change().dropna()
+    # pandas 2.2+ compatible — explicit fill_method=None
+    pct_change = available_data.pct_change(fill_method=None).dropna()
     return (pct_change + 1).cumprod().iloc[-1] - 1 if not pct_change.empty else np.nan
 
 
