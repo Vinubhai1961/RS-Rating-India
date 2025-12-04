@@ -2,8 +2,8 @@ name: Generate IPO Stocks List
 
 on:
   workflow_dispatch:      # Can be run manually
-  schedule:
-    - cron: '0 2 * * *'   # Runs daily at 02:00 UTC (optional)
+  #schedule:
+    #- cron: '0 2 * * *'   # Runs daily at 02:00 UTC (optional)
   push:
     branches:
       - main
