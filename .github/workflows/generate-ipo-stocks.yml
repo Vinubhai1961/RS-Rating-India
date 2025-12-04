@@ -1,0 +1,86 @@
+name: Generate IPO Stocks List
+
+on:
+  workflow_dispatch:      # Can be run manually
+  schedule:
+    - cron: '0 2 * * *'   # Runs daily at 02:00 UTC (optional)
+  push:
+    branches:
+      - main
+    paths:
+      - 'logs/debug_rs/debug-rs-part1.csv'
+      - 'RS_Data/rs_stocks.csv'
+
+jobs:
+  generate-ipo-stocks:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write     # Needed to push changes
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pandas
+        run: pip install pandas
+
+      - name: Generate IPO_stocks.csv
+        run: |
+          python - <<'PY'
+          import pandas as pd
+          import os
+
+          DEBUG_FILE = "logs/debug_rs/debug-rs-part1.csv"
+          RS_FILE    = "RS_Data/rs_stocks.csv"
+          OUTPUT_FILE = "RS_Data/IPO_stocks.csv"
+
+          # 1. Load debug file and find IPOs (Days < 100)
+          debug_df = pd.read_csv(DEBUG_FILE)
+          debug_df = debug_df[debug_df['Days'] < 100]
+
+          if debug_df.empty:
+              print("No IPO stocks found (Days < 100). Creating empty IPO_stocks.csv")
+              pd.DataFrame(columns=pd.read_csv(RS_FILE).columns).to_csv(OUTPUT_FILE, index=False)
+          else:
+              ipo_tickers = set(debug_df['Ticker'].str.strip())
+
+              # 2. Load full rs_stocks
+              rs_df = pd.read_csv(RS_FILE)
+
+              # 3. Filter rows where Ticker is in IPO list
+              ipo_df = rs_df[rs_df['Ticker'].isin(ipo_tickers)].copy()
+
+              # Ensure same column order as original rs_stocks.csv
+              ipo_df = ipo_df[rs_df.columns]
+
+              # Sort by Rank if exists (optional, for readability)
+              if 'Rank' in ipo_df.columns:
+                  ipo_df = ipo_df.sort_values(by='Rank', na_position='last').reset_index(drop=True)
+
+              # Save
+              ipo_df.to_csv(OUTPUT_FILE, index=False)
+              print(f"Found {len(ipo_df)} IPO stocks. Saved to {OUTPUT_FILE}")
+
+          # Show first few rows for log
+          print(pd.read_csv(OUTPUT_FILE).head(10).to_string(index=False))
+          PY
+
+      - name: Commit and push if IPO_stocks.csv changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add RS_Data/IPO_stocks.csv
+          if git diff --staged --quiet; then
+            echo "No changes to IPO_stocks.csv"
+          else
+            git commit -m "chore: update IPO_stocks.csv from latest debug-rs data [skip ci]"
+            git push
+            echo "IPO_stocks.csv updated and pushed"
+          fi
