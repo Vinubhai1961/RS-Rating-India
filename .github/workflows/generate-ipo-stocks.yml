@@ -1,9 +1,11 @@
 name: Generate IPO Stocks List
 
 on:
-  workflow_dispatch:      # Can be run manually
-  #schedule:
-    #- cron: '0 2 * * *'   # Runs daily at 02:00 UTC (optional)
+  workflow_run:
+    workflows: ["Split RS Stocks by Exchange"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch: #allow manual run
   push:
     branches:
       - main
