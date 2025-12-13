@@ -1,10 +1,12 @@
 name: 📊 Calculate RS Ratings (India - NIFTY)
 
 on:
-  workflow_call:
-  workflow_dispatch:
-  #schedule:
-    #- cron: '20 20 * * 1-5'  # 8:20 UTC = 1:50 AM IST next day / perfect for India close
+  workflow_run:
+    workflows: ["Build Tickers and Price Data"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:   # allow manual run
+
 
 jobs:
   fetch-rs:
