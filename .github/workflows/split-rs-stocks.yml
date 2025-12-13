@@ -1,8 +1,11 @@
 name: Split RS Stocks by Exchange
 
 on:
-  workflow_call:
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["📊 Calculate RS Ratings (India - NIFTY)"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:   # allow manual run
 
 jobs:
   split-stocks:
