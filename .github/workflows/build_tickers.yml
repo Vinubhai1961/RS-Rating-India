@@ -3,8 +3,8 @@ name: Build Tickers and Price Data
 on:
   workflow_call:
   workflow_dispatch:
-  #schedule:
-    #- cron: "45 19 * * 1-5"  # 3:45 PM EDT (19:45 UTC) Monday through Friday
+  schedule:
+    - cron: "00 07 * * 1-5"  # 7:00 AM EST Monday through Friday
 
 jobs:
   build-tickers:
