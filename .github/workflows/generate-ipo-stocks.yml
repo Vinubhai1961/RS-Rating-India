@@ -1,4 +1,4 @@
-name: Generate IPO Stocks List
+name: Generate-IPO
 
 on:
   workflow_run:
