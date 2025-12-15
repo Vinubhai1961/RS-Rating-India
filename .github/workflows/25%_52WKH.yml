@@ -1,12 +1,11 @@
 name: Tickers Within 25% of 52-Week High
 
 on:
+  workflow_dispatch:   # allow manual run
   workflow_run:
     workflows: ["Generate IPO Stocks List"]
     types: [completed]
     branches: [main]
-
-  workflow_dispatch:   # allow manual run
 
 jobs:
   generate-tickers:
