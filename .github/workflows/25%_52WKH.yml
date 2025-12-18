@@ -1,16 +1,27 @@
 name: 25%-52-WKH
 
 on:
-  workflow_dispatch:   # allow manual run
   workflow_run:
     workflows: ["Generate-IPO"]
     types: [completed]
     branches: [main]
 
+  schedule:
+    - cron: "00 16 * * 1-5"   # 7:00 AM EST Mon–Fri
+
+  workflow_dispatch:         # manual run
+
+
 jobs:
   generate-tickers:
     runs-on: ubuntu-latest
-
+    
+    if: |
+      github.event_name == 'schedule' ||
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success')
+       
     steps:
       # Checkout the repository
       - name: Checkout code
