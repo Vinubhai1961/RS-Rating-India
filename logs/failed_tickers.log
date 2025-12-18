@@ -158,3 +158,13 @@
 2025-12-18 14:31:36,874 - NSE trading days used: 20251212T, 20251215T, 20251216T, 20251217T, 20251218T
 2025-12-18 14:31:36,875 - RSRATING.csv (NSE) generated → RS_Data/RSRATING.csv
 2025-12-18 14:31:36,875 - NSE RS calculation completed. 3171 tickers, 3158 with valid RS.
+2025-12-18 16:38:51,893 - Starting NSE India RS calculation
+2025-12-18 16:38:51,893 - Missing RS debug log: logs/debug_rs/Missing_RS.log
+2025-12-18 16:38:51,897 - Found 3172 symbols in tmp/arctic_db
+2025-12-18 16:38:51,919 - Metadata loaded: 3,172 tickers
+2025-12-18 16:38:51,919 - Starting RS calculation for 3172 tickers vs ^NSEI
+2025-12-18 16:39:06,335 - Latest market date (NSE): 2025-12-18
+2025-12-18 16:39:06,335 - NSE calendar failed: Class NSE is not one of the registered classes: dict_keys(['TradingCalendar', 'AIXK', 'ASEX', 'BVMF', 'XCYS', 'CMES', 'IEPA', 'XAMS', 'XASX', 'XBEL', 'XBDA', 'XBKK', 'XBOG', 'XBOM', 'XBRU', 'XBSE', 'XBUD', 'XBUE', 'XBRA', 'XCBF', 'XCSE', 'XDUB', 'XDUS', 'XEEE', 'XFRA', 'XETR', 'XHAM', 'XHEL', 'XHKG', 'XICE', 'XIDX', 'XIST', 'XJSE', 'XKAR', 'XKLS', 'XKRX', 'XLIM', 'XLIS', 'XLIT', 'XLJU', 'XLON', 'XLUX', 'XMAD', 'XMEX', 'XMIL', 'XMOS', 'XNYS', 'XNZE', 'XOSL', 'XPAR', 'XPHS', 'XPRA', 'XRIS', 'XSAU', 'XSES', 'XSGO', 'XSHG', 'XSTO', 'XSWX', 'XTAE', 'XTAI', 'XTAL', 'XTKS', 'XTSE', 'XWAR', 'XWBO', 'XZAG', 'us_futures', '24/7', '24/5'])
+2025-12-18 16:39:06,343 - NSE trading days used: 20251212T, 20251215T, 20251216T, 20251217T, 20251218T
+2025-12-18 16:39:06,344 - RSRATING.csv (NSE) generated → RS_Data/RSRATING.csv
+2025-12-18 16:39:06,344 - NSE RS calculation completed. 3171 tickers, 3157 with valid RS.
