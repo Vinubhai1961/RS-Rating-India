@@ -13,7 +13,7 @@ on:
 
 
 jobs:
-  generate-tickers:
+  ALL_52WKH_0-25P:
     runs-on: ubuntu-latest
     
     if: |
