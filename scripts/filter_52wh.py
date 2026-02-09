@@ -15,8 +15,21 @@ OUTPUT_PATH  = Path("RS_Data/RS80_Price30_within27pct_52wh.csv")
 RS_THRESHOLD    = 80.0
 PRICE_THRESHOLD = 30.0
 MAX_PCT_BELOW   = 27.0
-MIN_AVGVOL10    = 500K           # ← new: minimum 10-day average volume
+MIN_AVGVOL10    = 500_000         # ← new: minimum 10-day average volume
 # ────────────────────────────────────────────────
+def parse_volume(x):
+    if pd.isna(x):
+        return None
+    x = str(x).strip().upper()
+
+    if x.endswith('K'):
+        return float(x[:-1]) * 1_000
+    if x.endswith('M'):
+        return float(x[:-1]) * 1_000_000
+    if x.endswith('B'):
+        return float(x[:-1]) * 1_000_000_000
+
+    return float(x)
 
 
 def main():
@@ -31,9 +44,14 @@ def main():
 
     # Ensure numeric columns – added 'AvgVol10'
     numeric_cols = ['Price', '52WKH', 'RS Percentile', 'AvgVol10']
+    
     for col in numeric_cols:
-        if col in df.columns:
+    if col in df.columns:
+        if col == 'AvgVol10':
+            df[col] = df[col].apply(parse_volume)
+        else:
             df[col] = pd.to_numeric(df[col], errors='coerce')
+
 
     # Drop rows we cannot calculate properly – added 'AvgVol10'
     df = df.dropna(subset=['Price', '52WKH', 'RS Percentile', 'AvgVol10'])
