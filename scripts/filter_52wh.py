@@ -43,14 +43,15 @@ def main():
     print(f"→ Loaded {len(df):,} rows")
 
     # Ensure numeric columns – added 'AvgVol10'
+    # Ensure numeric columns – added 'AvgVol10'
     numeric_cols = ['Price', '52WKH', 'RS Percentile', 'AvgVol10']
     
     for col in numeric_cols:
-    if col in df.columns:
-        if col == 'AvgVol10':
-            df[col] = df[col].apply(parse_volume)
-        else:
-            df[col] = pd.to_numeric(df[col], errors='coerce')
+        if col in df.columns:
+            if col == 'AvgVol10':
+                df[col] = df[col].apply(parse_volume)
+            else:
+                df[col] = pd.to_numeric(df[col], errors='coerce')
 
 
     # Drop rows we cannot calculate properly – added 'AvgVol10'
