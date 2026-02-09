@@ -1,9 +1,15 @@
 name: Filter strong RS stocks near 52-week high
 
 on:
-  #schedule:
-   # - cron: '45 9 * * *'          # ~4:45 AM EST – adjust if needed
-  workflow_dispatch:              # allows manual trigger from GitHub UI
+  workflow_run:
+    workflows: ["Generate-IPO"]
+    types: [completed]
+    branches: [main]
+
+  schedule:
+    - cron: "00 16 * * 1-5"   # 7:00 AM EST Mon–Fri
+
+  workflow_dispatch:         # manual run
 
 jobs:
   filter:
