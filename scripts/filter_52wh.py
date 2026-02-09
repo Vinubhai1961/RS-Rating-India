@@ -62,12 +62,13 @@ def main():
     df['%_From_52WKH'] = df['%_From_52WKH'].round(2)
 
     # Apply all filters – added volume condition
+
     mask = (
-        (df['%_From_52WKH'] >= 0) &
-        (df['%_From_52WKH'] <= MAX_PCT_BELOW) &
-        (df['RS Percentile'] > RS_THRESHOLD) &
-        (df['Price'] > PRICE_THRESHOLD) &
-        (df['AvgVol10'] > MIN_AVGVOL10)              # ← NEW LINE
+    (df['%_From_52WKH'] >= 0) &
+    (df['%_From_52WKH'] <= MAX_PCT_BELOW) &
+    (df['RS Percentile'] >= RS_THRESHOLD) &  # ← Changed from > to >=
+    (df['Price'] >= PRICE_THRESHOLD) &       # ← Changed from > to >=
+    (df['AvgVol10'] >= MIN_AVGVOL10)         # ← Changed from > to >=
     )
 
     filtered = df[mask].copy()
