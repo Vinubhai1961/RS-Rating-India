@@ -1,147 +1,131 @@
 Rank,Ticker,Price,DVol,Sector,Industry,RS Percentile,1M_RS Percentile,3M_RS Percentile,6M_RS Percentile,AvgVol,AvgVol10,52WKH,52WKL,MCAP,IPO
-2,AXISOL.BO,170.75,13.55K,Technology Services,Information Technology Services,98.0,98.0,,,1.82K,3.05K,170.75,24.38,8.07B,No
-5,SESHACHAL.BO,96.41,2.25K,Technology Services,Information Technology Services,98.0,95.0,,,1.49K,2.21K,96.41,15.0,669.43M,No
-8,SIMANDHAR.BO,120.55,0.56K,Distribution Services,Wholesale Distributors,98.0,94.0,,,10.99K,4.46K,138.75,21.5,368.51M,No
-10,STEELCO.BO,82.32,0.40K,Non-Energy Minerals,Steel,98.0,98.0,,,0.10K,0.12K,82.32,16.53,408.80M,No
-13,MAXGROW.BO,57.58,11.52K,Commercial Services,Personnel Services,98.0,98.0,,,24.80K,46.46K,73.36,12.15,2.30B,No
-42,APPL.BO,266.55,18.00K,Distribution Services,Medical Distributors,97.0,86.0,97.0,,20.87K,6.00K,277.0,80.8,1.83B,No
-45,CITURGIA.BO,123.25,0.51K,Process Industries,Chemicals: Specialty,97.0,,,,0.74K,0.86K,123.25,47.4,16.28B,No
-55,RRPDEFENSE.BO,830.2,0.02K,Distribution Services,Wholesale Distributors,97.0,26.0,98.0,,0.22K,0.10K,984.4,366.5,11.39B,No
-77,KINETRU.BO,42.79,1.10K,Finance,Finance/Rental/Leasing,96.0,0.0,97.0,,2.08K,3.40K,75.82,22.01,143.77M,No
-82,CLENON.BO,59.97,4.68K,Producer Manufacturing,Electrical Products,96.0,90.0,97.0,,1.08K,0.98K,59.97,40.61,656.09M,No
-85,CITYSQUARE.BO,199.7,1.60K,Retail Trade,Food Retail,96.0,98.0,92.0,,12.96K,5.76K,222.2,78.81,1.77B,No
-92,HRS.BO,248.0,78.00K,Non-Energy Minerals,Aluminum,96.0,96.0,,,196.21K,35.28K,250.0,126.0,4.78B,No
-107,REGAL.BO,26.65,5.30K,Finance,Investment Banks/Brokers,95.0,0.0,96.0,,2.07K,3.33K,63.81,13.55,81.87M,No
-150,PAJSON.BO,210.9,6.00K,Consumer Non-Durables,Food: Specialty/Candy,94.0,96.0,,,143.98K,16.20K,255.0,120.05,5.02B,No
-156,GLOBALLOG.BO,124.7,3.20K,Transportation,Air Freight/Couriers,94.0,3.0,,,142.65K,16.48K,172.91,79.2,1.80B,No
-159,ZELIO.BO,349.3,225.00K,Consumer Durables,Motor Vehicles,94.0,97.0,8.0,,84.54K,131.90K,610.0,154.9,7.39B,No
-187,SMLMAH.NS,4542.9,116.07K,Consumer Durables,Motor Vehicles,93.0,96.0,96.0,,108.27K,135.43K,5348.0,2749.0,65.74B,No
-195,TMCV.NS,498.0,11530.79K,Consumer Durables,Motor Vehicles,92.0,83.0,95.0,,10872.43K,9052.06K,509.0,306.3,1833.80B,No
-215,KANDAGIRI.BO,44.92,11.00K,Process Industries,Textiles,92.0,44.0,96.0,,3.62K,4.03K,51.72,34.96,172.91M,No
-233,RDGAIL.BO,101.0,1.20K,Process Industries,Agricultural Commodities/Milling,91.0,50.0,96.0,,46.05K,3.72K,114.0,54.5,896.48M,No
-238,MPKSTEELS.BO,128.0,3.20K,Non-Energy Minerals,Steel,91.0,95.0,91.0,,25.90K,22.40K,152.8,72.65,1.30B,No
-244,MAHALIFE.BO,163.5,2.40K,Process Industries,Chemicals: Agricultural,91.0,42.0,95.0,,95.16K,10.80K,205.05,111.0,3.83B,No
-256,WAAREEINDO.NS,329.7,61.06K,Electronic Technology,Electronic Equipment/Instruments,91.0,2.0,2.0,,83.98K,73.21K,725.0,165.07,13.72B,No
-286,PRODOCS.BO,202.0,5.00K,Commercial Services,Miscellaneous Commercial Services,90.0,87.0,,,39.25K,7.70K,254.3,141.0,1.42B,No
-314,ADANIENPP.BO,1719.0,1.31K,Distribution Services,Wholesale Distributors,89.0,95.0,,,0.91K,0.92K,1795.55,1279.95,3555.76B,No
-319,PARKHOSPS.NS,190.53,927.21K,Health Services,Hospital/Nursing Management,89.0,94.0,,,2305.72K,1136.70K,197.7,138.1,82.30B,No
-326,PIRAMALFIN.NS,1801.0,193.61K,Finance,Finance/Rental/Leasing,88.0,72.0,90.0,,256.27K,103.68K,1954.5,1260.0,406.59B,No
-341,LENSKART.NS,525.85,2272.90K,Health Technology,Medical Specialties,88.0,89.0,92.0,,3450.79K,2553.94K,541.8,356.1,908.45B,No
-381,CANHLIFE.NS,143.44,898.39K,Finance,Life/Health Insurance,87.0,51.0,90.0,,1944.04K,1111.13K,159.0,106.0,136.27B,No
-383,NEPHROPLUS.NS,582.85,94.15K,Health Services,Medical/Nursing Services,87.0,85.0,,,662.65K,90.29K,616.0,446.0,58.48B,No
-401,SUNSKY.BO,71.83,18.00K,Transportation,Air Freight/Couriers,86.0,72.0,60.0,,13.77K,26.10K,96.0,48.21,893.21M,No
-415,RUBICON.NS,773.4,331.86K,Health Technology,Biotechnology,86.0,88.0,91.0,,202.63K,144.99K,822.0,570.75,127.42B,No
-434,ICICIAMC.NS,3090.1,308.65K,Finance,Investment Managers,85.0,74.0,,,1278.30K,276.36K,3193.0,2530.0,1527.31B,No
-477,MNFL.BO,145.05,25.20K,Consumer Non-Durables,Food: Specialty/Candy,84.0,5.0,,,42.54K,8.64K,186.0,118.4,1.82B,No
-493,ADVAIT.NS,1616.8,55.64K,Producer Manufacturing,Electrical Products,83.0,81.0,,,43.99K,34.79K,1885.0,1351.0,17.68B,No
-515,TENNIND.NS,558.85,517.16K,Producer Manufacturing,Auto Parts: Oem,82.0,81.0,90.0,,1134.62K,559.74K,602.0,438.05,,No
-518,DIGILOGIC.BO,90.97,31.20K,Electronic Technology,Electronic Equipment/Instruments,82.0,88.0,,,134.11K,22.56K,107.0,72.95,2.63B,No
-530,GROWW.NS,161.04,26154.83K,Miscellaneous,Investment Trusts/Mutual Funds,82.0,25.0,78.0,,46759.77K,19247.36K,193.8,112.0,994.20B,No
-554,INFINITY.BO,381.5,4.80K,Technology Services,Packaged Software,81.0,38.0,71.0,,5.35K,1.84K,483.85,294.0,2.08B,No
-563,BUILDPRO.NS,916.0,40.36K,Distribution Services,Wholesale Distributors,81.0,94.0,,,87.08K,80.62K,1050.2,636.0,22.21B,No
-627,CORONA.NS,1580.0,14.03K,Health Technology,Pharmaceuticals: Major,79.0,81.0,,,416.04K,18.31K,1660.8,1336.6,,No
-633,SHADOWFAX.NS,120.59,1350.77K,Technology Services,Packaged Software,79.0,88.0,,,4542.55K,1497.24K,127.75,98.55,69.72B,No
-636,EXATO.BO,306.05,11.00K,Technology Services,Packaged Software,79.0,64.0,,,121.70K,27.40K,475.0,266.0,,No
-651,AMAGI.NS,379.95,464.55K,Technology Services,Packaged Software,78.0,73.0,,,1970.38K,770.23K,438.4,318.0,,No
-714,NANTA.BO,263.45,6.00K,Distribution Services,Wholesale Distributors,76.0,38.0,,,65.68K,17.52K,365.0,234.0,1.35B,No
-721,KSHINTL.NS,379.85,260.26K,Producer Manufacturing,Electrical Products,76.0,84.0,,,439.54K,122.33K,403.7,330.0,25.74B,No
-758,GKSL.NS,110.4,322.19K,Health Services,Hospital/Nursing Management,75.0,77.0,,,1893.09K,673.85K,123.0,98.36,8.70B,No
-795,ARIS.NS,107.43,1811.32K,Technology Services,Packaged Software,74.0,53.0,,,1951.29K,1454.90K,122.3,82.18,8.78B,No
-821,VIYASH.NS,199.94,1642.59K,Health Technology,Pharmaceuticals: Major,73.0,54.0,,,759.18K,770.38K,240.0,188.0,87.43B,No
-822,ANL.BO,198.5,26.00K,Health Technology,Biotechnology,73.0,,,,84.44K,54.90K,208.0,150.1,1.44B,No
-855,ACESEPP.BO,121.65,2.13K,Technology Services,Data Processing Services,72.0,16.0,,,6.77K,6.42K,153.85,106.0,,No
-885,GRERENEW.BO,93.15,7.20K,Electronic Technology,Semiconductors,71.0,60.0,,,61.97K,9.72K,105.5,80.0,1.33B,No
-913,RACHIT.BO,112.0,1.00K,Consumer Non-Durables,Apparel/Footwear,70.0,15.0,34.0,,7.26K,4.00K,146.0,95.0,552.96M,No
-948,UNISEM.BO,62.0,2.00K,Process Industries,Agricultural Commodities/Milling,69.0,82.0,,,27.78K,21.80K,67.91,52.2,702.58M,No
-950,ADMACH.BO,201.5,7.20K,Producer Manufacturing,Industrial Machinery,69.0,27.0,,,61.87K,17.88K,245.0,185.0,1.37B,No
-952,TATACAP.NS,328.65,2294.72K,Finance,Finance/Rental/Leasing,69.0,46.0,78.0,,3078.68K,1461.93K,367.3,315.1,1385.81B,No
-972,MIDWESTLTD.NS,1221.4,64.76K,Non-Energy Minerals,Construction Materials,68.0,31.0,48.0,,156.09K,36.44K,1859.9,1048.5,44.17B,No
-1005,KSR.NS,31.24,635.75K,Consumer Non-Durables,Apparel/Footwear,67.0,88.0,78.0,,188.21K,223.67K,34.95,14.04,585.59M,No
-1016,DEFRAIL.BO,88.98,17.60K,Producer Manufacturing,Miscellaneous Manufacturing,67.0,6.0,,,80.10K,25.76K,122.0,81.46,625.03M,No
-1022,TMPV.NS,370.6,11803.91K,Consumer Durables,Motor Vehicles,67.0,79.0,81.0,,11284.33K,9499.19K,419.0,335.6,1364.69B,No
-1047,ANANTAM.BO,102.5,2.92K,Miscellaneous,Investment Trusts/Mutual Funds,66.0,56.0,71.0,,1.20K,1.75K,114.0,101.5,22.29B,No
-1054,COARO.BO,35.0,0.10K,Transportation,Trucking,66.0,19.0,86.0,,0.46K,0.46K,42.89,29.0,145.13M,No
-1080,VIDYAWIRES.NS,51.63,1928.36K,Non-Energy Minerals,Other Metals/Minerals,65.0,86.0,,,5827.30K,1818.54K,58.45,42.51,10.98B,No
-1097,CNL.NS,665.1,9.61K,Distribution Services,Electronics Distributors,64.0,51.0,,,11.70K,13.78K,799.0,635.35,9.99B,No
-1106,SHILCTECH.NS,3981.7,51.88K,Producer Manufacturing,Electrical Products,64.0,91.0,71.0,,36.11K,26.57K,4350.0,2852.5,45.55B,No
-1112,BAIKAKAJI.BO,181.1,12.00K,Process Industries,Containers/Packaging,64.0,25.0,,,135.33K,28.80K,220.0,173.0,3.88B,No
-1147,AMEENJI.BO,115.3,10.80K,Producer Manufacturing,Miscellaneous Manufacturing,63.0,53.0,18.0,,13.98K,3.96K,162.85,96.05,1.30B,No
-1148,WAKEFIT.NS,184.07,168.76K,Retail Trade,Specialty Stores,63.0,65.0,,,1984.30K,328.14K,224.0,164.06,60.16B,No
-1180,LGEINDIA.NS,1592.4,573.20K,Consumer Durables,Electronics/Appliances,62.0,83.0,68.0,,830.49K,536.51K,1749.0,1325.5,1080.88B,No
-1197,TRADEUNO.BO,113.9,105.60K,Retail Trade,Apparel/Footwear Retail,61.0,32.0,62.0,,45.21K,52.92K,161.95,102.0,2.04B,No
-1203,MARKOLINES.NS,159.71,243.13K,Industrial Services,Engineering & Construction,61.0,92.0,83.0,,248.26K,248.74K,188.0,131.65,3.53B,No
-1211,BHAVIK.BO,137.5,15.00K,Distribution Services,Wholesale Distributors,61.0,54.0,63.0,,19.21K,32.30K,150.15,121.1,2.80B,No
-1232,TFSL.BO,38.74,0.00K,Finance,Finance/Rental/Leasing,60.0,13.0,,,0.93K,0.96K,52.62,30.4,116.24M,No
-1242,HALEOSLABS.NS,1253.3,0.09K,Health Technology,Biotechnology,60.0,79.0,52.0,,1.27K,0.66K,1539.0,1091.1,3.79B,No
-1266,INDOSMC.BO,144.4,58.00K,Producer Manufacturing,Electrical Products,59.0,60.0,,,337.03K,97.50K,191.7,134.0,3.30B,No
-1306,SKFINDUS.NS,2476.7,8.09K,Producer Manufacturing,Auto Parts: Oem,58.0,25.0,,,33.77K,22.61K,2766.0,2311.2,122.44B,No
-1317,AEQUS.NS,139.94,593.55K,Electronic Technology,Aerospace & Defense,57.0,73.0,,,7693.44K,958.11K,165.4,131.14,91.64B,No
-1341,SIGMAADV.NS,162.8,222.44K,Technology Services,Information Technology Services,57.0,44.0,,,135.89K,189.04K,197.0,153.0,286.96B,No
-1347,STUDDS.NS,510.15,32.65K,Consumer Durables,Recreational Products,57.0,67.0,61.0,,58.99K,23.07K,600.0,475.0,20.08B,No
-1387,MEESHO.NS,155.51,1930.52K,Retail Trade,Apparel/Footwear Retail,55.0,20.0,,,33977.30K,1833.82K,254.4,144.76,701.84B,No
-1432,MAPROIN.BO,49.9,49.50K,Consumer Durables,Homebuilding,54.0,75.0,61.0,,16.86K,20.48K,96.65,43.32,418.61M,No
-1452,SIHORA.BO,59.99,20.00K,Process Industries,Textiles,53.0,47.0,,,8.06K,11.20K,70.0,50.1,319.59M,No
-1473,HALDER.NS,245.0,0.01K,Distribution Services,Food Distributors,53.0,25.0,,,1.95K,0.90K,294.0,235.7,,No
-1479,OMFREIGHT.NS,80.15,35.61K,Transportation,Air Freight/Couriers,52.0,16.0,37.0,,84.94K,91.79K,107.4,76.45,2.70B,No
-1499,ALGOQUANT.NS,61.92,1882.61K,Finance,Investment Banks/Brokers,52.0,69.0,,,819.23K,1319.29K,71.01,56.0,17.41B,No
-1500,HANNAH.BO,61.11,30.00K,Health Services,Hospital/Nursing Management,52.0,,,,140.76K,23.60K,71.66,57.5,1.39B,No
-1540,EARKART.BO,148.7,6.00K,Health Technology,Medical Specialties,50.0,26.0,5.0,,4.94K,2.70K,265.95,135.5,2.05B,No
-1627,SETL.NS,122.5,322.27K,Health Technology,Medical Specialties,48.0,79.0,,,322.60K,263.27K,141.75,110.17,24.44B,No
-1677,UTLSOLAR.NS,182.15,205.27K,Electronic Technology,Semiconductors,46.0,27.0,44.0,,463.72K,213.38K,230.99,176.4,55.81B,No
-1684,PRARUH.BO,56.0,8.00K,Technology Services,Information Technology Services,46.0,82.0,,,12.20K,15.20K,64.9,47.0,780.08M,No
-1713,WORKMATES.BO,343.0,21.00K,Technology Services,Packaged Software,45.0,48.0,19.0,,115.58K,25.26K,514.0,284.1,4.43B,No
-1729,RAVEL.BO,165.0,9.00K,Consumer Non-Durables,Household/Personal Care,45.0,40.0,,,83.56K,27.60K,215.0,117.0,1.13B,No
-1741,RNITAI.BO,50.6,136.37K,Producer Manufacturing,Electrical Products,44.0,93.0,51.0,,172.11K,166.18K,63.49,37.0,3.78B,No
-1798,ORKLAINDIA.NS,580.7,110.40K,Consumer Non-Durables,Food: Specialty/Candy,42.0,57.0,57.0,,126.67K,127.62K,760.0,533.25,79.55B,No
-1855,EMMVEE.NS,186.01,2731.98K,Electronic Technology,Semiconductors,41.0,50.0,38.0,,2852.25K,1861.44K,248.4,171.51,128.78B,No
-1966,MODIS.NS,316.4,3.47K,Finance,Real Estate Development,37.0,50.0,45.0,,28.98K,6.22K,409.0,287.2,6.20B,No
-1969,MONEYBOXX.NS,62.13,39.12K,Finance,Regional Banks,37.0,94.0,52.0,,67.91K,38.93K,91.5,44.02,4.06B,No
-2020,CAPILLARY.NS,504.65,87.78K,Technology Services,Packaged Software,36.0,6.0,27.0,,1576.33K,145.35K,798.95,481.0,40.02B,No
-2023,DACHEPALLI.BO,64.98,1.20K,Consumer Services,Publishing: Books/Magazines,35.0,33.0,,,74.08K,10.32K,90.0,63.13,973.14M,No
-2044,MSAFE.BO,123.0,104.00K,Producer Manufacturing,Building Products,35.0,,,,297.47K,134.10K,151.2,110.0,2.51B,No
-2048,KVTOYS.BO,261.0,3.00K,Consumer Durables,Recreational Products,35.0,24.0,,,56.46K,12.36K,363.9,253.15,1.64B,No
-2057,SKM.BO,120.0,2.00K,Process Industries,Chemicals: Major Diversified,34.0,23.0,40.0,,12.15K,4.80K,203.85,117.05,1.47B,No
-2099,MDRC.BO,76.9,9.60K,Health Services,Medical/Nursing Services,33.0,19.0,,,112.82K,7.36K,100.0,74.2,1.16B,No
-2111,JUSTO.BO,101.15,7.00K,Finance,Real Estate Development,33.0,89.0,32.0,,27.98K,45.30K,136.8,74.99,1.90B,No
-2127,CRAMC.NS,242.65,646.21K,Finance,Investment Managers,32.0,49.0,26.0,,727.00K,343.72K,353.4,241.35,48.39B,No
-2129,KVSCASTING.BO,55.42,124.00K,Non-Energy Minerals,Steel,32.0,26.0,31.0,,27.24K,28.00K,86.0,48.01,1.04B,No
-2241,BHARATCOAL.NS,32.14,12531.58K,Energy Minerals,Coal,29.0,6.0,,,72952.51K,10794.87K,45.09,31.16,,No
-2253,SUDEEPPHRM.NS,596.5,155.03K,Health Technology,Pharmaceuticals: Other,28.0,53.0,31.0,,349.92K,99.61K,795.0,524.05,67.37B,No
-2303,SHARVAYA.BO,139.9,3.00K,Non-Energy Minerals,Other Metals/Minerals,27.0,54.0,25.0,,20.06K,13.74K,209.0,135.5,1.40B,No
-2321,WEWORK.NS,479.75,132.69K,Finance,Real Estate Development,26.0,10.0,26.0,,123.28K,75.98K,664.0,468.25,64.30B,No
-2390,PANHR.BO,60.0,51.20K,Commercial Services,Personnel Services,24.0,,,,113.60K,55.68K,80.0,60.0,432.66M,No
-2507,SUDARCOLOR.NS,332.6,4.89K,Process Industries,Chemicals: Major Diversified,20.0,17.0,,,15.01K,7.93K,462.0,320.0,7.68B,No
-2526,MODINATUR.NS,283.4,5.11K,Process Industries,Agricultural Commodities/Milling,20.0,8.0,,,4.93K,4.08K,409.95,275.0,3.77B,No
-2562,PAUSHAKLTD.NS,435.35,25.09K,Process Industries,Chemicals: Major Diversified,19.0,16.0,,,12.30K,12.17K,633.05,433.0,,No
-2584,SHTL.BO,53.55,7.20K,Producer Manufacturing,Industrial Machinery,18.0,18.0,,,9.58K,3.36K,87.33,52.65,303.01M,No
-2613,ZAPPFRESH.BO,111.3,36.00K,Retail Trade,Food Retail,17.0,54.0,3.0,,86.36K,66.12K,208.0,104.3,2.48B,No
-2615,PINELABS.NS,181.44,1003.97K,Technology Services,Packaged Software,17.0,5.0,14.0,,1664.81K,1431.61K,284.0,177.2,208.34B,No
-2705,METHODHUB.BO,115.6,33.00K,Technology Services,Information Technology Services,14.0,79.0,,,173.33K,82.02K,171.95,101.1,2.18B,No
-2717,DHILLON.BO,31.5,1.60K,Transportation,Air Freight/Couriers,14.0,4.0,,,8.71K,7.52K,49.99,30.5,123.48M,No
-2788,ATIL.BO,104.8,18.00K,Producer Manufacturing,Trucks/Construction/Farm Machinery,12.0,60.0,,,103.02K,7.60K,156.0,94.9,1.43B,No
-2805,JAYKAY.NS,145.19,365.69K,Commercial Services,Miscellaneous Commercial Services,11.0,12.0,,,127.19K,164.90K,219.7,136.0,18.93B,No
-2814,ADVENTHTL.NS,188.24,61.78K,Industrial Services,Engineering & Construction,11.0,39.0,39.0,,346.55K,84.74K,345.05,167.77,10.15B,No
-2827,EXCELSOFT.NS,80.59,778.47K,Technology Services,Packaged Software,10.0,90.0,15.0,,5077.74K,1151.34K,142.59,68.0,9.27B,No
-2850,SODHACAP.BO,67.0,10.00K,Finance,Investment Banks/Brokers,10.0,78.0,10.0,,10.69K,12.40K,148.97,60.08,532.31M,No
-2859,GTIL.BO,62.83,9.60K,Producer Manufacturing,Metal Fabrication,9.0,13.0,,,136.28K,14.72K,97.5,61.0,852.94M,No
-2930,NSBBPO.BO,75.6,1.00K,Commercial Services,Miscellaneous Commercial Services,7.0,7.0,,,2.87K,2.30K,122.0,70.1,1.51B,No
-2938,KANISHK.BO,35.75,16.00K,Non-Energy Minerals,Aluminum,7.0,,,,133.22K,228.96K,58.4,35.0,480.48M,No
-2997,KRUPALU.BO,37.62,62.40K,Non-Energy Minerals,Other Metals/Minerals,5.0,23.0,3.0,,10.33K,22.08K,63.4,35.15,220.90M,No
-3031,SAFECURE.BO,34.2,9.60K,Commercial Services,Miscellaneous Commercial Services,4.0,55.0,34.0,,18.26K,9.60K,81.6,29.0,343.37M,No
-3067,PWL.NS,80.81,10730.81K,Technology Services,Internet Software/Services,3.0,1.0,4.0,,12038.45K,10976.76K,161.99,80.28,231.09B,No
-3102,SAMPAT.BO,52.8,1.20K,Non-Energy Minerals,Aluminum,2.0,6.0,5.0,,11.89K,5.40K,120.0,52.8,447.80M,No
-3109,RDEL.BO,38.0,4.80K,Producer Manufacturing,Office Equipment/Supplies,2.0,40.0,,,38.72K,9.60K,72.2,35.0,328.32M,No
-3137,CHTR.BO,58.82,19.20K,Commercial Services,Advertising/Marketing Services,1.0,71.0,1.0,,34.70K,7.32K,156.75,55.0,831.94M,No
-3143,SSMD.BO,36.5,53.00K,Consumer Non-Durables,Food: Major Diversified,1.0,1.0,,,41.62K,19.90K,80.45,31.0,316.31M,No
-3153,NEPLOG.BO,42.32,15.00K,Transportation,Trucking,0.0,6.0,,,67.30K,10.10K,100.8,42.31,579.78M,No
-3154,CAPFIN.BO,114.0,0.40K,Finance,Finance/Rental/Leasing,0.0,1.0,1.0,,1.09K,1.20K,215.5,114.0,334.96M,No
-3164,LUXURY.BO,60.45,16.00K,Consumer Durables,Other Consumer Specialties,0.0,51.0,,,88.87K,8.00K,168.0,57.13,499.00M,No
-3166,YAJUR.BO,48.27,72.00K,Process Industries,Textiles,0.0,1.0,,,144.15K,67.20K,139.2,46.0,1.09B,No
-3168,NARMADESH.BO,166.25,3.12K,Producer Manufacturing,Metal Fabrication,0.0,0.0,,,15.00K,3.05K,495.0,166.2,515.51M,No
-3170,SHLOKKA.BO,23.87,15.60K,Process Industries,Chemicals: Specialty,0.0,39.0,0.0,,36.72K,28.08K,90.0,22.0,511.02M,No
-3174,LOGICIEL.BO,38.21,7.80K,Technology Services,Packaged Software,0.0,9.0,,,52.00K,8.88K,154.4,37.0,,No
-3176,EMROCK.BO,285.25,0.90K,Consumer Durables,Homebuilding,,99.0,98.0,,9.51K,7.34K,301.2,21.95,4.51B,No
-3180,TRADWIN.BO,672.35,0.46K,Consumer Services,Other Consumer Services,,5.0,98.0,,0.12K,0.12K,846.45,56.44,2.02B,No
-3184,SWANDEF.NS,1781.4,49.90K,Producer Manufacturing,Trucks/Construction/Farm Machinery,,98.0,98.0,,20.09K,32.60K,1953.0,64.36,93.85B,No
-3193,RANJITSE.BO,117.45,0.76K,Finance,Finance/Rental/Leasing,,98.0,,,0.30K,0.62K,117.45,6.24,315.64M,No
-3194,AGVENTURES.BO,109.15,22.22K,Process Industries,Chemicals: Specialty,,,,,,,114.65,108.0,,No
+3,SESHACHAL.BO,101.23,29.95K,Technology Services,Information Technology Services,98.0,97.0,,,1.52K,2.21K,101.23,15.0,702.90M,No
+6,SIMANDHAR.BO,122.95,0.17K,Distribution Services,Wholesale Distributors,98.0,93.0,,,10.99K,4.46K,138.75,21.5,375.85M,No
+29,CITURGIA.BO,129.4,0.20K,Process Industries,Chemicals: Specialty,98.0,,,,0.74K,0.86K,129.4,47.4,17.09B,No
+30,APPL.BO,261.25,10.00K,Distribution Services,Medical Distributors,98.0,85.0,98.0,,21.04K,6.00K,277.0,80.8,1.79B,No
+68,HRS.BO,250.3,37.20K,Non-Energy Minerals,Aluminum,96.0,95.0,,,196.21K,35.28K,253.0,126.0,4.83B,No
+69,KINETRU.BO,40.66,1.86K,Finance,Finance/Rental/Leasing,96.0,0.0,97.0,,2.08K,3.40K,75.82,22.01,136.62M,No
+106,REGAL.BO,25.32,0.45K,Finance,Investment Banks/Brokers,95.0,0.0,96.0,,1.93K,3.33K,63.81,13.55,77.79M,No
+120,ZELIO.BO,357.15,160.00K,Consumer Durables,Motor Vehicles,95.0,96.0,7.0,,84.30K,131.90K,610.0,154.9,7.55B,No
+129,PAJSON.BO,200.5,3.60K,Consumer Non-Durables,Food: Specialty/Candy,94.0,95.0,,,143.98K,16.20K,255.0,120.05,4.77B,No
+146,GLOBALLOG.BO,118.55,4.80K,Transportation,Air Freight/Couriers,94.0,3.0,,,142.65K,16.48K,172.91,79.2,1.71B,No
+183,SMLMAH.NS,4326.8,91.73K,Consumer Durables,Motor Vehicles,93.0,94.0,96.0,,108.07K,135.43K,5348.0,2749.0,62.62B,No
+189,TMCV.NS,470.75,12487.73K,Consumer Durables,Motor Vehicles,92.0,81.0,95.0,,10933.65K,9052.06K,509.0,306.3,1733.46B,No
+194,RDGAIL.BO,100.0,6.00K,Process Industries,Agricultural Commodities/Milling,92.0,48.0,97.0,,46.05K,3.72K,114.0,54.5,887.60M,No
+211,MPKSTEELS.BO,127.0,41.60K,Non-Energy Minerals,Steel,92.0,97.0,90.0,,25.46K,22.40K,152.8,72.65,1.29B,No
+213,MAHALIFE.BO,159.0,3.60K,Process Industries,Chemicals: Agricultural,92.0,41.0,96.0,,94.21K,10.80K,205.05,111.0,3.72B,No
+219,WAAREEINDO.NS,324.5,116.31K,Electronic Technology,Electronic Equipment/Instruments,91.0,3.0,2.0,,83.58K,73.21K,725.0,165.07,13.50B,No
+229,PRODOCS.BO,202.0,1.00K,Commercial Services,Miscellaneous Commercial Services,91.0,83.0,,,39.25K,7.70K,254.3,141.0,1.42B,No
+276,PIRAMALFIN.NS,1789.8,415.01K,Finance,Finance/Rental/Leasing,90.0,76.0,91.0,,258.11K,103.68K,1954.5,1260.0,404.06B,No
+277,LENSKART.NS,523.8,1453.88K,Health Technology,Medical Specialties,90.0,93.0,94.0,,3472.79K,2553.94K,541.8,356.1,905.72B,No
+305,PARKHOSPS.NS,184.01,774.20K,Health Services,Hospital/Nursing Management,89.0,94.0,,,2305.72K,1136.70K,197.7,138.1,79.48B,No
+307,CANHLIFE.NS,143.28,948.68K,Finance,Life/Health Insurance,89.0,51.0,91.0,,1968.68K,1111.13K,159.0,106.0,136.12B,No
+328,SUNSKY.BO,71.56,27.00K,Transportation,Air Freight/Couriers,88.0,62.0,68.0,,13.88K,26.10K,96.0,48.21,889.85M,No
+344,RUBICON.NS,763.4,126.68K,Health Technology,Biotechnology,87.0,88.0,92.0,,203.60K,144.99K,822.0,570.75,125.77B,No
+377,NEPHROPLUS.NS,558.0,76.14K,Health Services,Medical/Nursing Services,86.0,83.0,,,662.65K,90.29K,616.0,446.0,55.99B,No
+399,INFINITY.BO,392.0,4.00K,Technology Services,Packaged Software,86.0,51.0,80.0,,5.13K,1.84K,483.85,294.0,2.14B,No
+411,ICICIAMC.NS,2992.7,537.10K,Finance,Investment Managers,85.0,72.0,,,1278.30K,276.36K,3193.0,2530.0,1479.17B,No
+452,BUILDPRO.NS,919.75,20.69K,Distribution Services,Wholesale Distributors,84.0,95.0,,,87.08K,80.62K,1050.2,636.0,22.30B,No
+473,DIGILOGIC.BO,88.96,76.80K,Electronic Technology,Electronic Equipment/Instruments,83.0,67.0,,,134.11K,22.56K,107.0,72.95,2.58B,No
+481,TENNIND.NS,548.55,393.68K,Producer Manufacturing,Auto Parts: Oem,83.0,77.0,90.0,,1122.40K,559.74K,602.0,438.05,,No
+484,EXATO.BO,312.6,42.00K,Technology Services,Packaged Software,83.0,80.0,,,121.70K,27.40K,475.0,266.0,,No
+494,GROWW.NS,157.02,21202.20K,Miscellaneous,Investment Trusts/Mutual Funds,83.0,48.0,78.0,,46799.42K,19247.36K,193.8,112.0,969.38B,No
+532,ADVAIT.NS,1527.2,29.45K,Producer Manufacturing,Electrical Products,81.0,82.0,,,43.99K,34.79K,1885.0,1351.0,16.70B,No
+551,AMAGI.NS,378.55,302.28K,Technology Services,Packaged Software,81.0,77.0,,,1970.38K,770.23K,438.4,318.0,,No
+560,SHADOWFAX.NS,119.01,1343.39K,Technology Services,Packaged Software,80.0,88.0,,,4542.55K,1497.24K,127.75,98.55,68.80B,No
+578,CORONA.NS,1545.3,10.05K,Health Technology,Pharmaceuticals: Major,80.0,81.0,,,416.04K,18.31K,1660.8,1336.6,,No
+591,ACESEPP.BO,126.55,0.20K,Technology Services,Data Processing Services,79.0,22.0,,,6.77K,6.42K,153.85,103.0,,No
+630,NANTA.BO,260.0,1.80K,Distribution Services,Wholesale Distributors,78.0,18.0,,,65.68K,17.52K,365.0,234.0,1.33B,No
+670,KSR.NS,32.32,92.83K,Consumer Non-Durables,Apparel/Footwear,77.0,95.0,89.0,,191.32K,223.67K,34.95,14.04,605.83M,No
+677,VIYASH.NS,200.92,844.25K,Health Technology,Pharmaceuticals: Major,77.0,59.0,,,759.18K,770.38K,240.0,188.0,87.86B,No
+683,GKSL.NS,108.94,225.27K,Health Services,Hospital/Nursing Management,77.0,78.0,,,1893.09K,673.85K,123.0,98.36,8.59B,No
+723,ARIS.NS,106.16,3380.17K,Technology Services,Packaged Software,75.0,78.0,,,1951.29K,1454.90K,122.3,82.18,8.68B,No
+729,GRERENEW.BO,94.0,10.80K,Electronic Technology,Semiconductors,75.0,49.0,,,61.97K,9.72K,105.5,77.5,1.34B,No
+742,RACHIT.BO,113.75,5.00K,Consumer Non-Durables,Apparel/Footwear,75.0,36.0,40.0,,7.38K,4.00K,146.0,95.0,561.60M,No
+758,KSHINTL.NS,362.7,88.44K,Producer Manufacturing,Electrical Products,74.0,81.0,,,439.54K,122.33K,403.7,330.0,24.57B,No
+767,UNISEM.BO,62.99,6.00K,Process Industries,Agricultural Commodities/Milling,74.0,89.0,,,27.78K,21.80K,67.91,52.2,713.80M,No
+889,ANANTAM.BO,103.26,0.33K,Miscellaneous,Investment Trusts/Mutual Funds,70.0,66.0,76.0,,1.19K,1.75K,114.0,101.5,22.46B,No
+916,TATACAP.NS,319.6,2382.98K,Finance,Finance/Rental/Leasing,69.0,51.0,77.0,,3113.71K,1461.93K,367.3,315.1,1347.65B,No
+917,PSTITANIA.BO,1070000.0,0.00K,Miscellaneous,Investment Trusts/Mutual Funds,69.0,73.0,,,0.00K,0.00K,1100000.0,1045000.0,4.77B,No
+936,TFSL.BO,40.1,0.24K,Finance,Finance/Rental/Leasing,68.0,32.0,,,0.95K,0.96K,52.62,30.4,120.32M,No
+937,CNL.NS,668.9,2.28K,Distribution Services,Electronics Distributors,68.0,64.0,73.0,,11.04K,13.78K,799.0,635.35,10.04B,No
+959,MIDWESTLTD.NS,1163.0,37.30K,Non-Energy Minerals,Construction Materials,68.0,12.0,54.0,,131.91K,36.44K,1859.9,1048.5,42.06B,No
+967,VIDYAWIRES.NS,51.3,1498.48K,Non-Energy Minerals,Other Metals/Minerals,67.0,90.0,,,5827.30K,1818.54K,58.45,42.51,10.91B,No
+968,AMEENJI.BO,115.3,12.00K,Producer Manufacturing,Miscellaneous Manufacturing,67.0,57.0,25.0,,13.93K,3.96K,162.85,96.05,1.30B,No
+973,DEFRAIL.BO,87.0,8.00K,Producer Manufacturing,Miscellaneous Manufacturing,67.0,6.0,,,80.10K,25.76K,122.0,81.46,611.12M,No
+979,WAKEFIT.NS,185.25,123.34K,Retail Trade,Specialty Stores,67.0,75.0,,,1984.30K,328.14K,224.0,164.06,60.55B,No
+1004,HALEOSLABS.NS,1281.2,0.30K,Health Technology,Biotechnology,66.0,70.0,62.0,,1.29K,0.66K,1539.0,1091.1,3.87B,No
+1036,KASTURI.BO,60.14,42.00K,Producer Manufacturing,Metal Fabrication,65.0,,,,120.31K,46.20K,73.8,48.8,625.17M,No
+1064,BAIKAKAJI.BO,178.25,13.20K,Process Industries,Containers/Packaging,64.0,23.0,,,135.33K,28.80K,220.0,172.5,3.82B,No
+1092,MAPROIN.BO,50.89,0.60K,Consumer Durables,Homebuilding,63.0,70.0,78.0,,16.86K,20.48K,96.65,43.32,426.91M,No
+1094,MARKOLINES.NS,159.12,270.87K,Industrial Services,Engineering & Construction,63.0,93.0,85.0,,248.99K,248.74K,188.0,131.65,3.51B,No
+1144,SHAYONAENG.BO,136.9,18.00K,Producer Manufacturing,Industrial Machinery,62.0,,,,23.05K,9.40K,166.0,129.0,532.85M,No
+1149,LGEINDIA.NS,1547.3,1425.03K,Consumer Durables,Electronics/Appliances,62.0,85.0,70.0,,832.42K,536.51K,1749.0,1325.5,1050.26B,No
+1164,INDOSMC.BO,143.4,51.00K,Producer Manufacturing,Electrical Products,61.0,55.0,,,337.03K,97.50K,191.7,134.0,3.28B,No
+1166,TMPV.NS,351.2,17727.97K,Consumer Durables,Motor Vehicles,61.0,52.0,72.0,,11319.51K,9499.19K,419.0,335.6,1293.25B,No
+1180,VALPLAST.BO,54.45,14.00K,Industrial Services,Engineering & Construction,60.0,68.0,60.0,,14.86K,14.40K,67.99,46.15,1.07B,No
+1205,STUDDS.NS,508.7,35.05K,Consumer Durables,Recreational Products,60.0,80.0,66.0,,58.04K,23.07K,600.0,475.0,20.02B,No
+1280,SHILCTECH.NS,3718.1,54.51K,Producer Manufacturing,Electrical Products,57.0,79.0,65.0,,36.42K,26.57K,4350.0,2852.5,42.54B,No
+1306,AEQUS.NS,136.5,601.80K,Electronic Technology,Aerospace & Defense,56.0,65.0,,,7693.44K,958.11K,165.4,131.14,89.39B,No
+1307,SIHORA.BO,60.0,46.00K,Process Industries,Textiles,56.0,65.0,,,8.06K,11.20K,70.0,50.1,319.64M,No
+1313,TRADEUNO.BO,109.5,9.60K,Retail Trade,Apparel/Footwear Retail,56.0,13.0,50.0,,42.30K,52.92K,161.95,102.0,1.96B,No
+1363,SIGMAADV.NS,157.81,145.68K,Technology Services,Information Technology Services,55.0,48.0,,,135.89K,189.04K,197.0,153.0,278.17B,No
+1367,SKFINDUS.NS,2385.8,33.96K,Producer Manufacturing,Auto Parts: Oem,55.0,37.0,,,33.77K,22.61K,2766.0,2311.2,117.95B,No
+1390,HALDER.NS,242.05,0.76K,Distribution Services,Food Distributors,54.0,19.0,,,1.95K,0.90K,294.0,235.7,,No
+1435,MEESHO.NS,150.27,4066.62K,Retail Trade,Apparel/Footwear Retail,52.0,47.0,,,33977.30K,1833.82K,254.4,144.76,678.19B,No
+1457,MONEYBOXX.NS,65.94,21.64K,Finance,Regional Banks,52.0,95.0,71.0,,68.44K,38.93K,91.5,44.02,4.31B,No
+1485,HANNAH.BO,59.92,38.00K,Health Services,Hospital/Nursing Management,51.0,18.0,,,140.76K,23.60K,71.66,57.5,1.36B,No
+1520,EARKART.BO,146.1,875.00K,Health Technology,Medical Specialties,50.0,18.0,5.0,,4.88K,2.70K,265.95,120.0,2.01B,No
+1578,RAVEL.BO,165.0,9.00K,Consumer Non-Durables,Household/Personal Care,48.0,22.0,,,83.56K,27.60K,215.0,117.0,1.13B,No
+1622,ALGOQUANT.NS,59.24,1059.31K,Finance,Investment Banks/Brokers,46.0,58.0,,,819.23K,1319.29K,71.01,49.54,16.65B,No
+1637,SETL.NS,119.14,160.46K,Health Technology,Medical Specialties,46.0,79.0,,,322.60K,263.27K,141.75,110.17,23.77B,No
+1666,ORKLAINDIA.NS,572.25,68.05K,Consumer Non-Durables,Food: Specialty/Candy,45.0,74.0,62.0,,123.37K,127.62K,760.0,533.25,78.39B,No
+1704,UTLSOLAR.NS,174.83,144.52K,Electronic Technology,Semiconductors,44.0,17.0,44.0,,440.87K,213.38K,230.99,174.0,53.57B,No
+1763,WORKMATES.BO,332.0,13.80K,Technology Services,Packaged Software,42.0,19.0,15.0,,106.59K,25.26K,514.0,284.1,4.29B,No
+1785,MSAFE.BO,124.9,28.00K,Producer Manufacturing,Building Products,41.0,,,,297.47K,134.10K,151.2,110.0,2.55B,No
+1804,PURPLEWAVE.BO,107.9,24.00K,Technology Services,Packaged Software,40.0,58.0,,,67.81K,31.50K,138.0,104.7,,No
+1830,BHARATCOAL.NS,33.47,22620.66K,Energy Minerals,Coal,40.0,15.0,,,72952.51K,10794.87K,45.09,31.16,,No
+1831,EMMVEE.NS,187.19,948.47K,Electronic Technology,Semiconductors,40.0,51.0,25.0,,2795.48K,1861.44K,248.4,171.51,129.60B,No
+1853,MODIS.NS,310.9,3.36K,Finance,Real Estate Development,39.0,48.0,49.0,,29.30K,6.22K,409.0,287.2,6.09B,No
+1856,CAPILLARY.NS,510.65,109.55K,Technology Services,Packaged Software,39.0,11.0,26.0,,1204.17K,145.35K,798.95,481.0,40.50B,No
+1866,SKM.BO,120.0,1.00K,Process Industries,Chemicals: Major Diversified,38.0,29.0,47.0,,12.02K,4.80K,203.85,117.05,1.47B,No
+1972,KVTOYS.BO,256.3,1.80K,Consumer Durables,Recreational Products,35.0,37.0,,,56.46K,12.36K,363.9,251.1,1.61B,No
+2013,DACHEPALLI.BO,63.0,1.20K,Consumer Services,Publishing: Books/Magazines,34.0,38.0,,,74.08K,10.32K,90.0,63.0,943.49M,No
+2025,MDRC.BO,75.4,6.40K,Health Services,Medical/Nursing Services,33.0,16.0,,,112.82K,7.36K,100.0,74.2,1.14B,No
+2029,RNITAI.BO,48.07,116.70K,Producer Manufacturing,Electrical Products,33.0,54.0,26.0,,168.27K,166.18K,63.49,37.0,3.60B,No
+2164,PANHR.BO,60.5,3.20K,Commercial Services,Personnel Services,29.0,,,,113.60K,55.68K,80.0,60.0,436.27M,No
+2165,SUDEEPPHRM.NS,584.0,66.22K,Health Technology,Pharmaceuticals: Other,29.0,58.0,31.0,,259.46K,99.61K,795.0,524.05,65.96B,No
+2175,KVSCASTING.BO,51.92,10.00K,Non-Energy Minerals,Steel,28.0,13.0,34.0,,25.41K,28.00K,86.0,48.01,973.67M,No
+2188,CRAMC.NS,232.55,730.57K,Finance,Investment Managers,28.0,43.0,22.0,,723.27K,343.72K,353.4,231.0,46.37B,No
+2275,JUSTO.BO,94.4,15.00K,Finance,Real Estate Development,25.0,85.0,25.0,,28.38K,45.30K,136.8,74.99,1.77B,No
+2287,WEWORK.NS,464.5,86.56K,Finance,Real Estate Development,25.0,7.0,26.0,,122.92K,75.98K,664.0,458.05,62.25B,No
+2312,MODINATUR.NS,286.35,3.36K,Process Industries,Agricultural Commodities/Milling,24.0,25.0,,,4.93K,4.08K,409.95,271.0,3.81B,No
+2392,SUDARCOLOR.NS,328.8,7.89K,Process Industries,Chemicals: Major Diversified,21.0,14.0,,,15.01K,7.93K,462.0,320.0,7.59B,No
+2473,ZAPPFRESH.BO,109.7,142.80K,Retail Trade,Food Retail,19.0,47.0,4.0,,85.98K,66.12K,208.0,104.3,2.44B,No
+2531,PAUSHAKLTD.NS,418.85,55.05K,Process Industries,Chemicals: Major Diversified,17.0,17.0,12.0,,12.35K,12.17K,633.05,414.05,,No
+2623,ADVENTHTL.NS,184.18,76.14K,Industrial Services,Engineering & Construction,14.0,37.0,55.0,,345.97K,84.74K,345.05,167.77,9.94B,No
+2642,METHODHUB.BO,112.35,13.20K,Technology Services,Information Technology Services,13.0,55.0,,,173.33K,82.02K,171.95,101.1,2.12B,No
+2643,PINELABS.NS,172.84,1599.39K,Technology Services,Packaged Software,13.0,4.0,9.0,,1533.00K,1431.61K,284.0,169.9,198.47B,No
+2687,EXCELSOFT.NS,78.7,488.74K,Technology Services,Packaged Software,12.0,90.0,20.0,,4964.05K,1151.34K,142.59,68.0,9.06B,No
+2712,JAYKAY.NS,142.44,375.63K,Commercial Services,Miscellaneous Commercial Services,11.0,19.0,,,127.48K,164.90K,219.7,136.0,18.57B,No
+2768,GTIL.BO,61.45,4.80K,Producer Manufacturing,Metal Fabrication,9.0,17.0,,,136.28K,14.72K,97.5,60.5,834.21M,No
+2779,SHARVAYA.BO,119.7,33.00K,Non-Energy Minerals,Other Metals/Minerals,9.0,13.0,5.0,,19.61K,13.74K,209.0,112.25,1.20B,No
+2806,ATIL.BO,98.5,12.00K,Producer Manufacturing,Trucks/Construction/Farm Machinery,8.0,48.0,,,103.02K,7.60K,156.0,94.9,1.35B,No
+2824,KRUPALU.BO,39.04,1.60K,Non-Energy Minerals,Other Metals/Minerals,8.0,30.0,4.0,,10.28K,22.08K,63.4,35.15,229.24M,No
+2837,NSBBPO.BO,74.35,6.00K,Commercial Services,Miscellaneous Commercial Services,7.0,7.0,,,2.87K,2.30K,122.0,70.1,1.48B,No
+2896,KANISHK.BO,33.97,20.80K,Non-Energy Minerals,Aluminum,5.0,,,,133.22K,228.96K,58.4,33.97,456.56M,No
+2908,GALLARD.BO,144.55,49.00K,Producer Manufacturing,Industrial Machinery,5.0,64.0,2.0,,23.30K,5.60K,245.95,140.1,1.37B,No
+2928,SAFECURE.BO,33.87,10.80K,Commercial Services,Miscellaneous Commercial Services,4.0,84.0,36.0,,17.52K,9.60K,81.6,29.0,340.05M,No
+2986,PWL.NS,79.56,25960.94K,Technology Services,Internet Software/Services,2.0,0.0,2.0,,11892.14K,10976.76K,161.99,77.72,227.52B,No
+2996,SAMPAT.BO,50.9,1.20K,Non-Energy Minerals,Aluminum,2.0,4.0,6.0,,11.96K,5.40K,120.0,50.9,431.69M,No
+3056,NEPLOG.BO,40.71,18.00K,Transportation,Trucking,0.0,7.0,,,67.30K,10.10K,100.8,40.5,557.73M,No
+3063,LUXURY.BO,60.6,1.60K,Consumer Durables,Other Consumer Specialties,0.0,70.0,,,88.87K,8.00K,168.0,57.13,500.24M,No
+3064,NARMADESH.BO,171.0,1.44K,Producer Manufacturing,Metal Fabrication,0.0,0.0,,,15.00K,3.05K,495.0,165.75,530.24M,No
+3065,YAJUR.BO,47.6,53.60K,Process Industries,Textiles,0.0,0.0,,,144.15K,67.20K,139.2,46.0,1.08B,No
+3068,SHLOKKA.BO,25.06,16.80K,Process Industries,Chemicals: Specialty,0.0,78.0,0.0,,35.94K,28.08K,90.0,22.0,536.50M,No
+3073,LOGICIEL.BO,36.3,10.20K,Technology Services,Packaged Software,0.0,5.0,,,52.00K,8.88K,154.4,36.3,,No
+3076,AGVENTURES.BO,109.65,9.79K,Process Industries,Chemicals: Specialty,,,,,,,113.95,106.0,,No
+3077,SWANDEF.NS,1870.0,21.63K,Producer Manufacturing,Trucks/Construction/Farm Machinery,,98.0,98.0,,20.09K,32.60K,1953.0,67.57,98.52B,No
+3078,RANJITSE.BO,119.75,2.27K,Finance,Finance/Rental/Leasing,,98.0,,,0.30K,0.62K,119.75,6.24,321.82M,No
+3079,TRADWIN.BO,705.95,0.07K,Consumer Services,Other Consumer Services,,12.0,98.0,,0.12K,0.12K,846.45,56.44,2.12B,No
+3081,EMROCK.BO,279.55,26.27K,Consumer Durables,Homebuilding,,99.0,98.0,,9.51K,7.34K,301.2,21.95,4.42B,No
