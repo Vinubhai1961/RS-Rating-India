@@ -7,7 +7,7 @@ on:
     branches: [main]
 
   schedule:
-    - cron: "00 16 * * 1-5"   # 7:00 AM EST Mon–Fri
+    - cron: "00 12 * * 1-5"   # 7:00 AM EST Mon–Fri
 
   workflow_dispatch:         # manual run
 
