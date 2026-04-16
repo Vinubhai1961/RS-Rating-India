@@ -53,13 +53,13 @@ jobs:
           # Define the percentiles in correct order (highest → lowest)
           percentiles = [98, 89, 69, 49, 29, 9, 1]
           labels = [
-              "USA 98th → RS ≥",
-              "USA 89th → RS ≥",
-              "USA 69th → RS ≥",
-              "USA 49th → RS ≥",
-              "USA 29th → RS ≥",
-              "USA 9th  → RS ≥",
-              "USA 1st  → RS ≥"
+              "INDIA 98th → RS ≥",
+              "INDIA 89th → RS ≥",
+              "INDIA 69th → RS ≥",
+              "INDIA 49th → RS ≥",
+              "INDIA 29th → RS ≥",
+              "INDIA 9th  → RS ≥",
+              "INDIA 1st  → RS ≥"
           ]
 
           lines = []
@@ -69,7 +69,7 @@ jobs:
               p = percentiles[i]
               label = labels[i]
               val = row['rs']
-              line = f'usa{p:02d} = input.float({val:.2f}, "{label}", group="USA Thresholds")'
+              line = f'ind{p:02d} = input.float({val:.2f}, "{label}", group="INDIA Thresholds")'
               lines.append(line)
 
           # Write to destination
