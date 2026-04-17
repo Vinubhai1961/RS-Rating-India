@@ -1,6 +1,6 @@
 // Auto-generated RS Rating thresholds - do not edit manually
-// Last updated: 2026-04-17 01:58 UTC
-// Trigger: workflow_dispatch
+// Last updated: 2026-04-17 02:10 UTC
+// Trigger: workflow_run
 
 ```pine_v6
 ind98 = input.float(212.30, "INDIA 98th → RS ≥", group="INDIA Thresholds")
