@@ -6,8 +6,8 @@ on:
     types: [completed]
     branches: [main]
 
-  schedule:
-    - cron: "05 11 * * 1-5"   # 7:00 AM EST Mon–Fri
+  #schedule:
+    #- cron: "05 11 * * 1-5"   # 7:00 AM EST Mon–Fri
 
   workflow_dispatch:         # manual run
 
