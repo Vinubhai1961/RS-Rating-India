@@ -7,8 +7,9 @@ on:
   
   workflow_run:
     workflows: ["Filter strong RS stocks near 52-week high"]
-    types:
-      - completed
+    types: [completed]
+    branches: [main]
+    
 jobs:
   update-thresholds:
     runs-on: ubuntu-latest
