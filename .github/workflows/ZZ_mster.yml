@@ -1,16 +1,22 @@
-name: Master Pipeline
+name: Master RS Pipeline (After Split)
 
 on:
+  workflow_run:
+    workflows: ["Split RS Stocks by Exchange"]   # ← Only this triggers the whole chain
+    types: [completed]
+    branches: [main]
+
   workflow_dispatch:
 
 jobs:
-  build_tickers:
-    uses: ./.github/workflows/build_tickers.yml
+  generate-ipo:
+    uses: ./.github/workflows/4-generate-ipo-stocks.yml
+    # needs: not required for the first one
 
-  calculate_rs:
-    uses: ./.github/workflows/Calculate RS.yml
-    needs: build_tickers
+  filter-52wh:
+    needs: generate-ipo
+    uses: ./.github/workflows/5-rs-52wh-filter.yml
 
-  split_rs:
-    uses: ./.github/workflows/split-rs-stocks.yml
-    needs: calculate_rs
+  update-rs-thresholds:
+    needs: filter-52wh
+    uses: ./.github/workflows/6-RS-TV.yml
