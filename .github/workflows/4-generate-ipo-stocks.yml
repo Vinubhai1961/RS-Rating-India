@@ -1,11 +1,12 @@
 name: Generate IPO
 
 on:
-  workflow_run:
-    workflows: ["Split RS Stocks by Exchange"]
-    types: [completed]
-    branches: [main]
-  workflow_dispatch: #allow manual run
+  workflow_call:
+  #workflow_run:
+    #workflows: ["Split RS Stocks by Exchange"]
+    #types: [completed]
+    #branches: [main]
+  #workflow_dispatch: #allow manual run
   push:
     branches:
       - main
