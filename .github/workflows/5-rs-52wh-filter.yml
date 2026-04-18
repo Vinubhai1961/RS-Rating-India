@@ -1,8 +1,8 @@
-name: Filter strong RS stocks near 52-week high
+name: Filter strong RS stocks near 52 week high
 
 on:
   workflow_run:
-    workflows: ["Generate-IPO"]
+    workflows: ["Generate IPO"]
     types: [completed]
     branches: [main]
 
