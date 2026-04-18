@@ -32,7 +32,7 @@ jobs:
 
               for (const run of runs.data.workflow_runs) {
                 const createdAt = new Date(run.created_at);
-                const twoDaysAgo = new Date(Date.now() - 365 * 24 * 60 * 60 * 1000); // 48 hours ago
+                const twoDaysAgo = new Date(Date.now() - 2 * 24 * 60 * 60 * 1000); // 48 hours ago
 
                 if (createdAt < twoDaysAgo) {
                   console.log(`Deleting run ${run.id} from ${createdAt}`);
