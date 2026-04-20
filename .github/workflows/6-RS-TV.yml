@@ -96,17 +96,31 @@ jobs:
 
       - name: Commit and push changes (if any)
         run: |
-          git config user.name "GitHub Action"
-          git config user.email "action@github.com"
-          
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
           git add RS_Data/RS-Rating.txt
-          
+
           if git diff --staged --quiet; then
             echo "No changes to commit"
           else
-            git commit -m "chore: update RS rating thresholds [$(date +'%Y-%m-%d')]"
-            git push
-          fi
+            git commit -m "chore: update RS rating thresholds [$(date +'%Y-%m-%d %H:%M %Z')]"
 
+            echo "🔄 Pulling latest changes from main before pushing..."
+            git pull --rebase origin main || echo "Pull had minor issues, continuing..."
+
+            echo "🚀 Pushing changes..."
+            for i in {1..3}; do
+              if git push origin main; then
+                echo "✅ Successfully pushed RS-Rating.txt"
+                break
+              else
+                echo "⚠️ Push failed (attempt $i/3). Retrying in 3 seconds..."
+                sleep 3
+                git pull --rebase origin main || true
+              fi
+            done
+          fi
+          
       - name: Show result file content
         run: cat RS_Data/RS-Rating.txt || echo "File not created"
