@@ -213,21 +213,51 @@ jobs:
             --metadata-file data/ticker_price.json \
             --debug
 
-      - name: 📃 Archive RS Results
+      - name: 🔍 Find Inside Bars (RS >= 80, Price >= 30)
+        run: |
+          current_date=$(date -u -d "4 hours ago" +"%m%d%Y")
+          mkdir -p logs RS_Data
+          python scripts/find_inside_bars.py \
+            --arctic-db-path tmp/arctic_db \
+            --input-csv RS_Data/rs_stocks.csv \
+            --output-dir RS_Data \
+            --log-file logs/failed_ib_tickers.log \
+            --date "$current_date" \
+            --rs-threshold 80.0 \
+            --min-price 30.0
+            
+      - name: 📦 Archive RS + Inside Bar Results
         run: |
           mkdir -p archive
-          current_date=$(date +"%m%d%Y")
-          echo "📅 Archiving results for: ${current_date}"
-          
+          current_date=$(date -u -d "4 hours ago" +"%m%d%Y")
+          echo "Archiving results for: ${current_date}"
+
+          # RS files
           for file in rs_stocks rs_industries RSRATING; do
             if [ -f "RS_Data/${file}.csv" ]; then
-              cp RS_Data/${file}.csv archive/${file}_${current_date}.csv
-              echo "✅ Archived ${file}.csv"
+              cp "RS_Data/${file}.csv" "archive/${file}_${current_date}.csv"
+              echo "Archived ${file}_${current_date}.csv"
             else
               echo "❌ RS_Data/${file}.csv not found!"
               exit 1
             fi
           done
+
+          # Inside Bar file
+          ib_file="RS_Data/IB_Stocks.csv"
+          if [ -f "$ib_file" ]; then
+            cp "$ib_file" "archive/IB_Stocks_${current_date}.csv"
+            echo "✅ Archived IB_Stocks_${current_date}.csv"
+          else
+            echo "❌ Warning: IB_Stocks_${current_date}.csv not found"
+          fi
+
+          # echo "🧹 Cleaning CSV files older than 90 days in archive..."
+          # find archive -type f -name "*.csv" -mtime +90 -print -delete
+
+          echo "📦 Final archived files:"
+          ls -l archive | tail -n 10
+
 
       - name: 🗓️ Upload outputs
         uses: actions/upload-artifact@v4
