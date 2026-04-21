@@ -75,7 +75,7 @@ def short_relative_strength(closes: pd.Series, closes_ref: pd.Series, days: int)
     ref_ret = ref_new / ref_old - 1
 
     if ref_ret == 0:
-        return np.nan if stock_ret <= 0 else 999.0
+        return np.nan
 
     rs = (1 + stock_ret) / (1 + ref_ret) * 100
     return round(rs, 2) if rs <= 700 else 700.0
