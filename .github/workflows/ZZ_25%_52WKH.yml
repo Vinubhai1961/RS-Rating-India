@@ -1,15 +1,13 @@
 name: 25%-52-WKH
 on:
-  workflow_run:
+  workflow_dispatch:         # manual run
+  #workflow_run:
    # workflows: ["Generate-IPO"]
     #types: [completed]
     #branches: [main]
 
   #schedule:
-   # - cron: "00 16 * * 1-5"   # 7:00 AM EST Mon–Fri
-
-  workflow_dispatch:         # manual run
-
+   # - cron: "00 16 * * 1-5"   # 7:00 AM EST Mon–Fr
 
 
 jobs:
