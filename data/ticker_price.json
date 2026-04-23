@@ -2,7 +2,7 @@
   {
     "ticker": "^CRSLDX",
     "info": {
-      "Ticker Name": "NIFTY 50",
+      "Ticker Name": "NIFTY 500 - ^CRSLDX",
       "Price": 22810.85,
       "DVol": "0.00K",
       "RVol": "0.00",
@@ -14158,8 +14158,8 @@
     "info": {
       "Ticker Name": "Danlaw Technologies India Limited",
       "Price": 778.8,
-      "DVol": "1.57K",
-      "RVol": "0.55",
+      "DVol": "1.54K",
+      "RVol": "0.54",
       "Sector": "Technology Services",
       "Industry": "Packaged Software",
       "type": "Stock",
@@ -24161,7 +24161,7 @@
       "type": "Stock",
       "52WKL": 1239.3,
       "52WKH": 2350.0,
-      "MCAP": "12.57B",
+      "MCAP": null,
       "AvgVol": "4.64K",
       "AvgVol10": "3.93K",
       "Exchange": "NSE",
