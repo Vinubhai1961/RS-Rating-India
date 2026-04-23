@@ -72,7 +72,7 @@ def merge_arcticdb(source_root: str, dest_path: str):
 
                     # Write (or overwrite with better data)
                     dest_lib.write(symbol, df)
-                    if symbol == "NIFTYMIDSML400.NS":
+                    if symbol == "^CRSLDX":
                         benchmark_found = True
                         print(f"  BENCHMARK {symbol} merged successfully ({len(df)} days)")
 
@@ -97,7 +97,7 @@ def merge_arcticdb(source_root: str, dest_path: str):
     print(f"Total write operations      : {total_merged:,}")
     print(f"Duplicates skipped/upgraded : {duplicates_skipped}")
     print(f"Failed symbols              : {len(failed_symbols)}")
-    print(f"Benchmark NIFTYMIDSML400.NS : {'FOUND & MERGED' if benchmark_found else 'MISSING!'}")
+    print(f"Benchmark NIFTY500-^CRSLDX : {'FOUND & MERGED' if benchmark_found else 'MISSING!'}")
     print(f"Merged DB location          : {dest_path}")
     print("="*60)
 
@@ -112,7 +112,7 @@ def merge_arcticdb(source_root: str, dest_path: str):
         print(f"Failed symbols logged to: {log_path}")
 
     if not benchmark_found:
-        print("CRITICAL: NIFTYMIDSML400.NS was NOT found in any shard!")
+        print("CRITICAL: NIFTY500-^CRSLDX was NOT found in any shard!")
         print("RS calculation will fail. Check your fetch partitions.")
 
 if __name__ == "__main__":
