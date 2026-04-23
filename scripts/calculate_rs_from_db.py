@@ -347,7 +347,8 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Calculate RS Rating for NSE India vs Nifty 50")
     parser.add_argument("--arctic-db-path", default="tmp/arctic_db", help="Path to ArcticDB")
-    parser.add_argument("--reference-ticker", default="^NSEI", help="Benchmark index (default: ^NSEI)")
+    #parser.add_argument("--reference-ticker", default="^NSEI", help="Benchmark index (default: ^NSEI)")
+    parser.add_argument("--reference-ticker", default="^CRSLDX", help="Benchmark index (default: ^NSEI)")
     parser.add_argument("--output-dir", default="RS_Data", help="Output directory")
     parser.add_argument("--log-file", default="logs/calc.log", help="Log file")
     parser.add_argument("--metadata-file", default="data/ticker_price.json", help="Metadata JSON")
