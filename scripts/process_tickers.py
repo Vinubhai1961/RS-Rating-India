@@ -96,9 +96,9 @@ output_df = output_df.sort_values('Ticker')
 # Prepare JSON output
 json_data = []
 
-# Add NIFTY 500 benchmark ticker as the first record
+# Add NIFTY 500 benchmark ticker as the first record - (NIFTY 50 -- ^NSEI) - (NIFTY 500 - ^CRSLDX)
 json_data.append({
-    "ticker": "^NSEI",
+    "ticker": "^CRSLDX",
     "info": {
         "Ticker Name": "NIFTY 50",
         "Price": "",
