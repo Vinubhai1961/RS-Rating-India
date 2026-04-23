@@ -266,12 +266,12 @@ jobs:
           pip install --upgrade pip
           pip install pandas numpy tqdm arcticdb pandas_market_calendars
 
-      - name: 📃 Run RS calculation (India - NIFTYMIDSML400)
+      - name: 📃 Run RS calculation (India - NIFTY500)
         run: |
           mkdir -p RS_Logs RS_Data 
           python scripts/calculate_rs_from_db.py \
             --arctic-db-path tmp/arctic_db \
-            --reference-ticker ^NSEI \
+            --reference-ticker ^CRSLDX \
             --output-dir RS_Data \
             --log-file logs/failed_tickers.log \
             --metadata-file data/ticker_price.json \
