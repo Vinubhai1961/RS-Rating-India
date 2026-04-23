@@ -100,7 +100,7 @@ json_data = []
 json_data.append({
     "ticker": "^CRSLDX",
     "info": {
-        "Ticker Name": "NIFTY 500 - ^CRSLDX",
+        "Ticker Name": "NIFTY 500",
         "Price": "",
         "DVol": "",
         "RVol": "",
