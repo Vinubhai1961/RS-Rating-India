@@ -15,7 +15,7 @@ OUTPUT_PATH  = Path("RS_Data/RS80_Price30_within27pct_52wh.csv")
 RS_THRESHOLD    = 80.0
 PRICE_THRESHOLD = 30.0
 MAX_PCT_BELOW   = 27.0
-MIN_AVGVOL10    = 300_000         # ← new: minimum 10-day average volume
+MIN_AVGVOL10    = 400_000         # ← new: minimum 10-day average volume
 # ────────────────────────────────────────────────
 def parse_volume(x):
     if pd.isna(x):
