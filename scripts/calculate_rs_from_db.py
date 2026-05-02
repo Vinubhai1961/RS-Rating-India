@@ -45,7 +45,7 @@ def debug_alignment(ticker, closes, closes_ref, df, log_path):
         log_missing_rs(ticker, f"Last aligned dates: {tail_dates}", log_path)
 
 
-def debug_returns(ticker, df, days, label, log_path):
+def debug_returns(ticker, df, days, label, log_path, ref_ticker="^CRSLDX"):
     if len(df) < days + 1:
         log_missing_rs(ticker, f"{label} → INSUFFICIENT DATA", log_path)
         return None, None
@@ -64,7 +64,7 @@ def debug_returns(ticker, df, days, label, log_path):
         ticker,
         f"{label:>2} → {old_date.date()} → {new_date.date()} | "
         f"Stock: {s_old:.2f} → {s_new:.2f} ({s_ret:+6.2%}) | "
-        f"Ref: {r_old:.2f} → {r_new:.2f} ({r_ret:+6.2%})",
+        f"{ref_ticker}: {r_old:.2f} → {r_new:.2f} ({r_ret:+6.2%})",
         log_path
     )
     return s_ret, r_ret
@@ -312,9 +312,9 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
             df_aligned = align_series(closes, ref_closes)
             debug_alignment(ticker, closes, ref_closes, df_aligned, missing_rs_log)
 
-            s1, r1 = debug_returns(ticker, df_aligned, 21, "1M", missing_rs_log)
-            s3, r3 = debug_returns(ticker, df_aligned, 63, "3M", missing_rs_log)
-            s6, r6 = debug_returns(ticker, df_aligned, 126, "6M", missing_rs_log)
+            s1, r1 = debug_returns(ticker, df_aligned, 21, "1M", missing_rs_log, reference_ticker)
+            s3, r3 = debug_returns(ticker, df_aligned, 63, "3M", missing_rs_log, reference_ticker)
+            s6, r6 = debug_returns(ticker, df_aligned, 126, "6M", missing_rs_log, reference_ticker)
 
             # === ORIGINAL CALCULATION (UNCHANGED) ===
             rs_1m = short_relative_strength(closes, ref_closes, 21)
