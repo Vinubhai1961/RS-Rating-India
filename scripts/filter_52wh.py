@@ -15,8 +15,11 @@ OUTPUT_PATH  = Path("RS_Data/RS80_Price30_within27pct_52wh.csv")
 RS_THRESHOLD    = 80.0
 PRICE_THRESHOLD = 30.0
 MAX_PCT_BELOW   = 27.0
-MIN_AVGVOL10    = 400_000         # ← new: minimum 10-day average volume
+MIN_AVGVOL10    = 400_000
+
+DEBUG_TICKER = "BBOX.NS"   # ← Added for debugging
 # ────────────────────────────────────────────────
+
 def parse_volume(x):
     if pd.isna(x):
         return None
@@ -32,6 +35,46 @@ def parse_volume(x):
     return float(x)
 
 
+def debug_ticker(df, ticker):
+    """Print detailed reason why a ticker is or isn't included"""
+    row = df[df['Ticker'] == ticker]
+    if row.empty:
+        print(f"\nDEBUG: {ticker} → NOT FOUND in source data")
+        return
+    
+    row = row.iloc[0]
+    price = row['Price']
+    rs = row['RS Percentile']
+    vol = row['AvgVol10']
+    high = row['52WKH']
+    pct_below = ((high - price) / high * 100).round(2) if pd.notna(high) and pd.notna(price) else None
+
+    print(f"\n=== DEBUG: {ticker} ===")
+    print(f"Price          : ${price:,.2f}")
+    print(f"RS Percentile  : {rs:.1f}")
+    print(f"10d Avg Vol    : {vol:,.0f}")
+    print(f"52W High       : ${high:,.2f}")
+    print(f"% Below 52WH   : {pct_below}%")
+    print("-" * 40)
+
+    issues = []
+    if pct_below is None or pct_below < 0 or pct_below > MAX_PCT_BELOW:
+        issues.append(f"• % from 52WH = {pct_below}% (must be 0–{MAX_PCT_BELOW}%)")
+    if rs < RS_THRESHOLD:
+        issues.append(f"• RS Percentile = {rs} (must be ≥ {RS_THRESHOLD})")
+    if price < PRICE_THRESHOLD:
+        issues.append(f"• Price = ${price:,.2f} (must be ≥ ${PRICE_THRESHOLD})")
+    if vol < MIN_AVGVOL10:
+        issues.append(f"• AvgVol10 = {vol:,.0f} (must be ≥ {MIN_AVGVOL10:,})")
+
+    if not issues:
+        print("→ PASSED ALL FILTERS")
+    else:
+        print("→ FAILED FILTERS:")
+        for issue in issues:
+            print(issue)
+
+
 def main():
     if not INPUT_PATH.exists():
         print(f"Error: Input file not found → {INPUT_PATH}")
@@ -39,13 +82,10 @@ def main():
 
     print("Reading source file ...")
     df = pd.read_csv(INPUT_PATH)
-
     print(f"→ Loaded {len(df):,} rows")
 
-    # Ensure numeric columns – added 'AvgVol10'
-    # Ensure numeric columns – added 'AvgVol10'
+    # Convert to numeric
     numeric_cols = ['Price', '52WKH', 'RS Percentile', 'AvgVol10']
-    
     for col in numeric_cols:
         if col in df.columns:
             if col == 'AvgVol10':
@@ -53,39 +93,38 @@ def main():
             else:
                 df[col] = pd.to_numeric(df[col], errors='coerce')
 
-
-    # Drop rows we cannot calculate properly – added 'AvgVol10'
     df = df.dropna(subset=['Price', '52WKH', 'RS Percentile', 'AvgVol10'])
 
     # Calculate % below 52-week high
     df['%_From_52WKH'] = ((df['52WKH'] - df['Price']) / df['52WKH']) * 100
     df['%_From_52WKH'] = df['%_From_52WKH'].round(2)
 
-    # Apply all filters – added volume condition
+    # === DEBUG BBOX.NS ===
+    debug_ticker(df, DEBUG_TICKER)
 
+    # Apply filters
     mask = (
-    (df['%_From_52WKH'] >= 0) &
-    (df['%_From_52WKH'] <= MAX_PCT_BELOW) &
-    (df['RS Percentile'] >= RS_THRESHOLD) &  # ← Changed from > to >=
-    (df['Price'] >= PRICE_THRESHOLD) &       # ← Changed from > to >=
-    (df['AvgVol10'] >= MIN_AVGVOL10)         # ← Changed from > to >=
+        (df['%_From_52WKH'] >= 0) &
+        (df['%_From_52WKH'] <= MAX_PCT_BELOW) &
+        (df['RS Percentile'] >= RS_THRESHOLD) &
+        (df['Price'] >= PRICE_THRESHOLD) &
+        (df['AvgVol10'] >= MIN_AVGVOL10)
     )
 
     filtered = df[mask].copy()
 
-    # Updated print – shows all active filters
-    print(f"After filters:")
+    print(f"\nAfter filters:")
     print(f"  • within {MAX_PCT_BELOW}% of 52-week high")
-    print(f"  • RS Percentile > {RS_THRESHOLD}")
-    print(f"  • Price > ${PRICE_THRESHOLD:,}")
-    print(f"  • 10-day Avg Volume > {MIN_AVGVOL10:,} shares")
+    print(f"  • RS Percentile ≥ {RS_THRESHOLD}")
+    print(f"  • Price ≥ ${PRICE_THRESHOLD:,}")
+    print(f"  • 10-day Avg Volume ≥ {MIN_AVGVOL10:,} shares")
     print(f"→ {len(filtered):,} rows remain")
 
     if len(filtered) == 0:
         print("No stocks match the current criteria.")
         return
 
-    # Define exact column order you requested
+    # Column selection and sorting
     desired = [
         'Rank', 'Ticker', 'Price', 'DVol',
         'Sector', 'Industry',
@@ -97,19 +136,12 @@ def main():
     ]
 
     available = [c for c in desired if c in filtered.columns]
-    result = filtered[available]
+    result = filtered[available].sort_values('RS Percentile', ascending=False).reset_index(drop=True)
 
-    # Sort by RS Percentile descending (you can switch to % closeness if preferred)
-    result = result.sort_values('RS Percentile', ascending=False).reset_index(drop=True)
-    # Alternative (closest to high first):
-    # result = result.sort_values(by=['%_From_52WKH', 'RS Percentile'], ascending=[True, False]).reset_index(drop=True)
-
-    # Overwrite output
     result.to_csv(OUTPUT_PATH, index=False)
     print(f"\nOutput overwritten → {OUTPUT_PATH}")
     print(f"Total rows saved: {len(result):,}")
 
-    # Show preview
     print("\nFirst 10 rows:")
     print(result.head(10).to_string(index=False))
 
