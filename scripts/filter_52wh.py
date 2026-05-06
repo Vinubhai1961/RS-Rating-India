@@ -1,7 +1,5 @@
 # =============================================================================
 #   Filter high-RS, higher-priced stocks near 52-week highs
-#   Overwrites the output file every run
-# scripts/filter_52wh.py
 # =============================================================================
 import pandas as pd
 from pathlib import Path
@@ -17,7 +15,7 @@ PRICE_THRESHOLD = 30.0
 MAX_PCT_BELOW   = 27.0
 MIN_AVGVOL10    = 400_000
 
-DEBUG_TICKER = "BBOX.NS"   # ← Added for debugging
+DEBUG_TICKER = "BBOX.NS"
 # ────────────────────────────────────────────────
 
 def parse_volume(x):
@@ -36,7 +34,6 @@ def parse_volume(x):
 
 
 def debug_ticker(df, ticker):
-    """Print detailed reason why a ticker is or isn't included"""
     row = df[df['Ticker'] == ticker]
     if row.empty:
         print(f"\nDEBUG: {ticker} → NOT FOUND in source data")
@@ -47,19 +44,25 @@ def debug_ticker(df, ticker):
     rs = row['RS Percentile']
     vol = row['AvgVol10']
     high = row['52WKH']
-    pct_below = ((high - price) / high * 100).round(2) if pd.notna(high) and pd.notna(price) else None
+    
+    if pd.notna(high) and pd.notna(price):
+        pct_from_high = ((price - high) / high * 100).round(2)   # Changed sign
+        pct_below = max(0, -pct_from_high)                       # For display
+    else:
+        pct_from_high = None
+        pct_below = None
 
     print(f"\n=== DEBUG: {ticker} ===")
     print(f"Price          : ${price:,.2f}")
     print(f"RS Percentile  : {rs:.1f}")
     print(f"10d Avg Vol    : {vol:,.0f}")
     print(f"52W High       : ${high:,.2f}")
-    print(f"% Below 52WH   : {pct_below}%")
+    print(f"% from 52WH    : {pct_from_high}%")   # Can be negative (new high)
     print("-" * 40)
 
     issues = []
-    if pct_below is None or pct_below < 0 or pct_below > MAX_PCT_BELOW:
-        issues.append(f"• % from 52WH = {pct_below}% (must be 0–{MAX_PCT_BELOW}%)")
+    if pct_from_high is None or pct_from_high < -MAX_PCT_BELOW:   # Allow new highs
+        issues.append(f"• Too far from 52WH ({pct_from_high}%)")
     if rs < RS_THRESHOLD:
         issues.append(f"• RS Percentile = {rs} (must be ≥ {RS_THRESHOLD})")
     if price < PRICE_THRESHOLD:
@@ -68,7 +71,7 @@ def debug_ticker(df, ticker):
         issues.append(f"• AvgVol10 = {vol:,.0f} (must be ≥ {MIN_AVGVOL10:,})")
 
     if not issues:
-        print("→ PASSED ALL FILTERS")
+        print("→ PASSED ALL FILTERS ✓")
     else:
         print("→ FAILED FILTERS:")
         for issue in issues:
@@ -84,7 +87,7 @@ def main():
     df = pd.read_csv(INPUT_PATH)
     print(f"→ Loaded {len(df):,} rows")
 
-    # Convert to numeric
+    # Convert columns
     numeric_cols = ['Price', '52WKH', 'RS Percentile', 'AvgVol10']
     for col in numeric_cols:
         if col in df.columns:
@@ -95,17 +98,16 @@ def main():
 
     df = df.dropna(subset=['Price', '52WKH', 'RS Percentile', 'AvgVol10'])
 
-    # Calculate % below 52-week high
-    df['%_From_52WKH'] = ((df['52WKH'] - df['Price']) / df['52WKH']) * 100
+    # Calculate % from 52-week high (negative = new high)
+    df['%_From_52WKH'] = ((df['Price'] - df['52WKH']) / df['52WKH']) * 100
     df['%_From_52WKH'] = df['%_From_52WKH'].round(2)
 
-    # === DEBUG BBOX.NS ===
+    # Debug specific ticker
     debug_ticker(df, DEBUG_TICKER)
 
-    # Apply filters
+    # Updated filter - allow new highs
     mask = (
-        (df['%_From_52WKH'] >= 0) &
-        (df['%_From_52WKH'] <= MAX_PCT_BELOW) &
+        (df['%_From_52WKH'] >= -MAX_PCT_BELOW) &      # ← Fixed: allow up to 27% above
         (df['RS Percentile'] >= RS_THRESHOLD) &
         (df['Price'] >= PRICE_THRESHOLD) &
         (df['AvgVol10'] >= MIN_AVGVOL10)
@@ -114,17 +116,13 @@ def main():
     filtered = df[mask].copy()
 
     print(f"\nAfter filters:")
-    print(f"  • within {MAX_PCT_BELOW}% of 52-week high")
+    print(f"  • within {MAX_PCT_BELOW}% of 52-week high (including new highs)")
     print(f"  • RS Percentile ≥ {RS_THRESHOLD}")
     print(f"  • Price ≥ ${PRICE_THRESHOLD:,}")
     print(f"  • 10-day Avg Volume ≥ {MIN_AVGVOL10:,} shares")
     print(f"→ {len(filtered):,} rows remain")
 
-    if len(filtered) == 0:
-        print("No stocks match the current criteria.")
-        return
-
-    # Column selection and sorting
+    # ... rest of your code (column selection, sorting, save) ...
     desired = [
         'Rank', 'Ticker', 'Price', 'DVol',
         'Sector', 'Industry',
