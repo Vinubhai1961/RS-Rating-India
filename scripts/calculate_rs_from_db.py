@@ -18,51 +18,38 @@ except ImportError:
     logging.warning("pandas_market_calendars not installed. Falling back to consecutive days for RSRATING.csv.")
 
 
-# ====================== FIXED: TECHNICAL INDICATORS ======================
+# ====================== YOUR NEW FUNCTION ======================
 def calculate_smas_and_adr(df):
     """Robust calculation of SMA50, SMA200 (daily), SMA10/30 Weekly, and ADR"""
     sma50 = sma200 = sma10w = sma30w = adr = np.nan
-
     if 'close' not in df.columns:
         return sma50, sma200, sma10w, sma30w, adr
-
+    
     closes = pd.to_numeric(df['close'], errors='coerce').dropna()
-
+    
     # Daily SMA
     if len(closes) >= 50:
         sma50 = round(closes.rolling(50).mean().iloc[-1], 2)
-
     if len(closes) >= 200:
         sma200 = round(closes.rolling(200).mean().iloc[-1], 2)
-
+    
     # Weekly SMA
     if len(closes) >= 30:
-
         weekly_closes = closes.resample('W-FRI').last().dropna()
-
         if len(weekly_closes) >= 10:
-            sma10w = round(
-                weekly_closes.rolling(10).mean().iloc[-1], 2
-            )
-
+            sma10w = round(weekly_closes.rolling(10).mean().iloc[-1], 2)
         if len(weekly_closes) >= 30:
-            sma30w = round(
-                weekly_closes.rolling(30).mean().iloc[-1], 2
-            )
-
+            sma30w = round(weekly_closes.rolling(30).mean().iloc[-1], 2)
+    
     # ADR
     if all(col in df.columns for col in ['high', 'low']):
-
         high = pd.to_numeric(df['high'], errors='coerce')
         low = pd.to_numeric(df['low'], errors='coerce')
-
         daily_range_pct = ((high / low) - 1) * 100
-
         adr_series = daily_range_pct.rolling(20).mean()
-
         if not adr_series.empty:
             adr = round(adr_series.iloc[-1], 2)
-
+    
     return sma50, sma200, sma10w, sma30w, adr
 
 
@@ -266,7 +253,7 @@ def generate_tradingview_csv(df_stocks, output_dir, ref_data, percentile_values=
     return ''.join(lines)
 
 
-# ====================== MAIN FUNCTION (ENHANCED with fixes) ======================
+# ====================== MAIN FUNCTION ======================
 def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=None, percentiles=None, debug=False):
     os.makedirs(os.path.dirname(log_file), exist_ok=True)
     logging.basicConfig(filename=log_file, level=logging.INFO, format="%(asctime)s - %(message)s")
@@ -294,11 +281,11 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
     ref_data = lib.read(reference_ticker).data
     ref_closes = pd.Series(ref_data["close"].values, index=pd.to_datetime(ref_data["datetime"], unit='s')).sort_index()
     if len(ref_closes) < 20:
-        logging.error(f"Reference ticker {reference_ticker} has insufficient data ({len(ref_closes)} days)")
+        logging.error(f"Reference ticker {reference_ticker} has insufficient data")
         print("Not enough reference ticker data.")
         sys.exit(1)
 
-    # === INDIA METADATA LOADING ===
+    # Metadata loading (unchanged)
     metadata_df = pd.DataFrame()
     if metadata_file and os.path.exists(metadata_file):
         try:
@@ -322,11 +309,9 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
                         "Type": info.get("type", "Stock")
                     })
             metadata_df = pd.DataFrame([r for r in records if r["Ticker"]])
-            logging.info(f"Metadata loaded: {len(metadata_df):,} tickers")
         except Exception as e:
-            logging.error(f"Invalid metadata file {metadata_file}: {str(e)}")
+            logging.error(f"Invalid metadata file: {e}")
 
-    logging.info(f"Starting RS + Indicators calculation for {len(tickers)} tickers")
     print(f"Processing {len(tickers)-1:,} Indian stocks...")
 
     rs_results = []
@@ -340,35 +325,35 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
             data_obj = lib.read(ticker)
             df_data = data_obj.data
 
+            # Original closes for RS calculation
             closes = pd.Series(df_data["close"].values, 
                              index=pd.to_datetime(df_data["datetime"], unit='s')).sort_index()
 
             log_missing_rs(ticker, f"=== Debug for {ticker} ===", missing_rs_log)
-            log_missing_rs(ticker, f"Rows: {len(closes)} | Start={closes.index[0].date()} | End={closes.index[-1].date()}", missing_rs_log)
+            log_missing_rs(ticker, f"Rows: {len(closes)} | Start={closes.index[0].date() if len(closes)>0 else 'N/A'} | End={closes.index[-1].date() if len(closes)>0 else 'N/A'}", missing_rs_log)
 
             if len(closes) < 2:
                 log_missing_rs(ticker, "NOT ENOUGH DATA (<2 rows)", missing_rs_log)
                 rs_results.append((ticker, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan))
                 continue
 
-            # === FIXED: ROBUST PRICE DATAFRAME FOR INDICATORS ===
+            # === PREPARE DATAFRAME FOR YOUR INDICATOR FUNCTION ===
             price_df = pd.DataFrame({
                 'close': df_data['close']
             }, index=pd.to_datetime(df_data["datetime"], unit='s'))
 
-            for col in ['open', 'high', 'low']:
+            for col in ['high', 'low', 'open']:
                 if col in df_data.columns:
                     price_df[col] = df_data[col]
 
             price_df = price_df.sort_index()
 
-            # Calculate new indicators
+            # Call your function
             sma50, sma200, sma10w, sma30w, adr = calculate_smas_and_adr(price_df)
 
-            # === ORIGINAL RS CALCULATIONS (UNCHANGED) ===
+            # === ORIGINAL RS CALCULATION (UNCHANGED) ===
             rs = relative_strength(closes, ref_closes)
 
-            # Enhanced Debug Block (unchanged)
             df_aligned = align_series(closes, ref_closes)
             debug_alignment(ticker, closes, ref_closes, df_aligned, missing_rs_log)
 
@@ -397,6 +382,7 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
             log_missing_rs(ticker, "-" * 60, missing_rs_log)
             rs_results.append((ticker, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan))
 
+    # ====================== OUTPUT ======================
     # ====================== OUTPUT (UNCHANGED) ======================
     df_stocks = pd.DataFrame(rs_results, columns=[
         "Ticker", "RS", "1M_RS", "3M_RS", "6M_RS",
