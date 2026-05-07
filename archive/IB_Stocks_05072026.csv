@@ -1,5 +1,5 @@
 Rank,Ticker,Price,DVol,Sector,Industry,RS Percentile,1M_RS Percentile,3M_RS Percentile,6M_RS Percentile,SMA50,SMA200,SMA10_Weekly,SMA30_Weekly,ADR,AvgVol,AvgVol10,52WKH,52WKL,MCAP,IPO
-7,EASTSILK.NS,61.0,0.65K,Process Industries,Textiles,98.0,6.0,4.0,47.0,,,,,,3.33K,0.63K,99.25,1.8,305.00M,No
+4,EASTSILK.NS,61.0,0.65K,Process Industries,Textiles,98.0,6.0,4.0,47.0,,,,,,3.33K,0.63K,99.25,1.8,305.00M,No
 22,SIMANDHAR.BO,149.0,60.96K,Distribution Services,Wholesale Distributors,98.0,41.0,95.0,,,,,,,8.87K,7.89K,151.7,21.5,455.48M,No
 24,SPICEISLIN.BO,340.3,6.05K,Process Industries,Textiles,98.0,53.0,95.0,98.0,,,,,,11.38K,19.44K,354.7,41.66,2.12B,No
 33,CUPID.NS,131.14,15199.39K,Consumer Non-Durables,Household/Personal Care,98.0,95.0,95.0,98.0,,,,,,20179.50K,16947.17K,132.49,15.9,176.34B,No
@@ -55,7 +55,7 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS Percentile,1M_RS Percentile,3M_RS Perc
 352,CFF.BO,794.2,23.60K,Industrial Services,Engineering & Construction,88.0,88.0,91.0,85.0,,,,,,37.19K,56.70K,860.0,445.0,16.66B,No
 355,ACEALPHA.BO,124.25,3.00K,Technology Services,Packaged Software,87.0,92.0,89.0,81.0,,,,,,15.18K,10.40K,138.0,77.1,2.18B,No
 356,CHENNPETRO.NS,1076.2,905.83K,Energy Minerals,Oil Refining/Marketing,87.0,38.0,79.0,76.0,,,,,,2742.43K,4183.33K,1159.7,587.1,160.26B,No
-357,SBCL.NS,621.6,279.10K,Non-Energy Minerals,Other Metals/Minerals,87.0,93.0,92.0,88.0,,,,,,376.50K,1419.62K,655.4,368.6,35.81B,No
+358,SBCL.NS,621.6,279.10K,Non-Energy Minerals,Other Metals/Minerals,87.0,93.0,92.0,88.0,,,,,,376.50K,1419.62K,655.4,368.6,35.81B,No
 360,UMIYA.BO,36.6,6.05K,Non-Energy Minerals,Steel,87.0,62.0,55.0,91.0,,,,,,25.09K,38.89K,45.36,11.21,474.21M,No
 367,BACPHAR.BO,56.49,1.54K,Health Technology,Pharmaceuticals: Major,87.0,15.0,90.0,92.0,,,,,,12.63K,1.29K,61.8,26.69,810.80M,No
 369,CHOKSI.BO,134.25,2.39K,Health Technology,Medical Specialties,87.0,3.0,62.0,89.0,,,,,,7.49K,9.04K,212.9,70.25,765.37M,No
@@ -84,7 +84,7 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS Percentile,1M_RS Percentile,3M_RS Perc
 525,ARCHITORG.BO,52.8,14.82K,Process Industries,Chemicals: Specialty,82.0,89.0,85.0,79.0,,,,,,21.39K,55.48K,57.8,34.0,1.08B,No
 527,ALUFLUOR.BO,564.25,7.05K,Non-Energy Minerals,Aluminum,82.0,80.0,80.0,84.0,,,,,,14.64K,27.52K,610.85,375.5,4.41B,No
 528,NAGPI.BO,151.9,7.66K,Electronic Technology,Electronic Equipment/Instruments,82.0,4.0,50.0,93.0,,,,,,2.44K,1.91K,177.0,80.16,1.99B,No
-530,EMCURE.NS,1664.8,279.03K,Health Technology,Pharmaceuticals: Major,82.0,27.0,64.0,86.0,,,,,,318.02K,528.53K,1830.0,983.0,315.63B,No
+531,EMCURE.NS,1664.8,279.03K,Health Technology,Pharmaceuticals: Major,82.0,27.0,64.0,86.0,,,,,,318.02K,528.53K,1830.0,983.0,315.63B,No
 557,HALDYNGL.NS,111.57,41.51K,Process Industries,Containers/Packaging,81.0,,,,,,,,,113.68K,135.02K,113.42,85.0,,No
 561,BCCFUBA.BO,163.7,10.82K,Electronic Technology,Electronic Components,81.0,86.0,73.0,60.0,,,,,,27.82K,28.54K,218.85,95.4,3.26B,No
 562,S&SPOWER.NS,405.0,0.52K,Producer Manufacturing,Electrical Products,81.0,78.0,93.0,77.0,,,,,,2.22K,2.40K,468.9,193.5,5.00B,No
