@@ -19,42 +19,51 @@ except ImportError:
 
 
 # ====================== FIXED: TECHNICAL INDICATORS ======================
-def calculate_smas_and_adr(data):
+def calculate_smas_and_adr(df):
     """Robust calculation of SMA50, SMA200 (daily), SMA10/30 Weekly, and ADR"""
-    if len(data) < 2:
-        return np.nan, np.nan, np.nan, np.nan, np.nan
-    
-    df = data.copy()
-    if not isinstance(df.index, pd.DatetimeIndex):
-        df = df.set_index('datetime') if 'datetime' in df.columns else df
-    
-    df = df.sort_index()
-    
-    # Daily SMAs
-    sma50 = df['close'].rolling(window=50, min_periods=1).mean().iloc[-1]
-    sma200 = df['close'].rolling(window=200, min_periods=1).mean().iloc[-1]
-    
-    # Weekly SMAs
-    weekly = df['close'].resample('W').last().dropna()
-    sma10_weekly = weekly.rolling(window=10, min_periods=1).mean().iloc[-1] if len(weekly) >= 1 else np.nan
-    sma30_weekly = weekly.rolling(window=30, min_periods=1).mean().iloc[-1] if len(weekly) >= 1 else np.nan
-    
-    # ADR - Average Daily Range %
-    adr = np.nan
-    if all(col in df.columns for col in ['high', 'low', 'close']):
+    sma50 = sma200 = sma10w = sma30w = adr = np.nan
+
+    if 'close' not in df.columns:
+        return sma50, sma200, sma10w, sma30w, adr
+
+    closes = pd.to_numeric(df['close'], errors='coerce').dropna()
+
+    # Daily SMA
+    if len(closes) >= 50:
+        sma50 = round(closes.rolling(50).mean().iloc[-1], 2)
+
+    if len(closes) >= 200:
+        sma200 = round(closes.rolling(200).mean().iloc[-1], 2)
+
+    # Weekly SMA
+    if len(closes) >= 30:
+
+        weekly_closes = closes.resample('W-FRI').last().dropna()
+
+        if len(weekly_closes) >= 10:
+            sma10w = round(
+                weekly_closes.rolling(10).mean().iloc[-1], 2
+            )
+
+        if len(weekly_closes) >= 30:
+            sma30w = round(
+                weekly_closes.rolling(30).mean().iloc[-1], 2
+            )
+
+    # ADR
+    if all(col in df.columns for col in ['high', 'low']):
+
         high = pd.to_numeric(df['high'], errors='coerce')
         low = pd.to_numeric(df['low'], errors='coerce')
-        close = pd.to_numeric(df['close'], errors='coerce')
-        daily_range_pct = (high - low) / close.replace(0, np.nan)
-        adr = daily_range_pct.rolling(window=14, min_periods=5).mean().iloc[-1] * 100
-    
-    return (
-        round(float(sma50), 2) if pd.notna(sma50) else np.nan,
-        round(float(sma200), 2) if pd.notna(sma200) else np.nan,
-        round(float(sma10_weekly), 2) if pd.notna(sma10_weekly) else np.nan,
-        round(float(sma30_weekly), 2) if pd.notna(sma30_weekly) else np.nan,
-        round(float(adr), 2) if pd.notna(adr) else np.nan
-    )
+
+        daily_range_pct = ((high / low) - 1) * 100
+
+        adr_series = daily_range_pct.rolling(20).mean()
+
+        if not adr_series.empty:
+            adr = round(adr_series.iloc[-1], 2)
+
+    return sma50, sma200, sma10w, sma30w, adr
 
 
 # ====================== ORIGINAL FUNCTIONS (UNCHANGED) ======================
