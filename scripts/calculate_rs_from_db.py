@@ -441,7 +441,41 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
     print(f"   • RSRATING.csv")
     print(f"   • logs/debug_rs/Missing_RS.log")
 
-    if debug:
+if debug:
+        print("\nStarting FULL DEBUG export...")
+        debug_records = []
+        strength_ref_cached = strength(ref_closes)
+        for row in tqdm(df_stocks.itertuples(), total=len(df_stocks), desc="Debug Export"):
+            ticker = row.Ticker
+            try:
+                data = lib.read(ticker).data
+                closes = pd.Series(data["close"].values, index=pd.to_datetime(data["datetime"], unit='s'))
+                num_days = len(closes)
+                perf_3m = quarters_perf(closes, 1)
+                perf_6m = quarters_perf(closes, 2)
+                perf_9m = quarters_perf(closes, 3)
+                perf_12m = quarters_perf(closes, 4)
+                strength_stock = strength(closes)
+                rs = getattr(row, 'RS', np.nan)
+                recomputed = relative_strength(closes, ref_closes)
+
+                debug_records.append({
+                    'Ticker': ticker, 'Days': num_days,
+                    '3M_Return': round(perf_3m, 4) if not np.isnan(perf_3m) else None,
+                    '6M_Return': round(perf_6m, 4) if not np.isnan(perf_6m) else None,
+                    '9M_Return': round(perf_9m, 4) if not np.isnan(perf_9m) else None,
+                    '12M_Return': round(perf_12m, 4) if not np.isnan(perf_12m) else None,
+                    'Strength_Stock': round(strength_stock, 4),
+                    'Strength_Ref': round(strength_ref_cached, 4),
+                    'RS': rs, 'Recomputed_RS': recomputed,
+                    'Match': "OK" if abs((rs or 0) - (recomputed or 0)) < 0.1 else "MISMATCH"
+                })
+            except:
+                debug_records.append({'Ticker': ticker, 'Days': 0, 'Match': 'Error'})
+
+        for i, chunk in enumerate([debug_records[x:x+3990] for x in range(0, len(debug_records), 3990)]):
+            pd.DataFrame(chunk).to_csv(os.path.join(debug_rs_dir, f"debug-rs-part{i+1}.csv"), index=False)
+        print(f"Full debug export done → {debug_rs_dir}/")
         print("\nStarting FULL DEBUG export... (original logic)")
         # ... (your original debug block can be kept if needed)
 
