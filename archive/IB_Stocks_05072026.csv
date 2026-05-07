@@ -1,5 +1,5 @@
 Rank,Ticker,Price,DVol,Sector,Industry,RS Percentile,1M_RS Percentile,3M_RS Percentile,6M_RS Percentile,SMA50,SMA200,SMA10_Weekly,SMA30_Weekly,ADR,AvgVol,AvgVol10,52WKH,52WKL,MCAP,IPO
-1,EASTSILK.NS,61.0,0.65K,Process Industries,Textiles,98.0,6.0,4.0,47.0,,,,,,3.33K,0.63K,99.25,1.8,305.00M,No
+7,EASTSILK.NS,61.0,0.65K,Process Industries,Textiles,98.0,6.0,4.0,47.0,,,,,,3.33K,0.63K,99.25,1.8,305.00M,No
 22,SIMANDHAR.BO,149.0,60.96K,Distribution Services,Wholesale Distributors,98.0,41.0,95.0,,,,,,,8.87K,7.89K,151.7,21.5,455.48M,No
 24,SPICEISLIN.BO,340.3,6.05K,Process Industries,Textiles,98.0,53.0,95.0,98.0,,,,,,11.38K,19.44K,354.7,41.66,2.12B,No
 33,CUPID.NS,131.14,15199.39K,Consumer Non-Durables,Household/Personal Care,98.0,95.0,95.0,98.0,,,,,,20179.50K,16947.17K,132.49,15.9,176.34B,No
@@ -43,7 +43,7 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS Percentile,1M_RS Percentile,3M_RS Perc
 285,AUSOMENT.NS,150.78,21.59K,Finance,Investment Banks/Brokers,90.0,95.0,82.0,92.0,,,,,,10.73K,36.14K,178.0,78.27,2.05B,No
 288,INA.NS,138.82,758.83K,Electronic Technology,Semiconductors,90.0,94.0,,,,,,,,1425.26K,1242.16K,161.81,79.75,,No
 294,GRANULES.NS,743.5,1304.38K,Health Technology,Pharmaceuticals: Other,89.0,55.0,87.0,88.0,,,,,,1111.76K,2199.65K,755.1,430.7,184.24B,No
-299,ADVAIT.NS,2040.9,38.11K,Producer Manufacturing,Electrical Products,89.0,47.0,87.0,,,,,,,56.14K,62.27K,2163.0,1351.0,22.32B,No
+298,ADVAIT.NS,2040.9,38.11K,Producer Manufacturing,Electrical Products,89.0,47.0,87.0,,,,,,,56.14K,62.27K,2163.0,1351.0,22.32B,No
 309,SAIL.NS,187.28,16273.24K,Non-Energy Minerals,Steel,89.0,55.0,80.0,90.0,,,,,,23643.40K,23759.03K,190.5,106.25,773.56B,No
 319,SRICC.BO,55.65,1.20K,Non-Energy Minerals,Construction Materials,89.0,73.0,30.0,3.0,,,,,,3.69K,5.13K,99.29,18.89,500.85M,No
 323,MCLEODRUSS.NS,60.57,475.81K,Consumer Non-Durables,Food: Specialty/Candy,88.0,97.0,90.0,53.0,,,,,,626.75K,687.94K,68.47,28.5,6.33B,No
@@ -77,7 +77,7 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS Percentile,1M_RS Percentile,3M_RS Perc
 488,PANSARI.NS,321.85,0.11K,Technology Services,Packaged Software,83.0,63.0,60.0,86.0,,,,,,3.74K,6.54K,352.3,176.2,5.62B,No
 496,GODAVARIB.NS,309.4,192.07K,Process Industries,Agricultural Commodities/Milling,83.0,10.0,77.0,80.0,,,,,,500.25K,432.72K,353.0,160.0,15.83B,No
 503,SHREEREF.BO,236.3,215.00K,Producer Manufacturing,Industrial Machinery,83.0,72.0,88.0,52.0,,,,,,91.16K,127.20K,311.5,153.0,8.42B,No
-504,NGIL.NS,37.0,17.53K,Consumer Non-Durables,Food: Specialty/Candy,83.0,92.0,88.0,87.0,,,,,,31.76K,33.06K,39.84,22.01,659.16M,No
+505,NGIL.NS,37.0,17.53K,Consumer Non-Durables,Food: Specialty/Candy,83.0,92.0,88.0,87.0,,,,,,31.76K,33.06K,39.84,22.01,659.16M,No
 517,GULPOLY.NS,188.12,221.66K,Consumer Non-Durables,Food: Specialty/Candy,82.0,61.0,93.0,86.0,,,,,,241.60K,307.60K,220.5,121.5,11.70B,No
 518,FORINTL.BO,73.0,0.19K,Transportation,Air Freight/Couriers,82.0,53.0,77.0,82.0,,,,,,1.81K,2.12K,87.19,50.11,513.92M,No
 523,KANORICHEM.NS,99.03,37.07K,Process Industries,Chemicals: Specialty,82.0,95.0,91.0,86.0,,,,,,26.61K,51.03K,101.75,56.0,4.33B,No
@@ -93,7 +93,7 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS Percentile,1M_RS Percentile,3M_RS Perc
 567,PANCHMAHQ.BO,320.0,0.40K,Non-Energy Minerals,Steel,81.0,10.0,35.0,78.0,,,,,,1.25K,0.75K,384.5,144.0,6.11B,No
 586,KIOCL.NS,408.45,235.53K,Non-Energy Minerals,Steel,80.0,63.0,70.0,55.0,,,,,,623.25K,430.76K,634.55,229.2,248.24B,No
 596,JAYUSH.BO,935.5,0.12K,Producer Manufacturing,Auto Parts: Oem,80.0,70.0,42.0,73.0,,,,,,0.32K,0.20K,1601.75,595.0,3.62B,No
-600,INFOBEAN.NS,173.89,677.86K,Technology Services,Packaged Software,80.0,71.0,5.0,78.0,,,,,,1715.42K,1610.95K,257.5,73.08,16.86B,No
+599,INFOBEAN.NS,173.89,677.86K,Technology Services,Packaged Software,80.0,71.0,5.0,78.0,,,,,,1715.42K,1610.95K,257.5,73.08,16.86B,No
 601,ICONIKSPEV.BO,38.77,14.46K,Commercial Services,Miscellaneous Commercial Services,80.0,35.0,3.0,3.0,,,,,,40.39K,29.03K,91.03,17.47,1.31B,No
 602,BLSE.NS,200.81,116.36K,Technology Services,Internet Software/Services,80.0,80.0,82.0,80.0,,,,,,539.86K,345.67K,232.5,124.3,18.20B,No
 605,AMAGI.NS,435.75,71.60K,Technology Services,Packaged Software,80.0,89.0,73.0,,,,,,,416.28K,475.11K,450.8,310.2,94.27B,No
