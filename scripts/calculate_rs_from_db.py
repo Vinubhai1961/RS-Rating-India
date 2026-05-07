@@ -18,36 +18,42 @@ except ImportError:
     logging.warning("pandas_market_calendars not installed. Falling back to consecutive days for RSRATING.csv.")
 
 
-# ====================== NEW: TECHNICAL INDICATORS ======================
+# ====================== FIXED: TECHNICAL INDICATORS ======================
 def calculate_smas_and_adr(data):
-    """Calculate SMA50, SMA200 (daily), SMA10/30 Weekly, and ADR from OHLC data"""
+    """Robust calculation of SMA50, SMA200 (daily), SMA10/30 Weekly, and ADR"""
     if len(data) < 2:
         return np.nan, np.nan, np.nan, np.nan, np.nan
     
-    df = data.copy().sort_index()
+    df = data.copy()
+    if not isinstance(df.index, pd.DatetimeIndex):
+        df = df.set_index('datetime') if 'datetime' in df.columns else df
+    
+    df = df.sort_index()
     
     # Daily SMAs
     sma50 = df['close'].rolling(window=50, min_periods=1).mean().iloc[-1]
     sma200 = df['close'].rolling(window=200, min_periods=1).mean().iloc[-1]
     
     # Weekly SMAs
-    weekly = df['close'].resample('W').last()
-    sma10_weekly = weekly.rolling(window=10, min_periods=1).mean().iloc[-1]
-    sma30_weekly = weekly.rolling(window=30, min_periods=1).mean().iloc[-1]
+    weekly = df['close'].resample('W').last().dropna()
+    sma10_weekly = weekly.rolling(window=10, min_periods=1).mean().iloc[-1] if len(weekly) >= 1 else np.nan
+    sma30_weekly = weekly.rolling(window=30, min_periods=1).mean().iloc[-1] if len(weekly) >= 1 else np.nan
     
     # ADR - Average Daily Range %
+    adr = np.nan
     if all(col in df.columns for col in ['high', 'low', 'close']):
-        daily_range_pct = (df['high'] - df['low']) / df['close'].replace(0, np.nan)
+        high = pd.to_numeric(df['high'], errors='coerce')
+        low = pd.to_numeric(df['low'], errors='coerce')
+        close = pd.to_numeric(df['close'], errors='coerce')
+        daily_range_pct = (high - low) / close.replace(0, np.nan)
         adr = daily_range_pct.rolling(window=14, min_periods=5).mean().iloc[-1] * 100
-    else:
-        adr = np.nan
     
     return (
-        round(float(sma50), 2) if not pd.isna(sma50) else np.nan,
-        round(float(sma200), 2) if not pd.isna(sma200) else np.nan,
-        round(float(sma10_weekly), 2) if not pd.isna(sma10_weekly) else np.nan,
-        round(float(sma30_weekly), 2) if not pd.isna(sma30_weekly) else np.nan,
-        round(float(adr), 2) if not pd.isna(adr) else np.nan
+        round(float(sma50), 2) if pd.notna(sma50) else np.nan,
+        round(float(sma200), 2) if pd.notna(sma200) else np.nan,
+        round(float(sma10_weekly), 2) if pd.notna(sma10_weekly) else np.nan,
+        round(float(sma30_weekly), 2) if pd.notna(sma30_weekly) else np.nan,
+        round(float(adr), 2) if pd.notna(adr) else np.nan
     )
 
 
@@ -251,7 +257,7 @@ def generate_tradingview_csv(df_stocks, output_dir, ref_data, percentile_values=
     return ''.join(lines)
 
 
-# ====================== MAIN FUNCTION (ENHANCED) ======================
+# ====================== MAIN FUNCTION (ENHANCED with fixes) ======================
 def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=None, percentiles=None, debug=False):
     os.makedirs(os.path.dirname(log_file), exist_ok=True)
     logging.basicConfig(filename=log_file, level=logging.INFO, format="%(asctime)s - %(message)s")
@@ -336,14 +342,18 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
                 rs_results.append((ticker, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan))
                 continue
 
-            # === NEW INDICATORS ===
+            # === FIXED: ROBUST PRICE DATAFRAME FOR INDICATORS ===
             price_df = pd.DataFrame({
-                'open': df_data.get('open', np.nan),
-                'high': df_data.get('high', np.nan),
-                'low': df_data.get('low', np.nan),
                 'close': df_data['close']
-            }, index=pd.to_datetime(df_data["datetime"], unit='s')).sort_index()
+            }, index=pd.to_datetime(df_data["datetime"], unit='s'))
 
+            for col in ['open', 'high', 'low']:
+                if col in df_data.columns:
+                    price_df[col] = df_data[col]
+
+            price_df = price_df.sort_index()
+
+            # Calculate new indicators
             sma50, sma200, sma10w, sma30w, adr = calculate_smas_and_adr(price_df)
 
             # === ORIGINAL RS CALCULATIONS (UNCHANGED) ===
@@ -378,7 +388,7 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
             log_missing_rs(ticker, "-" * 60, missing_rs_log)
             rs_results.append((ticker, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan, np.nan))
 
-    # ====================== OUTPUT ======================
+    # ====================== OUTPUT (UNCHANGED) ======================
     df_stocks = pd.DataFrame(rs_results, columns=[
         "Ticker", "RS", "1M_RS", "3M_RS", "6M_RS",
         "SMA50", "SMA200", "SMA10_Weekly", "SMA30_Weekly", "ADR"
@@ -387,7 +397,6 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
     if not metadata_df.empty:
         df_stocks = df_stocks.merge(metadata_df, on="Ticker", how="left")
 
-    # Calculate Percentiles
     for col in ["RS", "1M_RS", "3M_RS", "6M_RS"]:
         valid = df_stocks[col].dropna()
         if not valid.empty:
@@ -436,12 +445,12 @@ def main(arctic_db_path, reference_ticker, output_dir, log_file, metadata_file=N
     print(f"\n✅ ENHANCED NSE RS CALCULATION COMPLETE!")
     print(f"Valid RS: {valid_rs_count:,} / {len(df_stocks):,}")
     print(f"Output → {output_dir}/")
-    print(f"   • rs_stocks.csv (with new SMA & ADR columns)")
+    print(f"   • rs_stocks.csv (with SMA50, SMA200, SMA10_Weekly, SMA30_Weekly, ADR)")
     print(f"   • rs_industries.csv")
     print(f"   • RSRATING.csv")
     print(f"   • logs/debug_rs/Missing_RS.log")
 
-if debug:
+    if debug:
         print("\nStarting FULL DEBUG export...")
         debug_records = []
         strength_ref_cached = strength(ref_closes)
@@ -477,7 +486,6 @@ if debug:
             pd.DataFrame(chunk).to_csv(os.path.join(debug_rs_dir, f"debug-rs-part{i+1}.csv"), index=False)
         print(f"Full debug export done → {debug_rs_dir}/")
         print("\nStarting FULL DEBUG export... (original logic)")
-        # ... (your original debug block can be kept if needed)
 
 
 if __name__ == "__main__":
