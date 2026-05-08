@@ -4,7 +4,7 @@ import json
 from datetime import datetime
 
 # ==================== CONFIG ====================
-input_path = 'India_Tickers_All.csv'          # Updated path
+input_path = 'source/India_Tickers_All.csv'          # Updated path
 output_dir = 'data'
 logs_dir = 'logs'
 output_json_path = os.path.join(output_dir, 'ticker_info.json')
