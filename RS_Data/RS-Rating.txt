@@ -1,13 +1,13 @@
 // Auto-generated RS Rating thresholds - do not edit manually
-// Last updated: 2026-05-08 11:35 UTC
+// Last updated: 2026-05-08 20:26 UTC
 // Trigger: workflow_run
 
 ```pine_v6
-ind98 = input.float(229.34, "INDIA 98th → RS ≥", group="INDIA Thresholds")
-ind89 = input.float(137.06, "INDIA 89th → RS ≥", group="INDIA Thresholds")
-ind69 = input.float(110.04, "INDIA 69th → RS ≥", group="INDIA Thresholds")
-ind49 = input.float(98.60, "INDIA 49th → RS ≥", group="INDIA Thresholds")
-ind29 = input.float(89.91, "INDIA 29th → RS ≥", group="INDIA Thresholds")
-ind09 = input.float(77.77, "INDIA 9th  → RS ≥", group="INDIA Thresholds")
-ind01 = input.float(56.77, "INDIA 1st  → RS ≥", group="INDIA Thresholds")
+ind98 = input.float(230.22, "INDIA 98th → RS ≥", group="INDIA Thresholds")
+ind89 = input.float(137.18, "INDIA 89th → RS ≥", group="INDIA Thresholds")
+ind69 = input.float(110.74, "INDIA 69th → RS ≥", group="INDIA Thresholds")
+ind49 = input.float(99.17, "INDIA 49th → RS ≥", group="INDIA Thresholds")
+ind29 = input.float(90.22, "INDIA 29th → RS ≥", group="INDIA Thresholds")
+ind09 = input.float(77.93, "INDIA 9th  → RS ≥", group="INDIA Thresholds")
+ind01 = input.float(57.14, "INDIA 1st  → RS ≥", group="INDIA Thresholds")
 ```
