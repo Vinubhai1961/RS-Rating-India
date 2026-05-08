@@ -1,5 +1,5 @@
 Rank,Ticker,Price,DVol,Sector,Industry,RS Percentile,1M_RS Percentile,3M_RS Percentile,6M_RS Percentile,AvgVol,AvgVol10,52WKH,52WKL,MCAP,IPO
-13,SWANDEF.NS,1867.3,174.39K,Producer Manufacturing,Trucks/Construction/Farm Machinery,98.0,25.0,96.0,98.0,25.32K,9.29K,2489.0,140.37,98.37B,No
+5,SWANDEF.NS,1867.3,174.39K,Producer Manufacturing,Trucks/Construction/Farm Machinery,98.0,25.0,96.0,98.0,25.32K,9.29K,2489.0,140.37,98.37B,No
 19,STELLANT.BO,550.2,1.26K,Finance,Investment Banks/Brokers,98.0,1.0,4.0,97.0,6.46K,2.63K,683.8,24.07,3.05B,No
 25,EASTINDIA.BO,99.6,1.05K,Process Industries,Containers/Packaging,98.0,7.0,46.0,59.0,3.52K,1.61K,148.0,44.0,1.47B,No
 29,CALLISTA.BO,126.4,4.56K,Consumer Durables,Home Furnishings,98.0,0.0,4.0,96.0,3.96K,5.09K,225.95,15.16,385.09M,No
@@ -37,12 +37,12 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS Percentile,1M_RS Percentile,3M_RS Perc
 308,AETHER.NS,1214.8,223.02K,Process Industries,Chemicals: Major Diversified,89.0,32.0,75.0,94.0,338.73K,378.41K,1275.1,725.0,161.18B,No
 311,BALAJITELE.NS,122.94,2482.14K,Consumer Services,Movies/Entertainment,89.0,88.0,90.0,78.0,640.90K,775.30K,141.32,64.97,14.99B,No
 317,MCLEODRUSS.NS,60.57,475.81K,Consumer Non-Durables,Food: Specialty/Candy,89.0,97.0,91.0,54.0,626.75K,687.94K,68.47,28.5,6.33B,No
-321,GROWW.NS,208.03,34940.81K,Miscellaneous,Investment Trusts,89.0,52.0,73.0,,39867.42K,38110.11K,227.2,112.0,1288.03B,No
+322,GROWW.NS,208.03,34940.81K,Miscellaneous,Investment Trusts,89.0,52.0,73.0,,39867.42K,38110.11K,227.2,112.0,1288.03B,No
 326,GHVINFRA.BO,264.05,43.68K,Technology Services,Data Processing Services,88.0,2.0,68.0,29.0,28.32K,40.57K,368.5,97.17,19.03B,No
 346,TITANSEC.BO,47.66,18.73K,Finance,Investment Banks/Brokers,88.0,3.0,89.0,81.0,22.27K,9.12K,58.35,29.0,1.19B,No
 348,MPKSTEELS.BO,121.2,126.40K,Non-Energy Minerals,Steel,88.0,9.0,81.0,93.0,31.75K,16.48K,152.8,72.65,1.23B,No
 351,ABSLAMC.NS,1088.6,681.68K,Technology Services,Internet Software/Services,88.0,42.0,86.0,91.0,597.42K,752.21K,1123.5,623.0,314.71B,No
-355,J&KBANK.NS,139.63,13292.64K,Finance,Regional Banks,87.0,58.0,89.0,89.0,7049.59K,6277.44K,145.0,87.3,153.76B,No
+356,J&KBANK.NS,139.63,13292.64K,Finance,Regional Banks,87.0,58.0,89.0,89.0,7049.59K,6277.44K,145.0,87.3,153.76B,No
 368,HIRECT.NS,948.45,152.07K,Producer Manufacturing,Electrical Products,87.0,87.0,91.0,64.0,190.68K,112.49K,1054.25,447.5,32.60B,No
 374,ANDHRSUGAR.NS,102.31,759.58K,Process Industries,Chemicals: Specialty,87.0,89.0,91.0,86.0,425.89K,900.96K,107.23,66.5,13.87B,No
 377,WALCHANNAG.NS,254.99,1276.55K,Producer Manufacturing,Industrial Machinery,87.0,96.0,89.0,92.0,1196.48K,2384.72K,277.75,131.15,17.32B,No
@@ -59,12 +59,12 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS Percentile,1M_RS Percentile,3M_RS Perc
 450,AMBER.NS,8842.5,414.23K,Producer Manufacturing,Industrial Machinery,85.0,83.0,91.0,77.0,359.13K,298.39K,8974.0,5400.5,311.43B,No
 451,JNKINDIA.NS,362.1,152.49K,Producer Manufacturing,Building Products,84.0,89.0,95.0,85.0,469.15K,368.07K,398.0,200.92,20.26B,No
 455,NPL.BO,686.65,13.36K,Process Industries,Chemicals: Specialty,84.0,97.0,96.0,76.0,4.29K,10.45K,770.0,350.0,3.95B,No
-462,GARUDA.NS,201.64,1578.46K,Industrial Services,Engineering & Construction,84.0,70.0,76.0,52.0,1188.87K,1820.86K,249.3,87.5,18.76B,No
+463,GARUDA.NS,201.64,1578.46K,Industrial Services,Engineering & Construction,84.0,70.0,76.0,52.0,1188.87K,1820.86K,249.3,87.5,18.76B,No
 479,SWITCHTE.BO,94.99,0.90K,Producer Manufacturing,Electrical Products,84.0,92.0,75.0,91.0,2.73K,3.40K,97.99,40.0,232.73M,No
 488,NAVINFLUOR.NS,7085.0,188.22K,Process Industries,Chemicals: Specialty,83.0,62.0,63.0,86.0,277.39K,570.57K,7200.0,4189.4,363.36B,No
 493,AEROENTER.NS,111.29,2357.29K,Producer Manufacturing,Industrial Machinery,83.0,94.0,90.0,87.0,399.79K,490.90K,114.8,62.2,12.59B,No
 497,RASRESOR.BO,53.9,3.29K,Consumer Services,Hotels/Resorts/Cruise Lines,83.0,90.0,86.0,88.0,2.67K,11.31K,64.9,33.34,213.97M,No
-502,AYMSYNTEX.NS,231.42,20.16K,Process Industries,Textiles,83.0,80.0,92.0,88.0,41.69K,35.02K,279.33,141.53,13.56B,No
+500,AYMSYNTEX.NS,231.42,20.16K,Process Industries,Textiles,83.0,80.0,92.0,88.0,41.69K,35.02K,279.33,141.53,13.56B,No
 507,ARVIND.NS,447.9,12023.95K,Process Industries,Textiles,83.0,55.0,76.0,90.0,486.30K,306.44K,459.65,274.8,117.40B,No
 509,SHARDACROP.NS,1132.2,200.14K,Distribution Services,Wholesale Distributors,83.0,58.0,34.0,88.0,314.20K,295.92K,1297.0,511.05,102.15B,No
 513,TENNIND.NS,649.15,539.44K,Producer Manufacturing,Auto Parts: Oem,83.0,64.0,76.0,,981.48K,2936.89K,657.0,438.05,,No
