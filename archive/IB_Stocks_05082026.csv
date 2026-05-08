@@ -1,5 +1,5 @@
 Rank,Ticker,Price,DVol,Sector,Industry,RS Percentile,1M_RS Percentile,3M_RS Percentile,6M_RS Percentile,AvgVol,AvgVol10,52WKH,52WKL,MCAP,IPO
-9,SWANDEF.NS,1867.3,174.39K,Producer Manufacturing,Trucks/Construction/Farm Machinery,98.0,25.0,96.0,98.0,25.32K,9.29K,2489.0,140.37,98.37B,No
+13,SWANDEF.NS,1867.3,174.39K,Producer Manufacturing,Trucks/Construction/Farm Machinery,98.0,25.0,96.0,98.0,25.32K,9.29K,2489.0,140.37,98.37B,No
 19,STELLANT.BO,550.2,1.26K,Finance,Investment Banks/Brokers,98.0,1.0,4.0,97.0,6.46K,2.63K,683.8,24.07,3.05B,No
 25,EASTINDIA.BO,99.6,1.05K,Process Industries,Containers/Packaging,98.0,7.0,46.0,59.0,3.52K,1.61K,148.0,44.0,1.47B,No
 29,CALLISTA.BO,126.4,4.56K,Consumer Durables,Home Furnishings,98.0,0.0,4.0,96.0,3.96K,5.09K,225.95,15.16,385.09M,No
@@ -42,13 +42,13 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS Percentile,1M_RS Percentile,3M_RS Perc
 346,TITANSEC.BO,47.66,18.73K,Finance,Investment Banks/Brokers,88.0,3.0,89.0,81.0,22.27K,9.12K,58.35,29.0,1.19B,No
 348,MPKSTEELS.BO,121.2,126.40K,Non-Energy Minerals,Steel,88.0,9.0,81.0,93.0,31.75K,16.48K,152.8,72.65,1.23B,No
 351,ABSLAMC.NS,1088.6,681.68K,Technology Services,Internet Software/Services,88.0,42.0,86.0,91.0,597.42K,752.21K,1123.5,623.0,314.71B,No
-356,J&KBANK.NS,139.63,13292.64K,Finance,Regional Banks,87.0,58.0,89.0,89.0,7049.59K,6277.44K,145.0,87.3,153.76B,No
+355,J&KBANK.NS,139.63,13292.64K,Finance,Regional Banks,87.0,58.0,89.0,89.0,7049.59K,6277.44K,145.0,87.3,153.76B,No
 368,HIRECT.NS,948.45,152.07K,Producer Manufacturing,Electrical Products,87.0,87.0,91.0,64.0,190.68K,112.49K,1054.25,447.5,32.60B,No
 374,ANDHRSUGAR.NS,102.31,759.58K,Process Industries,Chemicals: Specialty,87.0,89.0,91.0,86.0,425.89K,900.96K,107.23,66.5,13.87B,No
 377,WALCHANNAG.NS,254.99,1276.55K,Producer Manufacturing,Industrial Machinery,87.0,96.0,89.0,92.0,1196.48K,2384.72K,277.75,131.15,17.32B,No
 397,NEOINFRA.BO,44.79,2.71K,Finance,Real Estate Development,86.0,14.0,81.0,83.0,1.36K,0.88K,54.99,24.78,237.69M,No
-400,ARMAN.BO,105.0,101.89K,Process Industries,Textiles,86.0,7.0,52.0,87.0,20.48K,45.79K,115.0,58.0,547.10M,No
-401,NLCINDIA.NS,328.7,8431.52K,Utilities,Electric Utilities,86.0,74.0,85.0,87.0,3826.42K,6184.63K,331.7,212.85,455.79B,No
+400,NLCINDIA.NS,328.7,8431.52K,Utilities,Electric Utilities,86.0,74.0,85.0,87.0,3826.42K,6184.63K,331.7,212.85,455.79B,No
+401,ARMAN.BO,105.0,101.89K,Process Industries,Textiles,86.0,7.0,52.0,87.0,20.48K,45.79K,115.0,58.0,547.10M,No
 404,GLOBALLOG.BO,113.7,9.60K,Transportation,Air Freight/Couriers,86.0,28.0,73.0,,15.18K,5.28K,172.91,79.2,1.64B,No
 411,ALSL.BO,74.81,235.02K,Finance,Investment Banks/Brokers,86.0,93.0,94.0,90.0,63.06K,91.21K,77.04,42.93,3.49B,No
 426,EFORU.BO,74.55,5.64K,Distribution Services,Wholesale Distributors,85.0,1.0,78.0,94.0,6.88K,0.41K,103.05,43.82,445.73M,No
@@ -64,7 +64,7 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS Percentile,1M_RS Percentile,3M_RS Perc
 488,NAVINFLUOR.NS,7085.0,188.22K,Process Industries,Chemicals: Specialty,83.0,62.0,63.0,86.0,277.39K,570.57K,7200.0,4189.4,363.36B,No
 493,AEROENTER.NS,111.29,2357.29K,Producer Manufacturing,Industrial Machinery,83.0,94.0,90.0,87.0,399.79K,490.90K,114.8,62.2,12.59B,No
 497,RASRESOR.BO,53.9,3.29K,Consumer Services,Hotels/Resorts/Cruise Lines,83.0,90.0,86.0,88.0,2.67K,11.31K,64.9,33.34,213.97M,No
-501,AYMSYNTEX.NS,231.42,20.16K,Process Industries,Textiles,83.0,80.0,92.0,88.0,41.69K,35.02K,279.33,141.53,13.56B,No
+502,AYMSYNTEX.NS,231.42,20.16K,Process Industries,Textiles,83.0,80.0,92.0,88.0,41.69K,35.02K,279.33,141.53,13.56B,No
 507,ARVIND.NS,447.9,12023.95K,Process Industries,Textiles,83.0,55.0,76.0,90.0,486.30K,306.44K,459.65,274.8,117.40B,No
 509,SHARDACROP.NS,1132.2,200.14K,Distribution Services,Wholesale Distributors,83.0,58.0,34.0,88.0,314.20K,295.92K,1297.0,511.05,102.15B,No
 513,TENNIND.NS,649.15,539.44K,Producer Manufacturing,Auto Parts: Oem,83.0,64.0,76.0,,981.48K,2936.89K,657.0,438.05,,No
@@ -80,7 +80,7 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS Percentile,1M_RS Percentile,3M_RS Perc
 542,RBLBANK.NS,345.75,5994.70K,Finance,Major Banks,82.0,30.0,64.0,70.0,5937.28K,9606.48K,349.9,188.1,213.79B,No
 546,BAFNAPH.NS,131.22,3.19K,Health Technology,Pharmaceuticals: Major,82.0,60.0,58.0,53.0,4.52K,2.27K,202.06,71.57,3.10B,No
 562,DHANBANK.NS,32.2,2237.93K,Finance,Major Banks,81.0,84.0,87.0,84.0,1569.81K,5797.62K,33.99,19.45,12.71B,No
-565,JPOLYINVST.NS,1134.0,7.55K,Finance,Investment Managers,81.0,25.0,69.0,80.0,146.20K,8.43K,1487.7,716.05,11.92B,No
+564,JPOLYINVST.NS,1134.0,7.55K,Finance,Investment Managers,81.0,25.0,69.0,80.0,146.20K,8.43K,1487.7,716.05,11.92B,No
 577,BORANA.NS,349.0,62.74K,Process Industries,Textiles,81.0,27.0,13.0,93.0,52.74K,58.14K,420.0,211.0,9.30B,No
 606,ISGEC.NS,1076.0,91.59K,Industrial Services,Engineering & Construction,80.0,65.0,92.0,85.0,140.96K,69.67K,1281.3,683.95,79.12B,No
 609,JBCHEPHARM.NS,2143.2,233.23K,Health Technology,Pharmaceuticals: Major,80.0,44.0,65.0,86.0,351.99K,290.26K,2195.0,1510.1,344.11B,No
