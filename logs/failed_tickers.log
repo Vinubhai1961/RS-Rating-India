@@ -1134,3 +1134,12 @@
 2026-05-11 13:59:37,075 - NSE trading days used: 20260505T, 20260506T, 20260507T, 20260508T, 20260511T
 2026-05-11 13:59:37,075 - RSRATING.csv (NSE) generated → RS_Data/RSRATING.csv
 2026-05-11 13:59:37,075 - NSE RS calculation completed. 3177 tickers, 3177 with valid RS.
+2026-05-12 13:14:53,724 - Starting NSE India RS calculation
+2026-05-12 13:14:53,724 - Missing RS debug log: logs/debug_rs/Missing_RS.log
+2026-05-12 13:14:53,729 - Found 3231 symbols in tmp/arctic_db
+2026-05-12 13:14:53,753 - Metadata loaded: 3,239 tickers
+2026-05-12 13:14:53,753 - Starting RS calculation for 3231 tickers vs ^CRSLDX
+2026-05-12 13:15:21,383 - Latest market date (NSE): 2026-05-12
+2026-05-12 13:15:21,390 - NSE trading days used: 20260506T, 20260507T, 20260508T, 20260511T, 20260512T
+2026-05-12 13:15:21,390 - RSRATING.csv (NSE) generated → RS_Data/RSRATING.csv
+2026-05-12 13:15:21,391 - NSE RS calculation completed. 3230 tickers, 3230 with valid RS.
