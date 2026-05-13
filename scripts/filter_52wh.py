@@ -15,7 +15,7 @@ PRICE_THRESHOLD = 30.0
 MAX_PCT_BELOW   = 25.0
 MIN_AVGVOL10    = 400_000
 
-DEBUG_TICKER = "BBOX.NS"
+DEBUG_TICKER = "HINDCOPPER.NS"
 # ────────────────────────────────────────────────
 
 def parse_volume(x):
