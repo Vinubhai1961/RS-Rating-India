@@ -1,9 +1,9 @@
 // Auto-generated RS Rating thresholds - do not edit manually
-// Last updated: 2026-05-21 14:28 UTC
-ind98 = input.float(228.98, "INDIA 98th → RS ≥", group="INDIA Thresholds")
-ind89 = input.float(135.64, "INDIA 89th → RS ≥", group="INDIA Thresholds")
-ind69 = input.float(108.34, "INDIA 69th → RS ≥", group="INDIA Thresholds")
-ind49 = input.float(97.53, "INDIA 49th → RS ≥", group="INDIA Thresholds")
-ind29 = input.float(88.55, "INDIA 29th → RS ≥", group="INDIA Thresholds")
-ind09 = input.float(75.72, "INDIA 9th  → RS ≥", group="INDIA Thresholds")
-ind01 = input.float(56.06, "INDIA 1st  → RS ≥", group="INDIA Thresholds")
+// Last updated: 2026-05-22 13:44 UTC
+ind98 = input.float(228.66, "INDIA 98th → RS ≥", group="INDIA Thresholds")
+ind89 = input.float(136.16, "INDIA 89th → RS ≥", group="INDIA Thresholds")
+ind69 = input.float(108.91, "INDIA 69th → RS ≥", group="INDIA Thresholds")
+ind49 = input.float(97.96, "INDIA 49th → RS ≥", group="INDIA Thresholds")
+ind29 = input.float(88.93, "INDIA 29th → RS ≥", group="INDIA Thresholds")
+ind09 = input.float(75.93, "INDIA 9th  → RS ≥", group="INDIA Thresholds")
+ind01 = input.float(56.04, "INDIA 1st  → RS ≥", group="INDIA Thresholds")
