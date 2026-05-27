@@ -15,11 +15,11 @@ PRICE_THRESHOLD = 30.0
 MAX_PCT_BELOW   = 25.0
 MIN_AVGVOL10    = 300_000
 
-DEBUG_TICKER = "THERMAX.NS"
+DEBUG_TICKER = "THERMAX.NS"   # ← Changed for testing
 # ────────────────────────────────────────────────
 
 def parse_volume(x):
-    if pd.isna(x):
+    if pd.isna(x) or str(x).strip() in ['', 'nan', 'NaN']:
         return None
     x = str(x).strip().upper()
 
@@ -47,15 +47,13 @@ def debug_ticker(df, ticker):
     
     if pd.notna(high) and pd.notna(price):
         pct_from_high = ((price - high) / high * 100).round(2)
-        pct_below = max(0, -pct_from_high)
     else:
         pct_from_high = None
-        pct_below = None
 
     print(f"\n=== DEBUG: {ticker} ===")
     print(f"Price          : ${price:,.2f}")
     print(f"RS Percentile  : {rs:.1f}")
-    print(f"10d Avg Vol    : {vol:,.0f}" if pd.notna(vol) else "10d Avg Vol    : MISSING")
+    print(f"10d Avg Vol    : {'MISSING' if pd.isna(vol) else f'{vol:,.0f}'}")
     print(f"52W High       : ${high:,.2f}")
     print(f"% from 52WH    : {pct_from_high}%")
     print("-" * 40)
@@ -71,7 +69,7 @@ def debug_ticker(df, ticker):
     if pd.notna(vol) and vol < MIN_AVGVOL10:
         issues.append(f"• AvgVol10 = {vol:,.0f} (must be ≥ {MIN_AVGVOL10:,})")
     elif pd.isna(vol):
-        print("→ Volume data MISSING → Included as potential opportunity")
+        print("→ Volume data MISSING → Will be INCLUDED as opportunity")
 
     if not issues:
         print("→ PASSED ALL FILTERS ✓")
@@ -99,22 +97,22 @@ def main():
             else:
                 df[col] = pd.to_numeric(df[col], errors='coerce')
 
-    # IMPORTANT CHANGE: Only drop rows missing critical data (keep missing volume)
+    # Keep rows even if volume is missing
     df = df.dropna(subset=['Price', '52WKH', 'RS Percentile'])
 
     # Calculate % from 52-week high
     df['%_From_52WKH'] = ((df['Price'] - df['52WKH']) / df['52WKH']) * 100
     df['%_From_52WKH'] = df['%_From_52WKH'].round(2)
 
-    # Debug specific ticker
+    # Debug
     debug_ticker(df, DEBUG_TICKER)
 
-    # Updated filter - allow missing volume
+    # Filter: Include missing volume
     mask = (
         (df['%_From_52WKH'] >= -MAX_PCT_BELOW) &
         (df['RS Percentile'] >= RS_THRESHOLD) &
         (df['Price'] >= PRICE_THRESHOLD) &
-        ((df['AvgVol10'] >= MIN_AVGVOL10) | df['AvgVol10'].isna())   # ← Key change
+        ((df['AvgVol10'] >= MIN_AVGVOL10) | df['AvgVol10'].isna())
     )
 
     filtered = df[mask].copy()
@@ -123,34 +121,27 @@ def main():
     print(f"  • within {MAX_PCT_BELOW}% of 52-week high (including new highs)")
     print(f"  • RS Percentile ≥ {RS_THRESHOLD}")
     print(f"  • Price ≥ ${PRICE_THRESHOLD:,}")
-    print(f"  • 10-day Avg Volume ≥ {MIN_AVGVOL10:,} OR **volume data missing**")
+    print(f"  • Volume ≥ {MIN_AVGVOL10:,} OR **volume missing**")
     print(f"→ {len(filtered):,} rows remain")
 
-    # Column selection
+    # Save
     desired = [
-        'Rank', 'Ticker', 'Price', 'DVol',
-        'Sector', 'Industry',
-        'RS Percentile',
-        '1M_RS Percentile', '3M_RS Percentile', '6M_RS Percentile',
-        'AvgVol', 'AvgVol10',
-        '52WKH', '52WKL', 'MCAP',
-        '%_From_52WKH'
+        'Rank', 'Ticker', 'Price', 'DVol', 'Sector', 'Industry',
+        'RS Percentile', '1M_RS Percentile', '3M_RS Percentile', 
+        '6M_RS Percentile', 'AvgVol', 'AvgVol10', '52WKH', 
+        '52WKL', 'MCAP', '%_From_52WKH'
     ]
 
     available = [c for c in desired if c in filtered.columns]
     result = filtered[available].sort_values('RS Percentile', ascending=False).reset_index(drop=True)
 
     result.to_csv(OUTPUT_PATH, index=False)
-    print(f"\nOutput overwritten → {OUTPUT_PATH}")
-    print(f"Total rows saved: {len(result):,}")
+    print(f"\nOutput saved → {OUTPUT_PATH}")
+    print(f"Total rows: {len(result):,}")
 
-    # Show how many have missing volume
     missing_vol = result['AvgVol10'].isna().sum()
     if missing_vol > 0:
-        print(f"⚠️  {missing_vol} tickers have MISSING volume data (included as opportunities)")
-
-    print("\nFirst 10 rows:")
-    print(result.head(10).to_string(index=False))
+        print(f"⚠️  {missing_vol} tickers have MISSING volume data (included)")
 
 
 if __name__ == "__main__":
