@@ -46,8 +46,8 @@ def debug_ticker(df, ticker):
     high = row['52WKH']
     
     if pd.notna(high) and pd.notna(price):
-        pct_from_high = ((price - high) / high * 100).round(2)   # Changed sign
-        pct_below = max(0, -pct_from_high)                       # For display
+        pct_from_high = ((price - high) / high * 100).round(2)
+        pct_below = max(0, -pct_from_high)
     else:
         pct_from_high = None
         pct_below = None
@@ -55,20 +55,23 @@ def debug_ticker(df, ticker):
     print(f"\n=== DEBUG: {ticker} ===")
     print(f"Price          : ${price:,.2f}")
     print(f"RS Percentile  : {rs:.1f}")
-    print(f"10d Avg Vol    : {vol:,.0f}")
+    print(f"10d Avg Vol    : {vol:,.0f}" if pd.notna(vol) else "10d Avg Vol    : MISSING")
     print(f"52W High       : ${high:,.2f}")
-    print(f"% from 52WH    : {pct_from_high}%")   # Can be negative (new high)
+    print(f"% from 52WH    : {pct_from_high}%")
     print("-" * 40)
 
     issues = []
-    if pct_from_high is None or pct_from_high < -MAX_PCT_BELOW:   # Allow new highs
+    if pct_from_high is None or pct_from_high < -MAX_PCT_BELOW:
         issues.append(f"• Too far from 52WH ({pct_from_high}%)")
     if rs < RS_THRESHOLD:
         issues.append(f"• RS Percentile = {rs} (must be ≥ {RS_THRESHOLD})")
     if price < PRICE_THRESHOLD:
         issues.append(f"• Price = ${price:,.2f} (must be ≥ ${PRICE_THRESHOLD})")
-    if vol < MIN_AVGVOL10:
+    
+    if pd.notna(vol) and vol < MIN_AVGVOL10:
         issues.append(f"• AvgVol10 = {vol:,.0f} (must be ≥ {MIN_AVGVOL10:,})")
+    elif pd.isna(vol):
+        print("→ Volume data MISSING → Included as potential opportunity")
 
     if not issues:
         print("→ PASSED ALL FILTERS ✓")
@@ -96,21 +99,22 @@ def main():
             else:
                 df[col] = pd.to_numeric(df[col], errors='coerce')
 
-    df = df.dropna(subset=['Price', '52WKH', 'RS Percentile', 'AvgVol10'])
+    # IMPORTANT CHANGE: Only drop rows missing critical data (keep missing volume)
+    df = df.dropna(subset=['Price', '52WKH', 'RS Percentile'])
 
-    # Calculate % from 52-week high (negative = new high)
+    # Calculate % from 52-week high
     df['%_From_52WKH'] = ((df['Price'] - df['52WKH']) / df['52WKH']) * 100
     df['%_From_52WKH'] = df['%_From_52WKH'].round(2)
 
     # Debug specific ticker
     debug_ticker(df, DEBUG_TICKER)
 
-    # Updated filter - allow new highs
+    # Updated filter - allow missing volume
     mask = (
-        (df['%_From_52WKH'] >= -MAX_PCT_BELOW) &      # ← Fixed: allow up to 27% above
+        (df['%_From_52WKH'] >= -MAX_PCT_BELOW) &
         (df['RS Percentile'] >= RS_THRESHOLD) &
         (df['Price'] >= PRICE_THRESHOLD) &
-        (df['AvgVol10'] >= MIN_AVGVOL10)
+        ((df['AvgVol10'] >= MIN_AVGVOL10) | df['AvgVol10'].isna())   # ← Key change
     )
 
     filtered = df[mask].copy()
@@ -119,10 +123,10 @@ def main():
     print(f"  • within {MAX_PCT_BELOW}% of 52-week high (including new highs)")
     print(f"  • RS Percentile ≥ {RS_THRESHOLD}")
     print(f"  • Price ≥ ${PRICE_THRESHOLD:,}")
-    print(f"  • 10-day Avg Volume ≥ {MIN_AVGVOL10:,} shares")
+    print(f"  • 10-day Avg Volume ≥ {MIN_AVGVOL10:,} OR **volume data missing**")
     print(f"→ {len(filtered):,} rows remain")
 
-    # ... rest of your code (column selection, sorting, save) ...
+    # Column selection
     desired = [
         'Rank', 'Ticker', 'Price', 'DVol',
         'Sector', 'Industry',
@@ -139,6 +143,11 @@ def main():
     result.to_csv(OUTPUT_PATH, index=False)
     print(f"\nOutput overwritten → {OUTPUT_PATH}")
     print(f"Total rows saved: {len(result):,}")
+
+    # Show how many have missing volume
+    missing_vol = result['AvgVol10'].isna().sum()
+    if missing_vol > 0:
+        print(f"⚠️  {missing_vol} tickers have MISSING volume data (included as opportunities)")
 
     print("\nFirst 10 rows:")
     print(result.head(10).to_string(index=False))
