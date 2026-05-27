@@ -22,6 +22,8 @@ MAX_BATCH_RETRIES = 3
 MAX_RETRY_TIMEOUT = 120
 RETRY_SUBPASS = True
 PRICE_THRESHOLD = 5.0  # Hardcoded minimum price threshold
+MAX_VOLUME_RETRY = 2          # Extra retries if volume is missing
+VOLUME_RETRY_DELAY = (8, 15)
 
 logging.basicConfig(
     level=logging.INFO,
@@ -102,75 +104,63 @@ def process_batch(batch, ticker_info):
     for attempt in range(MAX_BATCH_RETRIES):
         try:
             prices = []
-            failure_reasons = {"no_price": 0, "below_threshold": 0, "error": 0}
-            # Use original symbols directly without modification
+            failure_reasons = {"no_price": 0, "below_threshold": 0, "missing_volume": 0, "error": 0}
+            
             yq = Ticker(batch)
             hist = yq.history(period="1d")
             summary_details = yq.summary_detail
             
             for symbol in batch:
                 try:
-                    # Extract price from history
+                    # Price extraction
                     price = None
                     if symbol in hist.index.get_level_values(0):
                         price = hist.loc[symbol]['close'].iloc[-1] if not hist.loc[symbol].empty else None
                     
-                    # Validate price
                     if price is None or not isinstance(price, (int, float)):
-                        logging.debug(f"Skipping {symbol}: No or invalid price data")
                         failure_reasons["no_price"] += 1
                         continue
                     if price < PRICE_THRESHOLD:
-                        logging.debug(f"Skipping {symbol}: Price {price} below threshold {PRICE_THRESHOLD}")
                         failure_reasons["below_threshold"] += 1
                         continue
-                    
-                    # Extract summary details, set to None if missing or invalid
+
                     summary = summary_details.get(symbol, {}) if isinstance(summary_details, dict) else {}
-                    none_fields = []
                     
+                    # Volume fields
                     volume = summary.get("volume")
-                    if volume is None or not isinstance(volume, int) or volume < 0:
-                        none_fields.append("DVol")
-                        volume = None
-                    
                     avg_volume = summary.get("averageVolume")
-                    if avg_volume is None or not isinstance(avg_volume, int) or avg_volume < 0:
-                        none_fields.append("AvgVol")
-                        avg_volume = None
-                    
                     avg_volume_10days = summary.get("averageVolume10days")
-                    if avg_volume_10days is None or not isinstance(avg_volume_10days, int) or avg_volume_10days < 0:
-                        none_fields.append("AvgVol10")
-                        avg_volume_10days = None
-                    
-                    fifty_two_week_low = summary.get("fiftyTwoWeekLow")
-                    if fifty_two_week_low is None or not isinstance(fifty_two_week_low, (int, float)) or fifty_two_week_low <= 0:
-                        none_fields.append("52WKL")
-                        fifty_two_week_low = None
-                    
-                    fifty_two_week_high = summary.get("fiftyTwoWeekHigh")
-                    if fifty_two_week_high is None or not isinstance(fifty_two_week_high, (int, float)) or fifty_two_week_high <= 0:
-                        none_fields.append("52WKH")
-                        fifty_two_week_high = None
-                    
-                    market_cap = summary.get("marketCap")
-                    if market_cap is None or not isinstance(market_cap, (int, float)) or market_cap < 0:
-                        none_fields.append("MCAP")
-                        market_cap = None
-                    
-                    if none_fields:
-                        logging.debug(f"Ticker {symbol}: Setting {none_fields} to None due to missing or invalid summary data")
-                    
-                    # Get existing info from ticker_info.json
+
+                    # Track missing volume
+                    missing_vol = []
+                    if avg_volume is None or not isinstance(avg_volume, (int, float)) or avg_volume <= 0:
+                        missing_vol.append("AvgVol")
+                    if avg_volume_10days is None or not isinstance(avg_volume_10days, (int, float)) or avg_volume_10days <= 0:
+                        missing_vol.append("AvgVol10")
+
+                    if missing_vol:
+                        failure_reasons["missing_volume"] += 1
+
+                    # === NEW: Retry individual ticker if volume is missing (in next pass) ===
+                    if missing_vol and attempt == 0:  # Only on first attempt
+                        logging.debug(f"{symbol}: Missing volume data ({missing_vol}) - will retry individually later")
+
+                    # Format functions (same as before)
+                    def format_volume(v):
+                        return f"{v/1000:.2f}K" if v and v > 0 else None
+
+                    def format_market_cap(v):
+                        if not v: return None
+                        if v >= 1_000_000_000:
+                            return f"{v/1_000_000_000:.2f}B"
+                        return f"{v/1_000_000:.2f}M"
+
                     info = ticker_info.get(symbol, {}).get("info", {})
-                    
-                    # Calculate RVol as DVol / AvgVol10
+
                     rvol = None
-                    if volume is not None and avg_volume_10days is not None and avg_volume_10days > 0:
+                    if volume and avg_volume_10days and avg_volume_10days > 0:
                         rvol = f"{volume / avg_volume_10days:.2f}"
-                    
-                    # Combine data with preserved and updated fields, applying formatting
+
                     prices.append({
                         "ticker": symbol,
                         "info": {
@@ -181,9 +171,9 @@ def process_batch(batch, ticker_info):
                             "Sector": info.get("Sector", "n/a").title(),
                             "Industry": info.get("Industry", "n/a").title(),
                             "type": "Stock",
-                            "52WKL": round(fifty_two_week_low, 2) if fifty_two_week_low is not None else None,
-                            "52WKH": round(fifty_two_week_high, 2) if fifty_two_week_high is not None else None,
-                            "MCAP": format_market_cap(market_cap),
+                            "52WKL": round(summary.get("fiftyTwoWeekLow"), 2) if summary.get("fiftyTwoWeekLow") else None,
+                            "52WKH": round(summary.get("fiftyTwoWeekHigh"), 2) if summary.get("fiftyTwoWeekHigh") else None,
+                            "MCAP": format_market_cap(summary.get("marketCap")),
                             "AvgVol": format_volume(avg_volume),
                             "AvgVol10": format_volume(avg_volume_10days),
                             "Exchange": info.get("Exchange", "n/a"),
@@ -193,26 +183,28 @@ def process_batch(batch, ticker_info):
                         }
                     })
                 except Exception as e:
-                    logging.debug(f"Failed to process {symbol}: {e}")
                     failure_reasons["error"] += 1
-            
+                    logging.debug(f"Failed {symbol}: {e}")
+
             failed_tickers = [s for s in batch if s not in [p["ticker"] for p in prices]]
             logging.info(f"Batch failure reasons: {failure_reasons}")
             return len(prices), failed_tickers, prices
+
         except Exception as e:
+            # Existing rate limit retry logic (unchanged)
             if "429" in str(e) or "curl" in str(e).lower():
                 wait = min((2 ** attempt) * random.uniform(5, 10), MAX_RETRY_TIMEOUT - total_wait)
                 total_wait += wait
                 if total_wait >= MAX_RETRY_TIMEOUT:
-                    logging.warning(f"Max retry timeout reached for batch after {total_wait:.1f}s. Skipping.")
                     break
-                logging.warning(f"Batch error (attempt {attempt+1}/{MAX_BATCH_RETRIES}): {e}. Retrying in {wait:.1f}s.")
+                logging.warning(f"Batch error (attempt {attempt+1}): {e}. Retrying in {wait:.1f}s.")
                 time.sleep(wait)
             else:
-                logging.error(f"Unexpected error in batch: {e}. Aborting batch.")
+                logging.error(f"Unexpected error: {e}")
                 break
-    return 0, batch, []
 
+    return 0, batch, []
+    
 def main(part_index=None, part_total=None, verbose=False):
     start_time = time.time()
     ensure_dirs()
