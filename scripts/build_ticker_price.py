@@ -99,28 +99,77 @@ def process_batch(batch, ticker_info, is_volume_retry=False):
     start_time = time.time()
     prices = []
     failure_reasons = {"no_price": 0, "below_threshold": 0, "missing_volume": 0, "error": 0}
-    
+
     try:
-        yq = Ticker(batch)
-        hist = yq.history(period="1d")
-        summary_details = yq.summary_detail
-        
+        # Keep original logic intact
+        yq = Ticker(batch, validate=False)
+
+        try:
+            hist = yq.history(period="1d")
+        except Exception as e:
+            logging.error(f"History fetch failed for batch: {e}")
+            return 0, batch, []
+
+        try:
+            summary_details = yq.summary_detail
+        except Exception as e:
+            logging.warning(f"summary_detail fetch failed: {e}")
+            summary_details = {}
+
         for symbol in batch:
             try:
-                # Extract price from history
+                # -----------------------------
+                # PRICE EXTRACTION (PATCHED)
+                # -----------------------------
                 price = None
-                if symbol in hist.index.get_level_values(0):
-                    price = hist.loc[symbol]['close'].iloc[-1] if not hist.loc[symbol].empty else None
-                
+
+                try:
+                    if hasattr(hist, "index"):
+                        symbols_in_hist = hist.index.get_level_values(0)
+
+                        if symbol in symbols_in_hist:
+                            symbol_hist = hist.loc[symbol]
+
+                            if not symbol_hist.empty:
+                                close_series = symbol_hist.get("close")
+
+                                if close_series is not None and len(close_series) > 0:
+                                    price = close_series.iloc[-1]
+
+                except Exception as hist_err:
+                    logging.debug(f"{symbol} history parse failed: {hist_err}")
+
+                # Handle string prices safely
+                if isinstance(price, str):
+                    try:
+                        price = float(price)
+                    except:
+                        price = None
+
                 if price is None or not isinstance(price, (int, float)):
                     failure_reasons["no_price"] += 1
                     continue
+
                 if price < PRICE_THRESHOLD:
                     failure_reasons["below_threshold"] += 1
                     continue
-                
-                summary = summary_details.get(symbol, {}) if isinstance(summary_details, dict) else {}
-                
+
+                # -----------------------------
+                # SUMMARY DETAIL (PATCHED)
+                # -----------------------------
+                summary = {}
+
+                if isinstance(summary_details, dict):
+                    sym_summary = summary_details.get(symbol, {})
+
+                    # Yahoo sometimes returns error strings
+                    if isinstance(sym_summary, str):
+                        logging.debug(f"Invalid summary for {symbol}: {sym_summary}")
+                        sym_summary = {}
+
+                    if isinstance(sym_summary, dict):
+                        summary = sym_summary
+
                 volume = summary.get("volume")
                 avg_volume = summary.get("averageVolume")
                 avg_volume_10days = summary.get("averageVolume10days")
@@ -159,12 +208,17 @@ def process_batch(batch, ticker_info, is_volume_retry=False):
                         "DPChange": info.get("DPChange", None)
                     }
                 })
+
             except Exception as e:
                 failure_reasons["error"] += 1
                 logging.debug(f"Failed to process {symbol}: {e}")
-        
+
         failed_tickers = [s for s in batch if s not in [p["ticker"] for p in prices]]
-        logging.info(f"Batch {'[Volume Retry]' if is_volume_retry else ''} stats: {failure_reasons}")
+
+        logging.info(
+            f"Batch {'[Volume Retry]' if is_volume_retry else ''} stats: {failure_reasons}"
+        )
+
         return len(prices), failed_tickers, prices
 
     except Exception as e:
@@ -172,8 +226,9 @@ def process_batch(batch, ticker_info, is_volume_retry=False):
             logging.warning(f"Rate limit hit in batch: {e}")
         else:
             logging.error(f"Unexpected batch error: {e}")
-        return 0, batch, []
 
+        return 0, batch, []
+        
 def main(part_index=None, part_total=None, verbose=False):
     ensure_dirs()
     setup_logging(verbose)
