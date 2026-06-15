@@ -1926,3 +1926,13 @@
 2026-06-15 02:46:59,294 [WARNING] Invalid 52WKL for ZTECH.NS in ticker_price_part_4.json: 0
 2026-06-15 02:46:59,328 [INFO] Merged data saved to data/ticker_price.json with 1997 entries
 2026-06-15 02:46:59,330 [INFO] Price merge completed. Elapsed time: 0.1s
+2026-06-15 22:02:20,228 [INFO] Starting price merge process at 10:02 PM EDT on Monday, June 15, 2026
+2026-06-15 22:02:20,228 [INFO] Searching for ticker_price_part_*.json files in data
+2026-06-15 22:02:20,228 [INFO] Found 5 part files to merge: ['ticker_price_part_0.json', 'ticker_price_part_1.json', 'ticker_price_part_2.json', 'ticker_price_part_3.json', 'ticker_price_part_4.json']
+2026-06-15 22:02:20,230 [INFO] Loaded 640 tickers from ticker_price_part_0.json
+2026-06-15 22:02:20,236 [INFO] Loaded 650 tickers from ticker_price_part_1.json
+2026-06-15 22:02:20,241 [INFO] Loaded 640 tickers from ticker_price_part_2.json
+2026-06-15 22:02:20,247 [INFO] Loaded 617 tickers from ticker_price_part_3.json
+2026-06-15 22:02:20,252 [INFO] Loaded 634 tickers from ticker_price_part_4.json
+2026-06-15 22:02:20,305 [INFO] Merged data saved to data/ticker_price.json with 3181 entries
+2026-06-15 22:02:20,307 [INFO] Price merge completed. Elapsed time: 0.1s
