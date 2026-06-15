@@ -26,21 +26,37 @@ bse_tickers = len(df[df['Exchange'] == 'BSE'])
 print(f"Loaded {initial_total_tickers} tickers from source.")
 
 # ==================== COLUMN NAME NORMALIZATION ====================
-# Standardize column names (handle case and spacing differences)
-df.columns = [col.strip() for col in df.columns]
 
+# Remove extra spaces and commas so TradingView column name changes
+# don't break the workflow.
+df.columns = (
+    df.columns
+      .str.strip()
+      .str.replace(',', '', regex=False)
+)
+
+# Normalize known variations to a single standard name
 column_mapping = {
     'Price change % 1 day': 'Price Change % 1 day',
     'Price Change % 1 day': 'Price Change % 1 day',
+
     'Relative volume 1 day': 'Relative Volume 1 day',
     'Relative Volume 1 day': 'Relative Volume 1 day',
-    'Free float %': 'Free float %',
+
+    'Volume 1 day': 'Volume 1 day',
+
+    'High 52 weeks': 'High 52 weeks',
+    'Low 52 weeks': 'Low 52 weeks',
+
     'Performance % Year to date': 'Performance % Year to date',
+
+    'Free float %': 'Free float %',
 }
 
-for old_name, new_name in column_mapping.items():
-    if old_name in df.columns:
-        df = df.rename(columns={old_name: new_name})
+df = df.rename(columns=column_mapping)
+
+print("Detected columns:")
+print(sorted(df.columns.tolist()))
 
 # ==================== CLEANING FUNCTIONS ====================
 def clean_percentage(col_name):
