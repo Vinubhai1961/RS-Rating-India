@@ -87,12 +87,26 @@ df = df[~df['Description'].str.contains('|'.join(unwanted), case=False, na=False
 exchange_priority = {'NSE': 0, 'BSE': 1}
 df['exchange_priority'] = df['Exchange'].map(exchange_priority).fillna(99)
 
+# Count symbols appearing on both exchanges
+both_exchanges = (
+    df.groupby('Symbol')['Exchange']
+      .nunique()
+      .gt(1)
+      .sum()
+)
+
 df = df.sort_values(['Symbol', 'exchange_priority'])
 df_unique = df.drop_duplicates(subset=['Symbol'], keep='first')
 
 unique_tickers = len(df_unique)
+
+# Rows removed by deduplication
+duplicates_removed = len(df) - unique_tickers
+
 df_unique = df_unique.drop(columns=['exchange_priority'])
 
+print(f"Symbols listed on both NSE and BSE: {both_exchanges}")
+print(f"Duplicate rows removed: {duplicates_removed}")
 print(f"After filtering and deduplication: {unique_tickers} unique tickers")
 
 # ==================== CREATE TICKER COLUMN ====================
