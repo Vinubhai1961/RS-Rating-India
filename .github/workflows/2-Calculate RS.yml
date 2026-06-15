@@ -2,9 +2,9 @@ name: 📊 Calculate RS Ratings (India - NIFTY)
 
 on:
   workflow_run:
-    workflows: ["Build Tickers and Price Data"]
-    types: [completed]
-    branches: [main]
+    #workflows: ["Build Tickers and Price Data"]
+    #types: [completed]
+    #branches: [main]
   workflow_dispatch:   # allow manual run
 
 
