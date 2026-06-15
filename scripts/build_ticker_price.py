@@ -25,8 +25,8 @@ MAX_VOLUME_RETRIES = 2
 VOLUME_RETRY_DELAY = (10, 18)
 PRICE_THRESHOLD = 5.0
 
-# === Add important NSE tickers here for detailed logging ===
-SPECIAL_TICKERS = {"RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS", "^CRSLDX"}
+# Special tickers for detailed logging
+SPECIAL_TICKERS = {"RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS"}
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -49,7 +49,6 @@ def setup_logging(verbose: bool):
 
 
 def parse_dvol(dvol):
-    """Parse DVol string (e.g., '498.95K', '11.00M', '661') to integer."""
     if dvol is None or dvol == "":
         return None
     if isinstance(dvol, (int, float)):
@@ -62,8 +61,8 @@ def parse_dvol(dvol):
             return int(float(dvol[:-1]) * 1_000_000)
         else:
             return int(float(dvol))
-    except (ValueError, TypeError) as e:
-        logging.debug(f"Failed to parse DVol '{dvol}': {e}")
+    except Exception:
+        logging.debug(f"Failed to parse DVol '{dvol}'")
         return None
 
 
@@ -74,35 +73,35 @@ def load_ticker_info():
     
     with open(TICKER_INFO_FILE, "r", encoding="utf-8") as f:
         try:
-            ticker_info = json.load(f)
+            data = json.load(f)
+            
+            # Handle both list and dict formats
+            if isinstance(data, list):
+                ticker_info = {}
+                for item in data:
+                    if isinstance(item, dict) and "ticker" in item:
+                        ticker = item["ticker"]
+                        info_data = item.get("info", item)
+                        ticker_info[ticker] = {
+                            "info": {k: parse_dvol(v) if k == "DVol" else v for k, v in info_data.items()}
+                        }
+            else:
+                ticker_info = data  # dict format fallback
+
             qualified_tickers = sorted(ticker_info.keys())
             
-            logging.info(f"Total tickers loaded: {len(qualified_tickers)}")
-            logging.info(f"First 5 tickers: {qualified_tickers[:5]}")
-            logging.info(f"Last 5 tickers: {qualified_tickers[-5:]}")
+            logging.info(f"Loaded {len(qualified_tickers)} NSE tickers")
+            logging.info(f"First 5: {qualified_tickers[:5]}")
+            logging.info(f"Last 5: {qualified_tickers[-5:]}")
             
             for special in SPECIAL_TICKERS:
-                if special in qualified_tickers:
-                    logging.info(f"✅ {special} found in ticker_info.json")
-                else:
-                    logging.warning(f"❌ {special} NOT found!")
+                status = "✅ Found" if special in qualified_tickers else "❌ Missing"
+                logging.info(f"{status} special ticker: {special}")
             
-            # Convert to the structure expected by NSE logic
-            converted_info = {}
-            for item in ticker_info:
-                ticker = item.get("ticker") if isinstance(item, dict) else item
-                if isinstance(item, dict) and "info" in item:
-                    info_data = item["info"]
-                else:
-                    info_data = item if isinstance(item, dict) else {}
-                converted_info[ticker] = {
-                    "info": {k: parse_dvol(v) if k == "DVol" else v for k, v in info_data.items()}
-                }
+            return ticker_info, qualified_tickers
             
-            return converted_info, qualified_tickers
-            
-        except json.JSONDecodeError:
-            logging.error("Invalid JSON in ticker_info.json")
+        except json.JSONDecodeError as e:
+            logging.error(f"Invalid JSON in ticker_info.json: {e}")
             return {}, []
 
 
@@ -114,14 +113,14 @@ def partition_tickers(tickers, part_index, part_total):
 
 
 def yahoo_symbol(symbol: str) -> str:
-    """Convert symbol for Yahoo Finance (e.g., RELIANCE -> RELIANCE.NS)"""
+    """Ensure .NS suffix for Yahoo Finance"""
     if not symbol.endswith(".NS"):
         return f"{symbol}.NS"
     return symbol
 
 
 def is_special(symbol):
-    return symbol in SPECIAL_TICKERS
+    return symbol.replace(".NS", "") in SPECIAL_TICKERS
 
 
 def format_volume(value):
@@ -144,20 +143,18 @@ def process_batch(batch, ticker_info, is_volume_retry=False):
             prices = []
             failure_reasons = {"no_price": 0, "below_threshold": 0, "missing_volume": 0, "error": 0}
 
-            yahoo_symbols = [yahoo_symbol(symbol) for symbol in batch]
+            yahoo_symbols = [yahoo_symbol(s) for s in batch]
             yq = Ticker(yahoo_symbols, validate=False)
 
-            # Batch-level calls
             try:
                 hist = yq.history(period="1d")
             except Exception as e:
-                logging.error(f"History fetch failed for batch: {e}")
+                logging.error(f"History fetch failed: {e}")
                 return 0, batch, []
 
             try:
                 summary_details = yq.summary_detail
-            except Exception as e:
-                logging.warning(f"summary_detail fetch failed: {e}")
+            except Exception:
                 summary_details = {}
 
             for symbol in batch:
@@ -166,35 +163,29 @@ def process_batch(batch, ticker_info, is_volume_retry=False):
                     price = None
                     source = "none"
 
-                    # 1. Primary: History
-                    try:
-                        if hasattr(hist, "index") and yahoo_sym in hist.index.get_level_values(0):
+                    # Primary price from history
+                    if hasattr(hist, "index") and yahoo_sym in hist.index.get_level_values(0):
+                        try:
                             df = hist.loc[yahoo_sym]
                             if not df.empty and 'close' in df.columns:
                                 price = df['close'].iloc[-1]
                                 source = "history"
-                    except Exception as hist_err:
-                        logging.debug(f"{symbol} history parse failed: {hist_err}")
-
-                    # 2. Fallback from summary_detail (helps with new listings / edge cases)
-                    if price is None:
-                        try:
-                            summary = summary_details.get(yahoo_sym, {}) if isinstance(summary_details, dict) else {}
-                            if isinstance(summary, dict):
-                                for key in ["regularMarketPrice", "previousClose", "currentPrice", "price", "open"]:
-                                    if key in summary and isinstance(summary[key], (int, float)):
-                                        price = summary[key]
-                                        source = f"summary.{key}"
-                                        break
                         except Exception:
                             pass
 
+                    # Fallback
+                    if price is None:
+                        summary = summary_details.get(yahoo_sym, {}) if isinstance(summary_details, dict) else {}
+                        for key in ["regularMarketPrice", "previousClose", "currentPrice", "price"]:
+                            if key in summary and isinstance(summary[key], (int, float)):
+                                price = summary[key]
+                                source = f"summary.{key}"
+                                break
+
                     if is_special(symbol):
-                        logging.debug(f"{symbol}: price from {source} = {price}")
+                        logging.debug(f"{symbol} price from {source}: {price}")
 
                     if price is None or not isinstance(price, (int, float)):
-                        if is_special(symbol):
-                            logging.warning(f"❌ {symbol}: No valid price found")
                         failure_reasons["no_price"] += 1
                         continue
 
@@ -202,32 +193,22 @@ def process_batch(batch, ticker_info, is_volume_retry=False):
                         failure_reasons["below_threshold"] += 1
                         continue
 
-                    # Summary data
-                    summary = {}
-                    if isinstance(summary_details, dict):
-                        sym_summary = summary_details.get(yahoo_sym, {})
-                        if isinstance(sym_summary, str):
-                            logging.debug(f"Invalid summary for {symbol}: {sym_summary}")
-                            sym_summary = {}
-                        if isinstance(sym_summary, dict):
-                            summary = sym_summary
-
-                    volume = summary.get("volume")
-                    avg_volume = summary.get("averageVolume")
-                    avg_volume_10days = summary.get("averageVolume10days")
-
-                    if avg_volume_10days is None or avg_volume_10days <= 0:
-                        failure_reasons["missing_volume"] += 1
-
-                    fifty_two_week_low = summary.get("fiftyTwoWeekLow")
-                    fifty_two_week_high = summary.get("fiftyTwoWeekHigh")
-                    market_cap = summary.get("marketCap")
+                    # Get summary data
+                    summary = summary_details.get(yahoo_sym, {}) if isinstance(summary_details, dict) else {}
+                    if isinstance(summary, str):
+                        summary = {}
 
                     info = ticker_info.get(symbol, {}).get("info", {})
 
+                    volume = summary.get("volume")
+                    avg_volume_10days = summary.get("averageVolume10days")
+
                     rvol = None
-                    if volume is not None and avg_volume_10days is not None and avg_volume_10days > 0:
+                    if volume and avg_volume_10days and avg_volume_10days > 0:
                         rvol = f"{volume / avg_volume_10days:.2f}"
+
+                    if avg_volume_10days is None or avg_volume_10days <= 0:
+                        failure_reasons["missing_volume"] += 1
 
                     prices.append({
                         "ticker": symbol,
@@ -236,38 +217,33 @@ def process_batch(batch, ticker_info, is_volume_retry=False):
                             "Price": round(price, 2),
                             "DVol": format_volume(volume),
                             "RVol": rvol,
-                            "Sector": info.get("Sector", "n/a").title() if info.get("Sector") else "n/a",
-                            "Industry": info.get("Industry", "n/a").title() if info.get("Industry") else "n/a",
+                            "Sector": str(info.get("Sector", "n/a")).title(),
+                            "Industry": str(info.get("Industry", "n/a")).title(),
                             "type": "Stock",
-                            "52WKL": round(fifty_two_week_low, 2) if fifty_two_week_low is not None else None,
-                            "52WKH": round(fifty_two_week_high, 2) if fifty_two_week_high is not None else None,
-                            "MCAP": format_market_cap(market_cap),
-                            "AvgVol": format_volume(avg_volume),
+                            "52WKL": round(summary.get("fiftyTwoWeekLow") or 0, 2),
+                            "52WKH": round(summary.get("fiftyTwoWeekHigh") or 0, 2),
+                            "MCAP": format_market_cap(summary.get("marketCap")),
+                            "AvgVol": format_volume(summary.get("averageVolume")),
                             "AvgVol10": format_volume(avg_volume_10days),
-                            "Exchange": info.get("Exchange", "n/a"),
-                            "FF": info.get("FF", None),
-                            "1YR_Per": info.get("1YR_Per", None),
-                            "DPChange": info.get("DPChange", None),
+                            "Exchange": info.get("Exchange", "NSE"),
+                            "FF": info.get("FF"),
+                            "1YR_Per": info.get("1YR_Per"),
+                            "DPChange": info.get("DPChange"),
                             "Price_Source": source
                         }
                     })
 
                 except Exception as e:
                     if is_special(symbol):
-                        logging.error(f"{symbol} failed: {e}")
+                        logging.error(f"{symbol} error: {e}")
                     failure_reasons["error"] += 1
 
-            failed_tickers = [s for s in batch if s not in [p["ticker"] for p in prices]]
-            logging.info(
-                f"Batch {'[Volume Retry]' if is_volume_retry else ''} stats: {failure_reasons} | Success: {len(prices)}/{len(batch)}"
-            )
-
-            return len(prices), failed_tickers, prices
+            failed = [s for s in batch if s not in {p["ticker"] for p in prices}]
+            logging.info(f"Batch {'[Vol Retry]' if is_volume_retry else ''} | Success: {len(prices)}/{len(batch)} | Fail: {failure_reasons}")
+            return len(prices), failed, prices
 
         except Exception as e:
-            logging.warning(f"Batch error (attempt {attempt+1}): {e}")
-            if "429" in str(e) or "curl" in str(e).lower():
-                logging.warning("Rate limit detected")
+            logging.warning(f"Batch attempt {attempt+1} failed: {e}")
             time.sleep(random.uniform(8, 15))
 
     return 0, batch, []
@@ -278,52 +254,44 @@ def main(part_index=None, part_total=None, verbose=False):
     setup_logging(verbose)
 
     start_time = time.time()
-    start_time_str = datetime.now().strftime("%I:%M %p %Z on %A, %B %d, %Y")
-    logging.info(f"Starting NSE price build for part {part_index} at {start_time_str} | Special: {SPECIAL_TICKERS}")
+    logging.info(f"Starting NSE price build - Part {part_index}/{part_total}")
 
     ticker_info, qualified_tickers = load_ticker_info()
     if not ticker_info:
-        logging.error("No ticker_info.json found to process.")
+        logging.error("Failed to load ticker_info.json")
         return
 
     if part_index is not None and part_total is not None:
         part_tickers = partition_tickers(qualified_tickers, part_index, part_total)
-        logging.info(f"Processing part {part_index}/{part_total} with {len(part_tickers)} tickers.")
     else:
         part_tickers = qualified_tickers
 
-    batches = [part_tickers[i:i + BATCH_SIZE] for i in range(0, len(part_tickers), BATCH_SIZE)]
+    logging.info(f"Processing {len(part_tickers)} tickers in {len(part_tickers)//BATCH_SIZE + 1} batches")
 
+    batches = [part_tickers[i:i + BATCH_SIZE] for i in range(0, len(part_tickers), BATCH_SIZE)]
     all_prices = []
     all_failed = []
-    volume_missing_tickers = []
+    volume_missing = []
 
-    # Primary Processing
-    for idx, batch in enumerate(tqdm(batches, desc="Processing Price Batches"), 1):
+    for idx, batch in enumerate(tqdm(batches, desc="Price Batches"), 1):
         updated, failed, prices = process_batch(batch, ticker_info)
         all_prices.extend(prices)
         all_failed.extend(failed)
 
-        # Collect for volume retry
         for p in prices:
             if p["info"].get("AvgVol10") is None:
-                volume_missing_tickers.append(p["ticker"])
-
-        logging.info(f"Batch {idx}/{len(batches)} - Fetched data for {updated} tickers")
+                volume_missing.append(p["ticker"])
 
         if idx < len(batches):
-            delay = random.uniform(*BATCH_DELAY_RANGE)
-            time.sleep(delay)
+            time.sleep(random.uniform(*BATCH_DELAY_RANGE))
 
-    # Dedicated Volume Retry Pass (NSE-specific)
-    if volume_missing_tickers:
-        volume_missing_tickers = list(set(volume_missing_tickers))
-        logging.info(f"Starting dedicated volume retry for {len(volume_missing_tickers)} tickers...")
-        vol_batches = [volume_missing_tickers[i:i + BATCH_SIZE] for i in range(0, len(volume_missing_tickers), BATCH_SIZE)]
-        
-        for vidx, vbatch in enumerate(tqdm(vol_batches, desc="Volume Retry"), 1):
+    # Volume Retry Pass
+    if volume_missing:
+        volume_missing = list(set(volume_missing))
+        logging.info(f"Volume retry pass for {len(volume_missing)} tickers...")
+        vol_batches = [volume_missing[i:i + BATCH_SIZE] for i in range(0, len(volume_missing), BATCH_SIZE)]
+        for vbatch in tqdm(vol_batches, desc="Vol Retry"):
             _, _, vol_prices = process_batch(vbatch, ticker_info, is_volume_retry=True)
-            # Merge improved data
             for vp in vol_prices:
                 for i, ap in enumerate(all_prices):
                     if ap["ticker"] == vp["ticker"]:
@@ -331,31 +299,25 @@ def main(part_index=None, part_total=None, verbose=False):
                         break
             time.sleep(random.uniform(*VOLUME_RETRY_DELAY))
 
-    # Final checks for special tickers
-    for special in SPECIAL_TICKERS:
-        in_output = any(p.get("ticker") == special for p in all_prices)
-        logging.info(f"{special} in final output: {'✅ YES' if in_output else '❌ NO'}")
-
-    # Save unresolved
-    unresolved_final = sorted(set(all_failed))
-    with open(UNRESOLVED_PRICE_TICKERS % part_index, "w") as f:
-        f.write("\n".join(unresolved_final))
-
-    # Save results
+    # Save outputs
     output_file = TICKER_PRICE_PART_FILE % part_index
     with open(output_file, "w", encoding="utf-8") as f:
         json.dump(all_prices, f, indent=2)
-    
-    missing_vol10 = sum(1 for x in all_prices if x["info"].get("AvgVol10") is None)
-    logging.info(f"Saved {len(all_prices)} entries to {output_file}")
-    logging.info(f"Final tickers with missing AvgVol10: {missing_vol10}")
+
+    unresolved_file = UNRESOLVED_PRICE_TICKERS % part_index
+    with open(unresolved_file, "w") as f:
+        f.write("\n".join(sorted(set(all_failed))))
+
+    missing_vol = sum(1 for x in all_prices if x["info"].get("AvgVol10") is None)
+    logging.info(f"✅ Saved {len(all_prices)} tickers to {output_file}")
+    logging.info(f"Missing AvgVol10: {missing_vol} | Unresolved: {len(all_failed)}")
 
     elapsed = time.time() - start_time
-    logging.info("NSE Price build completed. Elapsed: %.1fs", elapsed)
+    logging.info(f"NSE Price build completed in {elapsed:.1f} seconds")
 
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Build ticker_price.json from ticker_info.json (NSE).")
+    parser = argparse.ArgumentParser(description="Build NSE ticker price data")
     parser.add_argument("--part-index", type=int, required=True)
     parser.add_argument("--part-total", type=int, required=True)
     parser.add_argument("--verbose", action="store_true")
