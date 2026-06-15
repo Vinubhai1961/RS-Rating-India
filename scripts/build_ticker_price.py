@@ -26,7 +26,7 @@ VOLUME_RETRY_DELAY = (10, 18)
 PRICE_THRESHOLD = 5.0
 
 # === Add important NSE tickers here for detailed logging ===
-SPECIAL_TICKERS = {"RELIANCE", "TCS", "HDFCBANK", "INFY"}
+SPECIAL_TICKERS = {"RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS"}
 
 logging.basicConfig(
     level=logging.DEBUG,
