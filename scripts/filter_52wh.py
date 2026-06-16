@@ -1,16 +1,12 @@
 # =============================================================================
 #   Filter high-RS, higher-priced stocks near 52-week highs
 #
-#   Enhanced version:
-#   - Keeps original 52WKH/RS/price/volume filter behavior
-#   - Adds optional output columns from enhanced RS pipeline:
+#   Clean rebuild:
+#   - Same filter logic as before
+#   - Uses %_From_52WKH internally only
+#   - Output columns match source rs_stocks.csv columns only
+#   - Supports new columns already produced upstream:
 #       ATR, ADR, SMA50, SMA200, SMA10W, SMA30W
-#   - Adds safer parsing for K/M/B formatted volume and market-cap strings
-#   - Adds distance-from-high, distance-from-low, and 52W range position
-#   - Adds optional trend flags:
-#       Above_SMA50, Above_SMA200, SMA50_Above_SMA200,
-#       Above_SMA10W, Above_SMA30W, SMA10W_Above_SMA30W
-#   - Uses robust column selection so missing columns do not break the script
 # =============================================================================
 
 import pandas as pd
@@ -28,31 +24,17 @@ MAX_PCT_BELOW = 25.0
 MIN_AVGVOL10 = 300_000
 
 DEBUG_TICKER = "HINDCOPPER.NS"
-
-# Optional trend filters.
-# Keep False by default so this patch does not change your current selection logic.
-REQUIRE_ABOVE_SMA50 = False
-REQUIRE_ABOVE_SMA200 = False
-REQUIRE_SMA50_ABOVE_SMA200 = False
-
-REQUIRE_ABOVE_SMA10W = False
-REQUIRE_ABOVE_SMA30W = False
-REQUIRE_SMA10W_ABOVE_SMA30W = False
 # ────────────────────────────────────────────────
 
 
 def parse_number(x):
     """
-    Parse numeric strings safely.
+    Parse K/M/B formatted values safely.
 
-    Supports:
-      498.95K
-      11.00M
-      2.45B
-      300000
-      1,234,567
-      ₹1,234.56
-      $1,234.56
+    Examples:
+        498.95K -> 498950
+        11.00M  -> 11000000
+        2.45B   -> 2450000000
     """
     if pd.isna(x):
         return None
@@ -96,55 +78,6 @@ def parse_number(x):
         return None
 
 
-def safe_bool(value):
-    if pd.isna(value):
-        return False
-    return bool(value)
-
-
-def add_derived_columns(df):
-    """Add range, SMA, and volatility helper columns."""
-    df["%_From_52WKH"] = ((df["Price"] - df["52WKH"]) / df["52WKH"]) * 100
-    df["%_From_52WKH"] = df["%_From_52WKH"].round(2)
-
-    df["%_Below_52WKH"] = (-df["%_From_52WKH"]).clip(lower=0).round(2)
-
-    if "52WKL" in df.columns:
-        df["%_Above_52WKL"] = ((df["Price"] - df["52WKL"]) / df["52WKL"]) * 100
-        df["%_Above_52WKL"] = df["%_Above_52WKL"].round(2)
-
-        range_width = df["52WKH"] - df["52WKL"]
-        df["52W_Range_Pos"] = ((df["Price"] - df["52WKL"]) / range_width) * 100
-        df.loc[range_width <= 0, "52W_Range_Pos"] = None
-        df["52W_Range_Pos"] = df["52W_Range_Pos"].round(2)
-
-    if "SMA50" in df.columns:
-        df["Above_SMA50"] = df["Price"] > df["SMA50"]
-
-    if "SMA200" in df.columns:
-        df["Above_SMA200"] = df["Price"] > df["SMA200"]
-
-    if "SMA50" in df.columns and "SMA200" in df.columns:
-        df["SMA50_Above_SMA200"] = df["SMA50"] > df["SMA200"]
-
-    if "SMA10W" in df.columns:
-        df["Above_SMA10W"] = df["Price"] > df["SMA10W"]
-
-    if "SMA30W" in df.columns:
-        df["Above_SMA30W"] = df["Price"] > df["SMA30W"]
-
-    if "SMA10W" in df.columns and "SMA30W" in df.columns:
-        df["SMA10W_Above_SMA30W"] = df["SMA10W"] > df["SMA30W"]
-
-    if "ATR" in df.columns:
-        df["ATR_%"] = (df["ATR"] / df["Price"] * 100).round(2)
-
-    if "ADR" in df.columns:
-        df["ADR_%"] = (df["ADR"] / df["Price"] * 100).round(2)
-
-    return df
-
-
 def debug_ticker(df, ticker):
     row = df[df["Ticker"] == ticker]
 
@@ -154,53 +87,26 @@ def debug_ticker(df, ticker):
 
     row = row.iloc[0]
 
+    price = row.get("Price")
+    rs = row.get("RS Percentile")
+    vol = row.get("AvgVol10")
+    high = row.get("52WKH")
+    pct_from_high = row.get("%_From_52WKH")
+
     print(f"\n=== DEBUG: {ticker} ===")
+    print(f"Price          : {price:,.2f}" if pd.notna(price) else "Price          : n/a")
+    print(f"RS Percentile  : {rs:.1f}" if pd.notna(rs) else "RS Percentile  : n/a")
+    print(f"10d Avg Vol    : {vol:,.0f}" if pd.notna(vol) else "10d Avg Vol    : n/a")
+    print(f"52W High       : {high:,.2f}" if pd.notna(high) else "52W High       : n/a")
+    print(f"% from 52WH    : {pct_from_high}%")
 
-    for label, col, fmt in [
-        ("Price", "Price", ",.2f"),
-        ("RS Percentile", "RS Percentile", ".1f"),
-        ("10d Avg Vol", "AvgVol10", ",.0f"),
-        ("52W High", "52WKH", ",.2f"),
-        ("52W Low", "52WKL", ",.2f"),
-        ("% from 52WH", "%_From_52WKH", ""),
-        ("% below 52WH", "%_Below_52WKH", ""),
-        ("% above 52WL", "%_Above_52WKL", ""),
-        ("52W Range Pos", "52W_Range_Pos", ""),
-        ("ATR", "ATR", ""),
-        ("ADR", "ADR", ""),
-        ("ATR_%", "ATR_%", ""),
-        ("ADR_%", "ADR_%", ""),
-        ("SMA50", "SMA50", ""),
-        ("SMA200", "SMA200", ""),
-        ("SMA10W", "SMA10W", ""),
-        ("SMA30W", "SMA30W", ""),
-    ]:
+    for col in ["ATR", "ADR", "SMA50", "SMA200", "SMA10W", "SMA30W"]:
         if col in row.index:
-            value = row.get(col)
-            if pd.notna(value) and fmt:
-                print(f"{label:<18}: {value:{fmt}}")
-            else:
-                print(f"{label:<18}: {value}")
+            print(f"{col:<15}: {row.get(col)}")
 
-    for col in [
-        "Above_SMA50",
-        "Above_SMA200",
-        "SMA50_Above_SMA200",
-        "Above_SMA10W",
-        "Above_SMA30W",
-        "SMA10W_Above_SMA30W",
-    ]:
-        if col in row.index:
-            print(f"{col:<24}: {row.get(col)}")
-
-    print("-" * 50)
+    print("-" * 40)
 
     issues = []
-
-    pct_from_high = row.get("%_From_52WKH")
-    rs = row.get("RS Percentile")
-    price = row.get("Price")
-    vol = row.get("AvgVol10")
 
     if pd.isna(pct_from_high) or pct_from_high < -MAX_PCT_BELOW:
         issues.append(f"• Too far from 52WH ({pct_from_high}%)")
@@ -213,19 +119,6 @@ def debug_ticker(df, ticker):
 
     if pd.isna(vol) or vol < MIN_AVGVOL10:
         issues.append(f"• AvgVol10 = {vol} (must be ≥ {MIN_AVGVOL10:,})")
-
-    optional_checks = [
-        ("Above_SMA50", REQUIRE_ABOVE_SMA50),
-        ("Above_SMA200", REQUIRE_ABOVE_SMA200),
-        ("SMA50_Above_SMA200", REQUIRE_SMA50_ABOVE_SMA200),
-        ("Above_SMA10W", REQUIRE_ABOVE_SMA10W),
-        ("Above_SMA30W", REQUIRE_ABOVE_SMA30W),
-        ("SMA10W_Above_SMA30W", REQUIRE_SMA10W_ABOVE_SMA30W),
-    ]
-
-    for col, enabled in optional_checks:
-        if enabled and col in row.index and not safe_bool(row.get(col)):
-            issues.append(f"• {col} failed")
 
     if not issues:
         print("→ PASSED ALL FILTERS ✓")
@@ -245,13 +138,24 @@ def main():
     print(f"→ Loaded {len(df):,} rows")
     print(f"→ Columns found: {list(df.columns)}")
 
-    required_cols = ["Ticker", "Price", "52WKH", "RS Percentile", "AvgVol10"]
-    missing_required = [c for c in required_cols if c not in df.columns]
+    required_cols = [
+        "Ticker",
+        "Price",
+        "52WKH",
+        "RS Percentile",
+        "AvgVol10",
+    ]
+
+    missing_required = [
+        col for col in required_cols
+        if col not in df.columns
+    ]
 
     if missing_required:
         print(f"Error: Missing required columns: {missing_required}")
         return
 
+    # Convert required numeric/filter columns.
     numeric_cols = [
         "Price",
         "52WKH",
@@ -293,32 +197,23 @@ def main():
     dropped = before_drop - len(df)
     print(f"→ Dropped {dropped:,} rows missing required numeric fields")
 
-    df = add_derived_columns(df)
+    # Internal-only helper column for filtering.
+    # Negative value means price is below 52WKH.
+    # 0 means exactly at 52WKH.
+    # Positive value means new high / above stored 52WKH.
+    df["%_From_52WKH"] = ((df["Price"] - df["52WKH"]) / df["52WKH"]) * 100
+    df["%_From_52WKH"] = df["%_From_52WKH"].round(2)
 
     debug_ticker(df, DEBUG_TICKER)
 
+    # Same filter logic:
+    # allow new highs and allow stocks up to MAX_PCT_BELOW below 52WKH.
     mask = (
         (df["%_From_52WKH"] >= -MAX_PCT_BELOW)
         & (df["RS Percentile"] >= RS_THRESHOLD)
         & (df["Price"] >= PRICE_THRESHOLD)
         & (df["AvgVol10"] >= MIN_AVGVOL10)
     )
-
-    optional_filters = [
-        ("Above_SMA50", REQUIRE_ABOVE_SMA50),
-        ("Above_SMA200", REQUIRE_ABOVE_SMA200),
-        ("SMA50_Above_SMA200", REQUIRE_SMA50_ABOVE_SMA200),
-        ("Above_SMA10W", REQUIRE_ABOVE_SMA10W),
-        ("Above_SMA30W", REQUIRE_ABOVE_SMA30W),
-        ("SMA10W_Above_SMA30W", REQUIRE_SMA10W_ABOVE_SMA30W),
-    ]
-
-    for col, enabled in optional_filters:
-        if enabled:
-            if col in df.columns:
-                mask = mask & df[col].fillna(False)
-            else:
-                print(f"Warning: optional filter {col} requested but column missing; ignoring.")
 
     filtered = df[mask].copy()
 
@@ -327,13 +222,9 @@ def main():
     print(f"  • RS Percentile ≥ {RS_THRESHOLD}")
     print(f"  • Price ≥ {PRICE_THRESHOLD:,}")
     print(f"  • 10-day Avg Volume ≥ {MIN_AVGVOL10:,} shares")
-
-    for col, enabled in optional_filters:
-        if enabled:
-            print(f"  • {col} = True")
-
     print(f"→ {len(filtered):,} rows remain")
 
+    # Output exactly same style/source columns only.
     desired = [
         "Rank",
         "Ticker",
@@ -346,51 +237,40 @@ def main():
         "3M_RS Percentile",
         "6M_RS Percentile",
         "ATR",
-        "ATR_%",
         "ADR",
-        "ADR_%",
         "AvgVol",
         "AvgVol10",
         "52WKH",
         "52WKL",
-        "%_From_52WKH",
-        "%_Below_52WKH",
-        "%_Above_52WKL",
-        "52W_Range_Pos",
         "MCAP",
         "IPO",
         "SMA50",
         "SMA200",
         "SMA10W",
         "SMA30W",
-        "Above_SMA50",
-        "Above_SMA200",
-        "SMA50_Above_SMA200",
-        "Above_SMA10W",
-        "Above_SMA30W",
-        "SMA10W_Above_SMA30W",
     ]
 
-    available = [c for c in desired if c in filtered.columns]
+    available = [
+        col for col in desired
+        if col in filtered.columns
+    ]
 
+    # Keep sorting simple and close to original behavior.
     sort_cols = [
-        c
-        for c in [
+        col for col in [
             "RS Percentile",
             "3M_RS Percentile",
             "1M_RS Percentile",
-            "52W_Range_Pos",
         ]
-        if c in filtered.columns
+        if col in filtered.columns
     ]
 
-    ascending = [False for _ in sort_cols]
-
     if sort_cols:
-        result = filtered[available].sort_values(
-            sort_cols,
-            ascending=ascending
-        ).reset_index(drop=True)
+        result = (
+            filtered[available]
+            .sort_values(sort_cols, ascending=[False] * len(sort_cols))
+            .reset_index(drop=True)
+        )
     else:
         result = filtered[available].reset_index(drop=True)
 
