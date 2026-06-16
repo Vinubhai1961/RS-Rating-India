@@ -16,8 +16,8 @@ import arcticdb as adb
 # want to save symbols with fewer than MIN_VALID_ROWS rows.
 #
 # Example:
-# SPECIAL_TICKERS = {"AZAD.NS", "PREMEXPLN.NS"}
-SPECIAL_TICKERS = set("AZAD.NS", "PREMEXPLN.NS")
+SPECIAL_TICKERS = {"AZAD.NS", "PREMEXPLN.NS"}
+
 
 # NSE should stay stricter than USA for RS quality.
 MIN_VALID_ROWS = 5
