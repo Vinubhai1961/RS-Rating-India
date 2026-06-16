@@ -79,7 +79,10 @@ jobs:
           final_columns = [
               'Rank', 'Ticker', 'Price', 'DVol', 'Sector', 'Industry',
               'RS', '1M_RS', '3M_RS', '6M_RS',
-              'AvgVol', 'AvgVol10', '52WKH', '52WKL', '%Dist_52H'
+              'ATR', 'ADR',
+              'AvgVol', 'AvgVol10', '52WKH', '52WKL', 'MCAP', 'IPO',
+              'SMA50', 'SMA200', 'SMA10W', 'SMA30W',
+              '%Dist_52H'
           ]
           for col in final_columns:
               if col not in nse_75.columns and col != '%Dist_52H':
@@ -110,6 +113,3 @@ jobs:
           git commit --allow-empty -m "Daily update + archived rs_stocks_NSE_75_$(date -u '+%Y-%m-%d') ($(date -u '+%Y-%m-%d %H:%M UTC'))"
           git push origin main
           echo "Latest file + archive pushed successfully!"
-
-
-
