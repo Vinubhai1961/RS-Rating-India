@@ -36,6 +36,11 @@ jobs:
       - name: Run filter script
         run: python scripts/filter_52wh.py
 
+      - name: Verify generated files
+        run: |
+          echo "Generated files:"
+          ls -lh RS_Data/
+          git status
 
       - name: Commit and push result if changed
         run: |
@@ -43,7 +48,7 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
           # Only add the actual output file
-          git add RS_Data/RS80_Price30_within27pct_52wh.csv || true
+          git add RS_Data/RS80_Price30_within25pct_52wh.csv || true
 
           if git diff --staged --quiet; then
             echo "No changes to commit"
