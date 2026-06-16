@@ -17,7 +17,7 @@ import arcticdb as adb
 #
 # Example:
 # SPECIAL_TICKERS = {"AZAD.NS", "PREMEXPLN.NS"}
-SPECIAL_TICKERS = set()
+SPECIAL_TICKERS = set("AZAD.NS", "PREMEXPLN.NS")
 
 # NSE should stay stricter than USA for RS quality.
 MIN_VALID_ROWS = 5
