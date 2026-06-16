@@ -79,10 +79,7 @@ jobs:
           final_columns = [
               'Rank', 'Ticker', 'Price', 'DVol', 'Sector', 'Industry',
               'RS', '1M_RS', '3M_RS', '6M_RS',
-              'ATR', 'ADR',
-              'AvgVol', 'AvgVol10', '52WKH', '52WKL', 'MCAP', 'IPO',
-              'SMA50', 'SMA200', 'SMA10W', 'SMA30W',
-              '%Dist_52H'
+              'AvgVol', 'AvgVol10', '52WKH', '52WKL', '%Dist_52H'
           ]
           for col in final_columns:
               if col not in nse_75.columns and col != '%Dist_52H':
@@ -102,14 +99,95 @@ jobs:
           print(f"  → Archived as              : {archive_file}")
           EOF
           
-      - name: Commit & push (including archive folder)
+      - name: Commit & push (with visibility)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          # Always sync with latest remote before committing
+
+          echo "=========================================="
+          echo "🔍 Generated file visibility check"
+          echo "=========================================="
+
+          archive_file="archive/rs_stocks_NSE_75_$(date -u '+%Y-%m-%d').csv"
+
+          echo "Expected files:"
+          for f in             RS_Data/rs_stocks_BSE.csv             RS_Data/rs_stocks_NSE.csv             RS_Data/rs_stocks_NSE_75.csv             "$archive_file"
+          do
+            if [ -f "$f" ]; then
+              echo "✅ Exists: $f ($(wc -l < "$f") lines, $(du -h "$f" | cut -f1))"
+            else
+              echo "❌ Missing: $f"
+            fi
+          done
+
+          echo ""
+          echo "Git status BEFORE remote sync:"
+          git status --short || true
+
+          echo ""
+          echo "🔄 Syncing with latest remote main before staging..."
           git fetch origin main
           git reset --soft origin/main
-          git add -f RS_Data/rs_stocks_BSE.csv RS_Data/rs_stocks_NSE.csv RS_Data/rs_stocks_NSE_75.csv archive/
-          git commit --allow-empty -m "Daily update + archived rs_stocks_NSE_75_$(date -u '+%Y-%m-%d') ($(date -u '+%Y-%m-%d %H:%M UTC'))"
-          git push origin main
-          echo "Latest file + archive pushed successfully!"
+
+          echo ""
+          echo "Git status AFTER soft reset:"
+          git status --short || true
+
+          echo ""
+          echo "Per-file change reason:"
+          for f in             RS_Data/rs_stocks_BSE.csv             RS_Data/rs_stocks_NSE.csv             RS_Data/rs_stocks_NSE_75.csv             "$archive_file"
+          do
+            if [ ! -f "$f" ]; then
+              echo "❌ Not pushed: $f is missing"
+              continue
+            fi
+
+            if git ls-files --error-unmatch "$f" >/dev/null 2>&1; then
+              if git diff --quiet -- "$f"; then
+                echo "➖ Not pushed as changed: $f is identical to repo"
+              else
+                echo "✏️ Will push changed file: $f"
+                git diff --shortstat -- "$f" || true
+              fi
+            else
+              echo "🆕 Will push new file: $f"
+            fi
+          done
+
+          echo ""
+          echo "Staging output files..."
+          git add -f             RS_Data/rs_stocks_BSE.csv             RS_Data/rs_stocks_NSE.csv             RS_Data/rs_stocks_NSE_75.csv             archive/ || true
+
+          echo ""
+          echo "Git status AFTER staging:"
+          git status --short || true
+
+          echo ""
+          echo "Staged diff summary:"
+          git diff --cached --stat || true
+
+          echo ""
+          echo "Staged file list:"
+          git diff --cached --name-status || true
+
+          if git diff --cached --quiet; then
+            echo ""
+            echo "✅ No changes to commit or push."
+            echo "Reason: all generated files are identical to repository versions, or no expected files were produced."
+          else
+            commit_msg="Daily update + archived rs_stocks_NSE_75_$(date -u '+%Y-%m-%d') ($(date -u '+%Y-%m-%d %H:%M UTC'))"
+
+            echo ""
+            echo "📝 Creating commit:"
+            echo "$commit_msg"
+            git commit -m "$commit_msg"
+
+            echo ""
+            echo "🚀 Pushing changes to main..."
+            git push origin main
+
+            echo ""
+            echo "✅ Push successful."
+            echo "Latest pushed commit:"
+            git log -1 --oneline
+          fi
