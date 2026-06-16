@@ -152,7 +152,11 @@ jobs:
 
       - name: Merge unresolved tickers
         run: |
-          cat data/unresolved_price_tickers_part_*.txt > data/unresolved_price_tickers.txt || echo "No unresolved files to merge"
+          #cat data/unresolved_price_tickers_part_*.txt > data/unresolved_price_tickers.txt || echo "No unresolved files to merge"
+          cat data/unresolved_price_tickers_part_*.txt > data/unresolved_price_tickers.txt
+          echo "Merged unresolved tickers:"
+          wc -l data/unresolved_price_tickers.txt
+          head -20 data/unresolved_price_tickers.txt
 
       - name: Merge ticker price files
         run: |
