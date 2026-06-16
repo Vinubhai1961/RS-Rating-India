@@ -325,6 +325,12 @@ def process_batch(batch, ticker_info, is_volume_retry=False):
                     rvol = None
                     if volume is not None and avg_volume_10days is not None and avg_volume_10days > 0:
                         rvol = f"{volume / avg_volume_10days:.2f}"
+                        
+                    sector = info.get("Sector", "n/a")
+                    industry = info.get("Industry", "n/a")
+                    
+                    sector = str(sector).title() if sector is not None else "N/A"
+                    industry = str(industry).title() if industry is not None else "N/A"
 
                     prices.append({
                         "ticker": symbol,
@@ -333,8 +339,8 @@ def process_batch(batch, ticker_info, is_volume_retry=False):
                             "Price": round(price, 2),
                             "DVol": format_volume(volume),
                             "RVol": rvol,
-                            "Sector": info.get("Sector", "n/a").title(),
-                            "Industry": info.get("Industry", "n/a").title(),
+                            "Sector": Sector,
+                            "Industry": industry,
                             "type": "Stock",
                             "52WKL": round(fifty_two_week_low, 2) if fifty_two_week_low else None,
                             "52WKH": round(fifty_two_week_high, 2) if fifty_two_week_high else None,
