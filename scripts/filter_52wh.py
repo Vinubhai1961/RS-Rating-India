@@ -292,7 +292,8 @@ def main():
     print(f"\nOutput overwritten → {OUTPUT_PATH}")
     print(f"Archive saved     → {archive_file}")
     print(f"Total rows saved: {len(result):,}")
-
+    print("\nFirst 10 rows:")
+    print(result.head(10)[['Rank', 'Ticker', 'Price', 'ATR', 'ADR', 'RS Percentile', '%_From_52WKH']].to_string(index=False))
 
 if __name__ == "__main__":
     main()
