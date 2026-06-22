@@ -10,6 +10,7 @@
 # =============================================================================
 
 import pandas as pd
+from datetime import datetime
 from pathlib import Path
 
 # ────────────────────────────────────────────────
@@ -275,16 +276,22 @@ def main():
         result = filtered[available].reset_index(drop=True)
 
     OUTPUT_PATH.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Daily output (existing)
     result.to_csv(OUTPUT_PATH, index=False)
-
+    
+    # Archive output
+    archive_dir = Path("52wh")
+    archive_dir.mkdir(parents=True, exist_ok=True)
+    
+    current_date = datetime.now().strftime("%Y%m%d")
+    archive_file = archive_dir / f"52wh_{current_date}.csv"
+    
+    result.to_csv(archive_file, index=False)
+    
     print(f"\nOutput overwritten → {OUTPUT_PATH}")
+    print(f"Archive saved     → {archive_file}")
     print(f"Total rows saved: {len(result):,}")
-
-    print("\nFirst 10 rows:")
-    if len(result) > 0:
-        print(result.head(10).to_string(index=False))
-    else:
-        print("No rows matched filters.")
 
 
 if __name__ == "__main__":
