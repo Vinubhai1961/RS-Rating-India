@@ -293,7 +293,7 @@ def main():
     print(f"Archive saved     → {archive_file}")
     print(f"Total rows saved: {len(result):,}")
     print("\nFirst 10 rows:")
-    print(result.head(10)[['Rank', 'Ticker', 'Price', 'ATR', 'ADR', 'RS Percentile', '%_From_52WKH']].to_string(index=False))
+    print(result.head(10)[['Rank', 'Ticker', 'Price', 'ATR', 'ADR', 'RS Percentile']].to_string(index=False))
 
 if __name__ == "__main__":
     main()
