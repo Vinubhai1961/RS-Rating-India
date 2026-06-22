@@ -284,7 +284,7 @@ def main():
     archive_dir = Path("52wh")
     archive_dir.mkdir(parents=True, exist_ok=True)
     
-    current_date = datetime.now().strftime("%Y%m%d")
+    current_date = datetime.now().strftime("%m%d%Y")
     archive_file = archive_dir / f"52wh_{current_date}.csv"
     
     result.to_csv(archive_file, index=False)
