@@ -1,5 +1,5 @@
 Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WKH,52WKL,%Dist_52H
-2,ARIHANT.NS,865.45,1.92K,Finance,Real Estate Development,98.0,46.0,,,6.26K,13.69K,1100.0,39.65,-21.32
+4,ARIHANT.NS,865.45,1.92K,Finance,Real Estate Development,98.0,46.0,,,6.26K,13.69K,1100.0,39.65,-21.32
 15,EASTSILK.NS,50.47,0.27K,Process Industries,Textiles,98.0,7.0,2.0,1.0,3.26K,1.93K,99.25,1.8,-49.15
 16,BATLIBOI.NS,89.37,439.78K,Producer Manufacturing,Industrial Machinery,98.0,82.0,,,26.30K,47.64K,97.45,15.7,-8.29
 26,STLTECH.NS,584.15,1227.71K,Technology Services,Information Technology Services,98.0,95.0,98.0,98.0,5387.04K,2643.64K,679.9,84.6,-14.08
@@ -29,7 +29,7 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WK
 99,NOVARTIND.NS,1475.0,74.04K,Health Technology,Pharmaceuticals: Major,96.0,69.0,,,29.48K,17.25K,1589.2,672.25,-7.19
 101,SICAGEN.NS,54.12,11.77K,Distribution Services,Wholesale Distributors,96.0,47.0,,,16.36K,11.35K,61.5,24.35,-12.0
 102,OMAXAUTO.NS,223.41,18.98K,Producer Manufacturing,Auto Parts: Oem,95.0,55.0,97.0,96.0,212.47K,46.03K,263.4,84.5,-15.18
-108,SAYAJIHOTL.NS,298.0,0.00K,Consumer Services,Hotels/Resorts/Cruise Lines,95.0,62.0,,,0.09K,0.08K,323.95,138.7,-8.01
+107,SAYAJIHOTL.NS,298.0,0.00K,Consumer Services,Hotels/Resorts/Cruise Lines,95.0,62.0,,,0.09K,0.08K,323.95,138.7,-8.01
 111,NINSYS.NS,773.05,9.74K,Technology Services,Packaged Software,95.0,88.0,98.0,95.0,12.71K,5.96K,811.0,281.05,-4.68
 117,NGLFINE.NS,3073.6,3.87K,Health Technology,Pharmaceuticals: Major,95.0,79.0,84.0,96.0,19.09K,33.80K,3232.0,1006.0,-4.9
 122,RUBICON.NS,1392.2,573.66K,Health Technology,Biotechnology,95.0,97.0,95.0,96.0,557.31K,627.05K,1468.7,570.75,-5.21
@@ -48,7 +48,7 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WK
 145,AVALON.NS,1748.3,268.39K,Electronic Technology,Electronic Production Equipment,94.0,87.0,95.0,96.0,518.26K,367.63K,1807.0,777.3,-3.25
 146,JAYBARMARU.NS,159.83,689.05K,Distribution Services,Wholesale Distributors,94.0,95.0,95.0,95.0,1392.13K,1936.18K,178.89,71.01,-10.65
 147,SALSTEEL.NS,56.05,105.13K,Non-Energy Minerals,Steel,94.0,38.0,90.0,92.0,188.80K,146.89K,65.5,14.37,-14.43
-153,APARINDS.NS,16665.0,155.25K,Electronic Technology,Electronic Equipment/Instruments,94.0,93.0,94.0,95.0,142.99K,211.79K,17157.0,6801.0,-2.87
+152,APARINDS.NS,16665.0,155.25K,Electronic Technology,Electronic Equipment/Instruments,94.0,93.0,94.0,95.0,142.99K,211.79K,17157.0,6801.0,-2.87
 155,SENORES.NS,1274.7,434.85K,Health Technology,Pharmaceuticals: Major,94.0,84.0,93.0,92.0,463.11K,493.36K,1360.0,532.0,-6.27
 157,GRWRHITECH.NS,6669.0,42.23K,Process Industries,Chemicals: Specialty,94.0,92.0,94.0,94.0,118.78K,84.66K,7085.5,2681.0,-5.88
 158,PRECWIRE.NS,441.1,678.98K,Producer Manufacturing,Electrical Products,94.0,49.0,82.0,94.0,735.80K,361.72K,467.5,168.51,-5.65
@@ -67,8 +67,8 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WK
 176,NETWEB.NS,5074.0,1105.98K,Electronic Technology,Computer Peripherals,93.0,93.0,88.0,91.0,1930.60K,2413.42K,5244.0,1775.0,-3.24
 177,KMEW.NS,2317.4,174.60K,Producer Manufacturing,Trucks/Construction/Farm Machinery,93.0,80.0,88.0,88.0,149.94K,162.97K,2408.8,762.95,-3.79
 179,YASHO.NS,2766.1,41.66K,Consumer Non-Durables,Food: Specialty/Candy,93.0,96.0,96.0,94.0,33.52K,57.34K,3025.0,1130.0,-8.56
-181,ATHERENERG.NS,990.1,1863.94K,Consumer Durables,Motor Vehicles,93.0,82.0,80.0,91.0,4928.79K,3000.98K,1069.0,318.6,-7.38
-182,SPARC.NS,226.86,5122.67K,Health Technology,Pharmaceuticals: Major,93.0,79.0,96.0,93.0,6544.87K,3404.99K,253.17,108.0,-10.39
+181,SPARC.NS,226.86,5122.67K,Health Technology,Pharmaceuticals: Major,93.0,79.0,96.0,93.0,6544.87K,3404.99K,253.17,108.0,-10.39
+182,ATHERENERG.NS,990.1,1863.94K,Consumer Durables,Motor Vehicles,93.0,82.0,80.0,91.0,4928.79K,3000.98K,1069.0,318.6,-7.38
 183,NITTAGELA.NS,1702.7,25.21K,Consumer Non-Durables,Food: Specialty/Candy,93.0,85.0,,,20.18K,14.64K,1870.0,882.0,-8.95
 185,INDOTECH.NS,2905.3,33.42K,Producer Manufacturing,Electrical Products,93.0,87.0,97.0,93.0,74.89K,18.41K,2977.6,1100.0,-2.43
 186,AEROENTER.NS,134.14,1620.87K,Producer Manufacturing,Industrial Machinery,93.0,96.0,95.0,94.0,974.49K,3420.28K,149.55,62.2,-10.3
@@ -115,8 +115,8 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WK
 246,INDOBORAX.NS,386.25,272.37K,Process Industries,Chemicals: Specialty,91.0,87.0,90.0,87.0,222.55K,473.73K,423.1,200.88,-8.71
 249,ZIMLAB.NS,127.87,135.87K,Health Technology,Pharmaceuticals: Generic,91.0,89.0,95.0,92.0,100.95K,127.50K,129.3,59.31,-1.11
 252,ADANIGREEN.NS,1525.4,1931.57K,Utilities,Alternative Power Generation,91.0,77.0,93.0,89.0,4774.90K,2406.70K,1557.0,765.0,-2.03
-254,RATEGAIN.NS,860.2,271.34K,Technology Services,Packaged Software,91.0,87.0,93.0,82.0,686.15K,637.61K,901.6,417.6,-4.59
-255,WALCHANNAG.NS,286.85,1404.26K,Producer Manufacturing,Industrial Machinery,91.0,92.0,96.0,93.0,2502.48K,4330.64K,315.8,131.15,-9.17
+253,RATEGAIN.NS,860.2,271.34K,Technology Services,Packaged Software,91.0,87.0,93.0,82.0,686.15K,637.61K,901.6,417.6,-4.59
+256,WALCHANNAG.NS,286.85,1404.26K,Producer Manufacturing,Industrial Machinery,91.0,92.0,96.0,93.0,2502.48K,4330.64K,315.8,131.15,-9.17
 258,SHREEJISPG.NS,488.2,1173.97K,Transportation,Other Transportation,91.0,72.0,78.0,89.0,906.56K,1212.70K,505.65,222.0,-3.45
 259,ADANIENSOL.NS,1495.9,1290.18K,Utilities,Electric Utilities,91.0,73.0,86.0,89.0,3445.79K,1867.60K,1614.8,744.9,-7.36
 260,BELRISE.NS,244.61,2583.06K,Producer Manufacturing,Auto Parts: Oem,91.0,79.0,78.0,90.0,4669.74K,3902.56K,249.59,98.55,-2.0
@@ -153,8 +153,8 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WK
 311,SOTL.NS,575.25,91.12K,Process Industries,Chemicals: Specialty,89.0,94.0,93.0,91.0,476.56K,385.14K,624.0,285.8,-7.81
 314,NITINSPIN.NS,567.3,172.28K,Process Industries,Textiles,89.0,73.0,87.0,93.0,210.11K,125.81K,573.9,302.2,-1.15
 315,ROSSTECH.NS,930.2,360.19K,Electronic Technology,Telecommunications Equipment,89.0,50.0,80.0,87.0,194.24K,358.73K,1122.0,396.0,-17.09
-316,SUVEN.NS,254.7,699.12K,Health Technology,Pharmaceuticals: Major,89.0,30.0,95.0,90.0,1672.97K,1545.61K,299.99,124.11,-15.1
-317,DREDGECORP.NS,1157.9,217.38K,Transportation,Marine Shipping,89.0,82.0,79.0,74.0,526.77K,368.49K,1286.0,538.0,-9.96
+316,DREDGECORP.NS,1157.9,217.38K,Transportation,Marine Shipping,89.0,82.0,79.0,74.0,526.77K,368.49K,1286.0,538.0,-9.96
+317,SUVEN.NS,254.7,699.12K,Health Technology,Pharmaceuticals: Major,89.0,30.0,95.0,90.0,1672.97K,1545.61K,299.99,124.11,-15.1
 318,RAIN.NS,192.73,5473.57K,Process Industries,Industrial Specialties,89.0,86.0,91.0,93.0,7003.02K,5738.69K,214.17,99.9,-10.01
 320,ANTELOPUS.NS,814.75,150.90K,Energy Minerals,Integrated Oil,89.0,83.0,89.0,96.0,222.30K,168.36K,933.65,357.0,-12.73
 321,ICIL.NS,433.9,13259.51K,Process Industries,Textiles,89.0,93.0,92.0,86.0,738.49K,1258.39K,442.95,216.9,-2.04
@@ -178,8 +178,8 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WK
 354,SANGHVIMOV.NS,419.85,296.08K,Finance,Finance/Rental/Leasing,88.0,87.0,93.0,86.0,542.70K,606.10K,442.6,223.8,-5.14
 355,WELSPLSOL.NS,56.52,2297.91K,Non-Energy Minerals,Steel,88.0,94.0,,,1678.99K,2472.68K,63.25,36.25,-10.64
 356,AMAGI.NS,533.2,693.84K,Technology Services,Packaged Software,88.0,94.0,87.0,,325.78K,784.45K,557.95,310.2,-4.44
-359,BHARATFORG.NS,2122.8,1303.39K,Producer Manufacturing,Metal Fabrication,88.0,81.0,65.0,90.0,1333.74K,1318.55K,2167.5,1100.5,-2.06
-360,J&KBANK.NS,159.55,3289.80K,Finance,Regional Banks,88.0,82.0,76.0,91.0,4728.05K,3352.15K,167.15,97.35,-4.55
+359,J&KBANK.NS,159.55,3289.80K,Finance,Regional Banks,88.0,82.0,76.0,91.0,4728.05K,3352.15K,167.15,97.35,-4.55
+360,BHARATFORG.NS,2122.8,1303.39K,Producer Manufacturing,Metal Fabrication,88.0,81.0,65.0,90.0,1333.74K,1318.55K,2167.5,1100.5,-2.06
 362,SAIPARENT.NS,589.75,172.74K,Health Technology,Pharmaceuticals: Major,88.0,91.0,,,310.98K,236.62K,622.8,400.0,-5.31
 363,VENUSPIPES.NS,1659.4,130.53K,Non-Energy Minerals,Steel,88.0,88.0,93.0,85.0,109.60K,214.92K,1715.0,890.0,-3.24
 364,MAHABANK.NS,88.53,8324.00K,Finance,Major Banks,88.0,75.0,82.0,91.0,21021.87K,18684.32K,91.2,51.71,-2.93
@@ -200,7 +200,7 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WK
 395,MENONBE.NS,169.32,93.53K,Producer Manufacturing,Metal Fabrication,87.0,82.0,83.0,92.0,245.50K,517.35K,183.0,101.5,-7.48
 396,MAHESHWARI.NS,72.5,42.19K,Transportation,Air Freight/Couriers,87.0,93.0,91.0,89.0,30.45K,40.93K,73.9,39.04,-1.89
 399,CENTUM.NS,3630.9,19.15K,Electronic Technology,Electronic Components,87.0,83.0,75.0,91.0,77.29K,63.50K,3749.8,2044.2,-3.17
-400,CEIGALL.NS,380.25,744.87K,Industrial Services,Engineering & Construction,87.0,71.0,80.0,91.0,658.40K,741.42K,390.8,222.61,-2.7
+401,CEIGALL.NS,380.25,744.87K,Industrial Services,Engineering & Construction,87.0,71.0,80.0,91.0,658.40K,741.42K,390.8,222.61,-2.7
 403,SETL.NS,224.26,4870.42K,Health Technology,Medical Specialties,86.0,97.0,94.0,84.0,463.97K,1026.62K,226.99,104.56,-1.2
 404,BIRLACABLE.NS,213.32,34.18K,Producer Manufacturing,Electrical Products,86.0,94.0,92.0,92.0,139.90K,97.79K,241.0,104.0,-11.49
 405,KRN.NS,1177.2,63.82K,Producer Manufacturing,Industrial Machinery,86.0,70.0,81.0,91.0,682.15K,139.15K,1405.0,589.8,-16.21
@@ -233,7 +233,7 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WK
 447,HINDCOPPER.NS,502.25,7760.85K,Non-Energy Minerals,Other Metals/Minerals,85.0,13.0,30.0,83.0,6852.63K,3480.06K,760.05,226.7,-33.92
 448,BANKA.NS,91.83,5.01K,Industrial Services,Environmental Services,85.0,67.0,95.0,84.0,12.51K,5.72K,97.88,41.0,-6.18
 449,ANGELONE.NS,340.65,4025.28K,Finance,Investment Banks/Brokers,85.0,46.0,86.0,84.0,10072.95K,7210.20K,360.45,208.63,-5.49
-451,AIAENG.NS,4857.5,53.00K,Producer Manufacturing,Industrial Machinery,85.0,90.0,77.0,83.0,89.00K,123.61K,5060.0,3001.1,-4.0
+452,AIAENG.NS,4857.5,53.00K,Producer Manufacturing,Industrial Machinery,85.0,90.0,77.0,83.0,89.00K,123.61K,5060.0,3001.1,-4.0
 453,SOUTHWEST.NS,230.35,643.79K,Energy Minerals,Coal,85.0,24.0,63.0,79.0,534.88K,893.71K,275.0,121.0,-16.24
 454,KOPRAN.NS,195.88,93.94K,Health Technology,Pharmaceuticals: Major,85.0,89.0,93.0,90.0,774.03K,130.24K,219.0,107.0,-10.56
 457,GALAPREC.NS,1132.2,67.86K,Producer Manufacturing,Metal Fabrication,85.0,93.0,86.0,89.0,75.34K,289.75K,1199.0,671.2,-5.57
@@ -253,8 +253,8 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WK
 480,JAYNECOIND.NS,86.24,4153.17K,Non-Energy Minerals,Steel,84.0,4.0,61.0,75.0,6646.99K,4004.39K,117.0,34.9,-26.29
 481,SHRIPISTON.NS,3926.9,85.51K,Producer Manufacturing,Auto Parts: Oem,84.0,86.0,73.0,79.0,80.67K,112.11K,3951.0,2301.2,-0.61
 482,ANANDRATHI.NS,1903.9,272.69K,Finance,Investment Managers,84.0,68.0,72.0,83.0,696.96K,498.95K,1953.6,1010.0,-2.54
-484,KEI.NS,5419.0,276.73K,Producer Manufacturing,Electrical Products,84.0,65.0,74.0,86.0,407.35K,269.13K,5708.0,3601.1,-5.06
-485,PASUPTAC.NS,65.19,75.56K,Process Industries,Textiles,84.0,80.0,84.0,79.0,413.78K,136.11K,78.95,40.1,-17.43
+484,PASUPTAC.NS,65.19,75.56K,Process Industries,Textiles,84.0,80.0,84.0,79.0,413.78K,136.11K,78.95,40.1,-17.43
+485,KEI.NS,5419.0,276.73K,Producer Manufacturing,Electrical Products,84.0,65.0,74.0,86.0,407.35K,269.13K,5708.0,3601.1,-5.06
 486,NRL.NS,83.74,102.16K,Non-Energy Minerals,Other Metals/Minerals,84.0,98.0,92.0,86.0,113.11K,146.92K,84.98,45.1,-1.46
 487,GRINDWELL.NS,2128.4,37.10K,Process Industries,Industrial Specialties,84.0,74.0,88.0,85.0,98.83K,62.53K,2177.0,1329.0,-2.23
 488,BHARATGEAR.NS,130.67,60.20K,Producer Manufacturing,Trucks/Construction/Farm Machinery,84.0,90.0,80.0,82.0,108.16K,385.38K,154.2,83.8,-15.26
@@ -290,7 +290,7 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WK
 532,GOODLUCK.NS,1417.8,78.87K,Non-Energy Minerals,Steel,83.0,38.0,80.0,83.0,178.74K,221.45K,1516.0,915.0,-6.48
 533,BIMETAL.NS,630.25,0.35K,Producer Manufacturing,Auto Parts: Oem,83.0,80.0,,,0.83K,1.00K,666.0,470.9,-5.37
 534,RELIABLE.NS,153.44,10.64K,Technology Services,Data Processing Services,83.0,85.0,72.0,52.0,60.93K,65.19K,175.0,71.21,-12.32
-535,BLACKROSE.NS,112.27,276.41K,Distribution Services,Wholesale Distributors,82.0,90.0,,,59.73K,159.05K,129.9,80.05,-13.57
+536,BLACKROSE.NS,112.27,276.41K,Distribution Services,Wholesale Distributors,82.0,90.0,,,59.73K,159.05K,129.9,80.05,-13.57
 537,CARTRADE.NS,2603.7,363.76K,Technology Services,Internet Software/Services,82.0,97.0,90.0,50.0,994.89K,2435.55K,3290.5,1557.0,-20.87
 538,GROWW.NS,199.69,34833.91K,Miscellaneous,Investment Trusts,82.0,56.0,64.0,85.0,54929.28K,43094.86K,227.2,112.0,-12.11
 539,KINGFA.NS,5059.5,3.87K,Process Industries,Chemicals: Specialty,82.0,44.0,68.0,85.0,8.64K,7.57K,5699.4,3100.7,-11.23
@@ -313,7 +313,7 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WK
 566,GLOBAL.NS,105.45,57.72K,Commercial Services,Miscellaneous Commercial Services,82.0,62.0,35.0,76.0,123.87K,106.06K,121.9,55.3,-13.49
 568,PRIVISCL.NS,3608.7,54.24K,Process Industries,Chemicals: Major Diversified,82.0,70.0,65.0,73.0,111.21K,127.15K,3720.1,2173.2,-2.99
 569,OLAELEC.NS,43.17,87166.90K,Consumer Durables,Motor Vehicles,81.0,89.0,94.0,75.0,180394.99K,165836.38K,71.25,22.25,-39.41
-571,CHENNPETRO.NS,1128.0,405.71K,Energy Minerals,Oil Refining/Marketing,81.0,74.0,46.0,76.0,1910.34K,1027.51K,1249.0,620.85,-9.69
+570,CHENNPETRO.NS,1128.0,405.71K,Energy Minerals,Oil Refining/Marketing,81.0,74.0,46.0,76.0,1910.34K,1027.51K,1249.0,620.85,-9.69
 572,SEJALLTD.NS,757.5,2.00K,Process Industries,Industrial Specialties,81.0,31.0,90.0,33.0,19.30K,16.89K,1036.7,381.0,-26.93
 573,VTL.NS,645.3,576.52K,Process Industries,Textiles,81.0,60.0,60.0,88.0,567.36K,476.47K,670.05,383.7,-3.69
 574,SUNDRMBRAK.NS,819.5,0.46K,Producer Manufacturing,Auto Parts: Oem,81.0,94.0,90.0,80.0,5.49K,7.63K,1048.95,460.0,-21.87
@@ -322,7 +322,7 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WK
 577,AZAD.NS,2006.9,211.47K,Producer Manufacturing,Metal Fabrication,81.0,43.0,80.0,81.0,528.78K,572.23K,2350.0,1360.0,-14.6
 578,POCL.NS,1352.2,130.15K,Non-Energy Minerals,Other Metals/Minerals,81.0,12.0,73.0,58.0,339.29K,217.13K,1619.0,732.05,-16.48
 579,PSPPROJECT.NS,999.25,295.66K,Industrial Services,Engineering & Construction,81.0,92.0,85.0,62.0,133.82K,156.00K,1029.9,569.2,-2.98
-580,GULPOLY.NS,198.45,190.13K,Consumer Non-Durables,Food: Specialty/Candy,81.0,71.0,76.0,90.0,488.35K,336.40K,221.75,121.5,-10.51
+581,GULPOLY.NS,198.45,190.13K,Consumer Non-Durables,Food: Specialty/Candy,81.0,71.0,76.0,90.0,488.35K,336.40K,221.75,121.5,-10.51
 583,EQUITASBNK.NS,77.05,5033.78K,Finance,Regional Banks,81.0,84.0,78.0,84.0,4563.19K,4632.72K,80.14,50.0,-3.86
 585,ABDL.NS,629.05,178.45K,Consumer Non-Durables,Beverages: Alcoholic,81.0,84.0,87.0,51.0,470.50K,552.90K,696.8,382.1,-9.72
 587,RAMRAT.NS,418.05,125.40K,Producer Manufacturing,Electrical Products,81.0,33.0,81.0,86.0,320.36K,179.46K,520.0,268.0,-19.61
@@ -338,7 +338,7 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WK
 600,JINDALSAW.NS,258.08,892.73K,Non-Energy Minerals,Steel,81.0,85.0,76.0,92.0,3011.61K,2323.12K,269.91,153.0,-4.38
 602,NLCINDIA.NS,325.25,2546.48K,Utilities,Electric Utilities,81.0,21.0,72.0,85.0,8098.78K,10317.44K,387.8,220.71,-16.13
 603,HESTERBIO.NS,2239.9,47.61K,Health Technology,Pharmaceuticals: Major,80.0,80.0,89.0,84.0,13.29K,8.17K,2350.0,1239.3,-4.69
-604,MACPOWER.NS,1169.3,14.79K,Producer Manufacturing,Industrial Machinery,80.0,61.0,81.0,73.0,35.26K,39.60K,1250.0,761.0,-6.46
+605,MACPOWER.NS,1169.3,14.79K,Producer Manufacturing,Industrial Machinery,80.0,61.0,81.0,73.0,35.26K,39.60K,1250.0,761.0,-6.46
 606,APOLLOPIPE.NS,487.35,39.48K,Producer Manufacturing,Miscellaneous Manufacturing,80.0,19.0,66.0,92.0,540.93K,94.80K,554.0,252.1,-12.03
 608,SURYODAY.NS,173.47,433.20K,Finance,Regional Banks,80.0,69.0,81.0,80.0,544.63K,444.27K,190.78,115.41,-9.07
 610,WELSPUNLIV.NS,169.84,17154.69K,Consumer Non-Durables,Consumer Sundries,80.0,84.0,84.0,74.0,2437.02K,4799.96K,171.0,107.1,-0.68
@@ -371,8 +371,8 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WK
 648,ABCAPITAL.NS,394.8,5799.88K,Finance,Multi-Line Insurance,79.0,68.0,60.0,60.0,4598.14K,4390.83K,396.5,243.0,-0.43
 649,PGIL.NS,2081.0,2613.76K,Consumer Non-Durables,Apparel/Footwear,79.0,85.0,69.0,75.0,87.84K,111.61K,2115.7,1178.1,-1.64
 650,SMLMAH.NS,4036.8,32.35K,Consumer Durables,Motor Vehicles,79.0,64.0,23.0,64.0,78.33K,73.02K,5348.0,1767.9,-24.52
-652,CORONA.NS,1948.6,190.71K,Health Technology,Pharmaceuticals: Major,79.0,81.0,62.0,,45.17K,80.10K,2100.7,1336.6,-7.24
-653,CARRARO.NS,571.7,289.11K,Producer Manufacturing,Auto Parts: Oem,79.0,39.0,83.0,65.0,277.17K,143.87K,667.55,405.0,-14.36
+652,CARRARO.NS,571.7,289.11K,Producer Manufacturing,Auto Parts: Oem,79.0,39.0,83.0,65.0,277.17K,143.87K,667.55,405.0,-14.36
+653,CORONA.NS,1948.6,190.71K,Health Technology,Pharmaceuticals: Major,79.0,81.0,62.0,,45.17K,80.10K,2100.7,1336.6,-7.24
 661,SHEMAROO.NS,126.51,18.09K,Consumer Services,Movies/Entertainment,79.0,93.0,78.0,77.0,27.76K,51.02K,161.0,73.0,-21.42
 662,MITCON.NS,82.5,2.28K,Commercial Services,Miscellaneous Commercial Services,79.0,55.0,87.0,73.0,13.84K,11.94K,93.18,49.56,-11.46
 664,DYNAMATECH.NS,10586.0,7.32K,Producer Manufacturing,Industrial Machinery,79.0,22.0,42.0,71.0,26.91K,13.74K,12875.0,6320.0,-17.78
@@ -418,8 +418,8 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WK
 724,ZEEL.NS,115.48,22998.53K,Consumer Services,Broadcasting,77.0,95.0,88.0,77.0,35929.27K,59219.42K,151.7,68.0,-23.88
 726,STAR.NS,1111.3,70.54K,Health Technology,Pharmaceuticals: Major,77.0,26.0,69.0,80.0,322.56K,217.34K,1231.0,768.65,-9.72
 729,NACLIND.NS,199.39,2179.42K,Process Industries,Chemicals: Agricultural,77.0,93.0,92.0,76.0,946.68K,2698.87K,339.45,112.62,-41.26
-730,INSPIRISYS.NS,110.03,3.83K,Technology Services,Information Technology Services,77.0,7.0,81.0,79.0,20.55K,7.50K,133.9,69.92,-17.83
-731,REFEX.NS,338.1,615.27K,Energy Minerals,Coal,77.0,89.0,92.0,84.0,1570.04K,1037.06K,475.8,188.0,-28.94
+730,REFEX.NS,338.1,615.27K,Energy Minerals,Coal,77.0,89.0,92.0,84.0,1570.04K,1037.06K,475.8,188.0,-28.94
+731,INSPIRISYS.NS,110.03,3.83K,Technology Services,Information Technology Services,77.0,7.0,81.0,79.0,20.55K,7.50K,133.9,69.92,-17.83
 732,DCM.NS,97.49,5.78K,Technology Services,Information Technology Services,77.0,88.0,91.0,63.0,15.68K,7.87K,136.0,55.0,-28.32
 733,RACLGEAR.NS,1353.5,11.60K,Producer Manufacturing,Auto Parts: Oem,77.0,18.0,41.0,80.0,28.98K,22.07K,1691.9,805.0,-20.0
 734,HINDALCO.NS,976.6,5029.27K,Non-Energy Minerals,Other Metals/Minerals,77.0,8.0,37.0,72.0,6296.13K,7826.39K,1176.0,657.5,-16.96
@@ -428,7 +428,7 @@ Rank,Ticker,Price,DVol,Sector,Industry,RS,1M_RS,3M_RS,6M_RS,AvgVol,AvgVol10,52WK
 737,OLECTRA.NS,1492.1,919.54K,Consumer Durables,Motor Vehicles,76.0,91.0,85.0,79.0,1081.92K,1461.91K,1714.2,866.6,-12.96
 739,KPIL.NS,1398.2,355.97K,Industrial Services,Engineering & Construction,76.0,81.0,80.0,78.0,237.64K,510.51K,1479.6,1007.1,-5.5
 741,GNA.NS,419.7,318.95K,Producer Manufacturing,Auto Parts: Oem,76.0,78.0,36.0,86.0,258.65K,977.43K,470.0,291.8,-10.7
-747,SHAILY.NS,2813.0,112.02K,Process Industries,Chemicals: Specialty,76.0,58.0,65.0,71.0,480.52K,542.92K,3233.9,1535.9,-13.02
+746,SHAILY.NS,2813.0,112.02K,Process Industries,Chemicals: Specialty,76.0,58.0,65.0,71.0,480.52K,542.92K,3233.9,1535.9,-13.02
 748,GUJTHEM.NS,401.2,77.27K,Health Technology,Pharmaceuticals: Major,76.0,72.0,84.0,56.0,380.69K,206.99K,479.0,225.05,-16.24
 749,XPROINDIA.NS,1347.0,38.22K,Process Industries,Industrial Specialties,76.0,85.0,83.0,87.0,71.17K,213.65K,1492.9,788.05,-9.77
 751,GANDHAR.NS,179.44,690.87K,Process Industries,Industrial Specialties,76.0,75.0,82.0,89.0,943.64K,1975.38K,185.0,115.0,-3.01
