@@ -627,8 +627,13 @@ def generate_pine_thresholds(df_stocks, output_dir, percentile_values):
 
     for prefix, col in threshold_sets.items():
         rs_map = build_rs_threshold_map(df_stocks, col, percentile_values)
-
+        print(f"\n=== {col} Pine thresholds ===")
+        
+        for p in sorted(percentile_values, reverse=True):
+            print(f"  {p:2}th percentile → Raw {col} ≥ {rs_map[p]:6.2f}")
+            
         lines.append(f"// {col} thresholds\n")
+        
         for p in sorted(percentile_values, reverse=True):
             label = f"{prefix}{p:02d}"
             lines.append(
@@ -636,12 +641,12 @@ def generate_pine_thresholds(df_stocks, output_dir, percentile_values):
             )
         lines.append("\n")
 
-    path = os.path.join(output_dir, "RS-Rating.txt")
+    path = os.path.join(output_dir, "RS-Rating-pine.txt")
 
     with open(path, "w", encoding="utf-8") as f:
         f.write("".join(lines))
 
-    print(f"RS-Rating.txt Pine thresholds generated → {path}")
+    print(f"RS-Rating-pine.txt Pine thresholds generated → {path}")
 
 
 def main(
