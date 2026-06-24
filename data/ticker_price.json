@@ -21735,27 +21735,6 @@
     }
   },
   {
-    "ticker": "GLOBALLOG.BO",
-    "info": {
-      "Ticker Name": "Global Ocean Logistics India Ltd.",
-      "Price": 143.5,
-      "DVol": "1.60K",
-      "RVol": "0.45",
-      "Sector": "Transportation",
-      "Industry": "Air Freight/Couriers",
-      "type": "Stock",
-      "52WKL": 79.2,
-      "52WKH": 172.91,
-      "MCAP": "2.07B",
-      "AvgVol": "32.54K",
-      "AvgVol10": "3.52K",
-      "Exchange": "BSE",
-      "FF": null,
-      "1YR_Per": "+64.16%",
-      "DPChange": "0.33%"
-    }
-  },
-  {
     "ticker": "GLOBALVECT.NS",
     "info": {
       "Ticker Name": "Global Vectra Helicorp Limited",
@@ -22425,27 +22404,6 @@
       "FF": "25.76%",
       "1YR_Per": "+23.49%",
       "DPChange": "-4.27%"
-    }
-  },
-  {
-    "ticker": "GOLDENCREST.BO",
-    "info": {
-      "Ticker Name": "Golden Crest Education & Services Ltd.",
-      "Price": 373.5,
-      "DVol": "0.00K",
-      "RVol": "0.08",
-      "Sector": "Commercial Services",
-      "Industry": "Miscellaneous Commercial Services",
-      "type": "Stock",
-      "52WKL": 224.8,
-      "52WKH": 378.0,
-      "MCAP": "1.96B",
-      "AvgVol": "0.01K",
-      "AvgVol10": "0.04K",
-      "Exchange": "BSE",
-      "FF": null,
-      "1YR_Per": "+19.72%",
-      "DPChange": "-1.68%"
     }
   },
   {
@@ -23265,27 +23223,6 @@
       "FF": "56.45%",
       "1YR_Per": "-10.11%",
       "DPChange": "0.35%"
-    }
-  },
-  {
-    "ticker": "GSLSEC.BO",
-    "info": {
-      "Ticker Name": "GSL Securities Ltd",
-      "Price": 49.4,
-      "DVol": "0.29K",
-      "RVol": "2.99",
-      "Sector": "Finance",
-      "Industry": "Financial Conglomerates",
-      "type": "Stock",
-      "52WKL": 33.5,
-      "52WKH": 61.2,
-      "MCAP": "211.19M",
-      "AvgVol": "0.44K",
-      "AvgVol10": "0.10K",
-      "Exchange": "BSE",
-      "FF": null,
-      "1YR_Per": "+1.69%",
-      "DPChange": "-4.98%"
     }
   },
   {
@@ -24672,27 +24609,6 @@
       "FF": "29.18%",
       "1YR_Per": "-12.48%",
       "DPChange": "2.18%"
-    }
-  },
-  {
-    "ticker": "HELLOJI.BO",
-    "info": {
-      "Ticker Name": "Helloji Holidays Limited",
-      "Price": 120.05,
-      "DVol": "1.20K",
-      "RVol": "1.00",
-      "Sector": "Consumer Services",
-      "Industry": "Other Consumer Services",
-      "type": "Stock",
-      "52WKL": 101.5,
-      "52WKH": 151.5,
-      "MCAP": "411.77M",
-      "AvgVol": "1.02K",
-      "AvgVol10": "1.20K",
-      "Exchange": "BSE",
-      "FF": null,
-      "1YR_Per": "-3.20%",
-      "DPChange": "-10.22%"
     }
   },
   {
@@ -27993,6 +27909,90 @@
     }
   },
   {
+    "ticker": "GLOBALLOG.BO",
+    "info": {
+      "Ticker Name": "Global Ocean Logistics India Ltd.",
+      "Price": 143.5,
+      "DVol": "1.60K",
+      "RVol": "0.45",
+      "Sector": "Transportation",
+      "Industry": "Air Freight/Couriers",
+      "type": "Stock",
+      "52WKL": 79.2,
+      "52WKH": 172.91,
+      "MCAP": "2.07B",
+      "AvgVol": "32.54K",
+      "AvgVol10": "3.52K",
+      "Exchange": "BSE",
+      "FF": null,
+      "1YR_Per": "+64.16%",
+      "DPChange": "0.33%"
+    }
+  },
+  {
+    "ticker": "GOLDENCREST.BO",
+    "info": {
+      "Ticker Name": "Golden Crest Education & Services Ltd.",
+      "Price": 373.5,
+      "DVol": "0.00K",
+      "RVol": "0.08",
+      "Sector": "Commercial Services",
+      "Industry": "Miscellaneous Commercial Services",
+      "type": "Stock",
+      "52WKL": 224.8,
+      "52WKH": 378.0,
+      "MCAP": "1.96B",
+      "AvgVol": "0.01K",
+      "AvgVol10": "0.04K",
+      "Exchange": "BSE",
+      "FF": null,
+      "1YR_Per": "+19.72%",
+      "DPChange": "-1.68%"
+    }
+  },
+  {
+    "ticker": "GSLSEC.BO",
+    "info": {
+      "Ticker Name": "GSL Securities Ltd",
+      "Price": 49.4,
+      "DVol": "0.29K",
+      "RVol": "2.99",
+      "Sector": "Finance",
+      "Industry": "Financial Conglomerates",
+      "type": "Stock",
+      "52WKL": 33.5,
+      "52WKH": 61.2,
+      "MCAP": "211.19M",
+      "AvgVol": "0.44K",
+      "AvgVol10": "0.10K",
+      "Exchange": "BSE",
+      "FF": null,
+      "1YR_Per": "+1.69%",
+      "DPChange": "-4.98%"
+    }
+  },
+  {
+    "ticker": "HELLOJI.BO",
+    "info": {
+      "Ticker Name": "Helloji Holidays Limited",
+      "Price": 120.05,
+      "DVol": "1.20K",
+      "RVol": "1.00",
+      "Sector": "Consumer Services",
+      "Industry": "Other Consumer Services",
+      "type": "Stock",
+      "52WKL": 101.5,
+      "52WKH": 151.5,
+      "MCAP": "411.77M",
+      "AvgVol": "1.02K",
+      "AvgVol10": "1.20K",
+      "Exchange": "BSE",
+      "FF": null,
+      "1YR_Per": "-3.20%",
+      "DPChange": "-10.22%"
+    }
+  },
+  {
     "ticker": "INFLAME.BO",
     "info": {
       "Ticker Name": "Inflame Appliances Limited",
@@ -28025,7 +28025,7 @@
       "type": "Stock",
       "52WKL": 91.45,
       "52WKH": 257.5,
-      "MCAP": "14.94B",
+      "MCAP": null,
       "AvgVol": "1328.21K",
       "AvgVol10": "436.15K",
       "Exchange": "NSE",
@@ -30356,7 +30356,7 @@
       "type": "Stock",
       "52WKL": 282.0,
       "52WKH": 577.0,
-      "MCAP": "1.46B",
+      "MCAP": "1.48B",
       "AvgVol": "0.59K",
       "AvgVol10": "1.12K",
       "Exchange": "BSE",
@@ -30734,7 +30734,7 @@
       "type": "Stock",
       "52WKL": 330.0,
       "52WKH": 518.8,
-      "MCAP": "48.55B",
+      "MCAP": "48.56B",
       "AvgVol": "704.28K",
       "AvgVol10": "465.77K",
       "Exchange": "NSE",
@@ -35186,7 +35186,7 @@
       "type": "Stock",
       "52WKL": 360.75,
       "52WKH": 490.0,
-      "MCAP": "2761.49B",
+      "MCAP": "5522.99B",
       "AvgVol": "4736.38K",
       "AvgVol10": "5191.44K",
       "Exchange": "NSE",
@@ -35711,7 +35711,7 @@
       "type": "Stock",
       "52WKL": 194.4,
       "52WKH": 329.45,
-      "MCAP": "742.99B",
+      "MCAP": "743.01B",
       "AvgVol": "5357.64K",
       "AvgVol10": "4474.25K",
       "Exchange": "NSE",
@@ -36062,15 +36062,15 @@
       "Ticker Name": "Mach Travel Solutions Limited",
       "Price": 138.65,
       "DVol": "3.60K",
-      "RVol": "0.16",
+      "RVol": "0.21",
       "Sector": "Commercial Services",
       "Industry": "Miscellaneous Commercial Services",
       "type": "Stock",
       "52WKL": 90.0,
       "52WKH": 170.0,
       "MCAP": "2.92B",
-      "AvgVol": "20.57K",
-      "AvgVol10": "22.08K",
+      "AvgVol": "18.13K",
+      "AvgVol10": "17.16K",
       "Exchange": "BSE",
       "FF": "99.68%",
       "1YR_Per": "+30.61%",
@@ -37251,27 +37251,6 @@
       "FF": null,
       "1YR_Per": "-26.52%",
       "DPChange": "-1.40%"
-    }
-  },
-  {
-    "ticker": "MARC.NS",
-    "info": {
-      "Ticker Name": "Marc Technocrats Limited",
-      "Price": 88.65,
-      "DVol": null,
-      "RVol": null,
-      "Sector": "Industrial Services",
-      "Industry": "Engineering & Construction",
-      "type": "Stock",
-      "52WKL": null,
-      "52WKH": null,
-      "MCAP": null,
-      "AvgVol": null,
-      "AvgVol10": null,
-      "Exchange": "NSE",
-      "FF": null,
-      "1YR_Per": "+32.54%",
-      "DPChange": "-1.09%"
     }
   },
   {
@@ -40786,8 +40765,8 @@
     "info": {
       "Ticker Name": "Nanta Tech Limited",
       "Price": 590.9,
-      "DVol": "4.80K",
-      "RVol": "0.70",
+      "DVol": "7.20K",
+      "RVol": "1.05",
       "Sector": "Distribution Services",
       "Industry": "Wholesale Distributors",
       "type": "Stock",
@@ -43222,8 +43201,8 @@
     "info": {
       "Ticker Name": "NTC Industries Limited",
       "Price": 150.5,
-      "DVol": "2.05K",
-      "RVol": "0.16",
+      "DVol": "2.50K",
+      "RVol": "0.19",
       "Sector": "Consumer Non-Durables",
       "Industry": "Tobacco",
       "type": "Stock",
@@ -47555,7 +47534,7 @@
       "type": "Stock",
       "52WKL": 415.1,
       "52WKH": 694.2,
-      "MCAP": null,
+      "MCAP": "71.82B",
       "AvgVol": "666.89K",
       "AvgVol10": "544.06K",
       "Exchange": "NSE",
@@ -48353,7 +48332,7 @@
       "type": "Stock",
       "52WKL": 258.55,
       "52WKH": 458.95,
-      "MCAP": "4.89B",
+      "MCAP": "4.19B",
       "AvgVol": "9.79K",
       "AvgVol10": "4.80K",
       "Exchange": "BSE",
