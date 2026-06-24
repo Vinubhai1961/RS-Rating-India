@@ -641,12 +641,12 @@ def generate_pine_thresholds(df_stocks, output_dir, percentile_values):
             )
         lines.append("\n")
 
-    path = os.path.join(output_dir, "RS-Rating-pine.txt")
+    path = os.path.join(output_dir, "RS-Rating-pine.csv")
 
     with open(path, "w", encoding="utf-8") as f:
         f.write("".join(lines))
 
-    print(f"RS-Rating-pine.txt Pine thresholds generated → {path}")
+    print(f"RS-Rating-pine.csv Pine thresholds generated → {path}")
 
 
 def main(
