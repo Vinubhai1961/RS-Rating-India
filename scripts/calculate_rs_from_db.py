@@ -1245,7 +1245,12 @@ def main(
         ref_data,
         percentiles
     )
-
+    
+    generate_pine_thresholds(
+    df_stocks,
+    output_dir,
+    percentiles
+    ) 
     logging.info(
         f"NSE RS calculation completed. "
         f"{len(df_stocks)} tickers, "
