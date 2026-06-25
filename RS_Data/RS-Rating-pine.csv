@@ -1,39 +1,39 @@
 // Auto-generated RS Rating thresholds - do not edit manually
-// Last updated: 2026-06-24 21:52 UTC
+// Last updated: 2026-06-25 01:09 UTC
 
 // RS thresholds
-ind98 = input.float(260.42, "IND 98th → RS ≥", group="IND Thresholds")
-ind89 = input.float(145.92, "IND 89th → RS ≥", group="IND Thresholds")
-ind69 = input.float(113.64, "IND 69th → RS ≥", group="IND Thresholds")
-ind49 = input.float(100.62, "IND 49th → RS ≥", group="IND Thresholds")
-ind29 = input.float(91.63, "IND 29th → RS ≥", group="IND Thresholds")
-ind09 = input.float(78.85, "IND 9th → RS ≥", group="IND Thresholds")
-ind01 = input.float(58.31, "IND 1th → RS ≥", group="IND Thresholds")
+ind98 = input.float(269.08, "IND 98th → RS ≥", group="IND Thresholds")
+ind89 = input.float(147.25, "IND 89th → RS ≥", group="IND Thresholds")
+ind69 = input.float(114.89, "IND 69th → RS ≥", group="IND Thresholds")
+ind49 = input.float(102.13, "IND 49th → RS ≥", group="IND Thresholds")
+ind29 = input.float(92.43, "IND 29th → RS ≥", group="IND Thresholds")
+ind09 = input.float(79.44, "IND 9th → RS ≥", group="IND Thresholds")
+ind01 = input.float(59.47, "IND 1th → RS ≥", group="IND Thresholds")
 
 // 1M_RS thresholds
-ind1m98 = input.float(144.41, "IND1M 98th → RS ≥", group="IND1M Thresholds")
-ind1m89 = input.float(118.01, "IND1M 89th → RS ≥", group="IND1M Thresholds")
-ind1m69 = input.float(105.43, "IND1M 69th → RS ≥", group="IND1M Thresholds")
-ind1m49 = input.float(99.67, "IND1M 49th → RS ≥", group="IND1M Thresholds")
-ind1m29 = input.float(95.41, "IND1M 29th → RS ≥", group="IND1M Thresholds")
-ind1m09 = input.float(87.66, "IND1M 9th → RS ≥", group="IND1M Thresholds")
-ind1m01 = input.float(73.13, "IND1M 1th → RS ≥", group="IND1M Thresholds")
+ind1m98 = input.float(144.47, "IND1M 98th → RS ≥", group="IND1M Thresholds")
+ind1m89 = input.float(117.96, "IND1M 89th → RS ≥", group="IND1M Thresholds")
+ind1m69 = input.float(105.44, "IND1M 69th → RS ≥", group="IND1M Thresholds")
+ind1m49 = input.float(99.69, "IND1M 49th → RS ≥", group="IND1M Thresholds")
+ind1m29 = input.float(95.49, "IND1M 29th → RS ≥", group="IND1M Thresholds")
+ind1m09 = input.float(87.67, "IND1M 9th → RS ≥", group="IND1M Thresholds")
+ind1m01 = input.float(72.88, "IND1M 1th → RS ≥", group="IND1M Thresholds")
 
 // 3M_RS thresholds
-ind3m98 = input.float(198.06, "IND3M 98th → RS ≥", group="IND3M Thresholds")
-ind3m89 = input.float(140.97, "IND3M 89th → RS ≥", group="IND3M Thresholds")
-ind3m69 = input.float(115.75, "IND3M 69th → RS ≥", group="IND3M Thresholds")
-ind3m49 = input.float(105.20, "IND3M 49th → RS ≥", group="IND3M Thresholds")
-ind3m29 = input.float(96.60, "IND3M 29th → RS ≥", group="IND3M Thresholds")
-ind3m09 = input.float(85.31, "IND3M 9th → RS ≥", group="IND3M Thresholds")
-ind3m01 = input.float(61.65, "IND3M 1th → RS ≥", group="IND3M Thresholds")
+ind3m98 = input.float(200.46, "IND3M 98th → RS ≥", group="IND3M Thresholds")
+ind3m89 = input.float(141.14, "IND3M 89th → RS ≥", group="IND3M Thresholds")
+ind3m69 = input.float(115.77, "IND3M 69th → RS ≥", group="IND3M Thresholds")
+ind3m49 = input.float(105.28, "IND3M 49th → RS ≥", group="IND3M Thresholds")
+ind3m29 = input.float(96.67, "IND3M 29th → RS ≥", group="IND3M Thresholds")
+ind3m09 = input.float(85.59, "IND3M 9th → RS ≥", group="IND3M Thresholds")
+ind3m01 = input.float(61.96, "IND3M 1th → RS ≥", group="IND3M Thresholds")
 
 // 6M_RS thresholds
 ind6m98 = input.float(245.03, "IND6M 98th → RS ≥", group="IND6M Thresholds")
-ind6m89 = input.float(145.20, "IND6M 89th → RS ≥", group="IND6M Thresholds")
-ind6m69 = input.float(115.18, "IND6M 69th → RS ≥", group="IND6M Thresholds")
+ind6m89 = input.float(145.43, "IND6M 89th → RS ≥", group="IND6M Thresholds")
+ind6m69 = input.float(115.25, "IND6M 69th → RS ≥", group="IND6M Thresholds")
 ind6m49 = input.float(100.48, "IND6M 49th → RS ≥", group="IND6M Thresholds")
-ind6m29 = input.float(89.98, "IND6M 29th → RS ≥", group="IND6M Thresholds")
-ind6m09 = input.float(74.82, "IND6M 9th → RS ≥", group="IND6M Thresholds")
-ind6m01 = input.float(49.08, "IND6M 1th → RS ≥", group="IND6M Thresholds")
+ind6m29 = input.float(90.07, "IND6M 29th → RS ≥", group="IND6M Thresholds")
+ind6m09 = input.float(74.83, "IND6M 9th → RS ≥", group="IND6M Thresholds")
+ind6m01 = input.float(49.12, "IND6M 1th → RS ≥", group="IND6M Thresholds")
 
