@@ -9,15 +9,43 @@ benchmark = market == "India" ? indiaBenchmark : "SPY"
 
 // ────────────────────── THRESHOLDS (AUTO SWITCHED) ──────────────────────
 // Auto-generated RS Rating thresholds - do not edit manually
-// Last updated: 2026-06-23 22:30 UTC
-usa98 = input.float(213.48, "USA 98th → RS ≥", group="USA Thresholds")
-usa89 = input.float(120.22, "USA 89th → RS ≥", group="USA Thresholds")
-usa69 = input.float(100.01, "USA 69th → RS ≥", group="USA Thresholds")
-usa49 = input.float(92.51, "USA 49th → RS ≥", group="USA Thresholds")
-usa29 = input.float(87.99, "USA 29th → RS ≥", group="USA Thresholds")
-usa09 = input.float(71.95, "USA 9th  → RS ≥", group="USA Thresholds")
-usa01 = input.float(39.72, "USA 1st  → RS ≥", group="USA Thresholds")
+// Last updated: 2026-06-25 02:57 UTC
 
+// RS thresholds
+usa98 = input.float(215.30, "USA 98th → RS ≥", group="USA Thresholds")
+usa89 = input.float(120.11, "USA 89th → RS ≥", group="USA Thresholds")
+usa69 = input.float(100.08, "USA 69th → RS ≥", group="USA Thresholds")
+usa49 = input.float(92.78, "USA 49th → RS ≥", group="USA Thresholds")
+usa29 = input.float(88.46, "USA 29th → RS ≥", group="USA Thresholds")
+usa09 = input.float(72.21, "USA 9th → RS ≥", group="USA Thresholds")
+usa01 = input.float(39.76, "USA 1th → RS ≥", group="USA Thresholds")
+
+// 1M_RS thresholds
+usa1m98 = input.float(135.94, "USA1M 98th → RS ≥", group="USA1M Thresholds")
+usa1m89 = input.float(111.94, "USA1M 89th → RS ≥", group="USA1M Thresholds")
+usa1m69 = input.float(103.56, "USA1M 69th → RS ≥", group="USA1M Thresholds")
+usa1m49 = input.float(101.70, "USA1M 49th → RS ≥", group="USA1M Thresholds")
+usa1m29 = input.float(99.66, "USA1M 29th → RS ≥", group="USA1M Thresholds")
+usa1m09 = input.float(88.45, "USA1M 9th → RS ≥", group="USA1M Thresholds")
+usa1m01 = input.float(63.69, "USA1M 1th → RS ≥", group="USA1M Thresholds")
+
+// 3M_RS thresholds
+usa3m98 = input.float(174.49, "USA3M 98th → RS ≥", group="USA3M Thresholds")
+usa3m89 = input.float(114.95, "USA3M 89th → RS ≥", group="USA3M Thresholds")
+usa3m69 = input.float(99.69, "USA3M 69th → RS ≥", group="USA3M Thresholds")
+usa3m49 = input.float(93.42, "USA3M 49th → RS ≥", group="USA3M Thresholds")
+usa3m29 = input.float(89.46, "USA3M 29th → RS ≥", group="USA3M Thresholds")
+usa3m09 = input.float(77.20, "USA3M 9th → RS ≥", group="USA3M Thresholds")
+usa3m01 = input.float(50.85, "USA3M 1th → RS ≥", group="USA3M Thresholds")
+
+// 6M_RS thresholds
+usa6m98 = input.float(202.30, "USA6M 98th → RS ≥", group="USA6M Thresholds")
+usa6m89 = input.float(123.05, "USA6M 89th → RS ≥", group="USA6M Thresholds")
+usa6m69 = input.float(102.81, "USA6M 69th → RS ≥", group="USA6M Thresholds")
+usa6m49 = input.float(95.71, "USA6M 49th → RS ≥", group="USA6M Thresholds")
+usa6m29 = input.float(91.56, "USA6M 29th → RS ≥", group="USA6M Thresholds")
+usa6m09 = input.float(69.81, "USA6M 9th → RS ≥", group="USA6M Thresholds")
+usa6m01 = input.float(34.79, "USA6M 1th → RS ≥", group="USA6M Thresholds")
 
 // Auto-generated RS Rating thresholds - do not edit manually
 // Last updated: 2026-06-25 01:36 UTC
@@ -68,29 +96,29 @@ p01 = market == "India" ? ind01 : usa01
 
 // Short-term threshold maps.
 // India uses dedicated 1M/3M/6M threshold sets. USA falls back to main USA thresholds until USA short-term sets are generated.
-p1m98 = market == "India" ? ind1m98 : usa98
-p1m89 = market == "India" ? ind1m89 : usa89
-p1m69 = market == "India" ? ind1m69 : usa69
-p1m49 = market == "India" ? ind1m49 : usa49
-p1m29 = market == "India" ? ind1m29 : usa29
-p1m09 = market == "India" ? ind1m09 : usa09
-p1m01 = market == "India" ? ind1m01 : usa01
+p1m98 = market == "India" ? ind1m98 : usa1m98
+p1m89 = market == "India" ? ind1m89 : usa1m89
+p1m69 = market == "India" ? ind1m69 : usa1m69
+p1m49 = market == "India" ? ind1m49 : usa1m49
+p1m29 = market == "India" ? ind1m29 : usa1m29
+p1m09 = market == "India" ? ind1m09 : usa1m09
+p1m01 = market == "India" ? ind1m01 : usa1m01
 
-p3m98 = market == "India" ? ind3m98 : usa98
-p3m89 = market == "India" ? ind3m89 : usa89
-p3m69 = market == "India" ? ind3m69 : usa69
-p3m49 = market == "India" ? ind3m49 : usa49
-p3m29 = market == "India" ? ind3m29 : usa29
-p3m09 = market == "India" ? ind3m09 : usa09
-p3m01 = market == "India" ? ind3m01 : usa01
+p3m98 = market == "India" ? ind3m98 : usa3m98
+p3m89 = market == "India" ? ind3m89 : usa3m89
+p3m69 = market == "India" ? ind3m69 : usa3m69
+p3m49 = market == "India" ? ind3m49 : usa3m49
+p3m29 = market == "India" ? ind3m29 : usa3m29
+p3m09 = market == "India" ? ind3m09 : usa3m09
+p3m01 = market == "India" ? ind3m01 : usa3m01
 
-p6m98 = market == "India" ? ind6m98 : usa98
-p6m89 = market == "India" ? ind6m89 : usa89
-p6m69 = market == "India" ? ind6m69 : usa69
-p6m49 = market == "India" ? ind6m49 : usa49
-p6m29 = market == "India" ? ind6m29 : usa29
-p6m09 = market == "India" ? ind6m09 : usa09
-p6m01 = market == "India" ? ind6m01 : usa01
+p6m98 = market == "India" ? ind6m98 : usa6m98
+p6m89 = market == "India" ? ind6m89 : usa6m89
+p6m69 = market == "India" ? ind6m69 : usa6m69
+p6m49 = market == "India" ? ind6m49 : usa6m49
+p6m29 = market == "India" ? ind6m29 : usa6m29
+p6m09 = market == "India" ? ind6m09 : usa6m09
+p6m01 = market == "India" ? ind6m01 : usa6m01
 
 
 // ────────────────────── DISPLAY OPTIONS ──────────────────────
@@ -354,7 +382,6 @@ stage2Color = stage2_up ? color.green : color.red
 // === Weekly 10 SMA Distance % ===
 weekly_close = request.security(syminfo.tickerid, "1W", close, lookahead=lookaheadMode)
 distFromWSMA10 = ((weekly_close - weekly_sma10) / weekly_sma10) * 100
-
 // ────────────────────── DEBUG ──────────────────────
 showDebug = input.bool(true, "Show Debug Label", group="Debug")
 
@@ -362,12 +389,14 @@ if showDebug and barstate.islast
     label.new(
          bar_index,
          high,
+         "\nCurrent Date=" + str.format("{0,date,yyyy-MM-dd}", curTimeD) +
          "Market=" + market +
          "\nBenchmark=" + benchmark +
          "\nAligned Rows=" + str.tostring(alignedRows, "#") +
          "\nChart Bars=" + str.tostring(bar_index) +
          "\nBench Close=" + str.tostring(curBenchD, "#.##") +
          "\nValid=" + str.tostring(valid) +
+         
 
          "\n\n1M Date: " + str.format("{0,date,yyyy-MM-dd}", time1M) +
          " → " + str.format("{0,date,yyyy-MM-dd}", curTimeD) +
@@ -408,7 +437,6 @@ if showDebug and barstate.islast
          color=color.yellow,
          textcolor=color.black
     )
-
 
 // ────────────────────── TABLE ──────────────────────
 var table t = table.new(position.top_right, 1, 1, border_width = 15)
