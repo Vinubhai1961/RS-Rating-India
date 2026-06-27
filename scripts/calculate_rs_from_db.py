@@ -1436,11 +1436,8 @@ if __name__ == "__main__":
         help="Metadata JSON"
     )
 
-    parser.add_argument(
-        "--percentiles",
-        default="98,89,69,49,29,9,1",
-        help="Percentiles for RSRATING.csv"
-    )
+    # parser.add_argument("--percentiles", default="98,89,69,49,29,9,1", help="Percentiles for RSRATING.csv")
+    parser.add_argument("--percentiles", default="99,98,95,90,85,80,75,70,60,50,40,30,20,10,5,1", help="Comma-separated percentile thresholds")
 
     parser.add_argument(
         "--debug",
@@ -1450,10 +1447,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    percentiles = [
-        int(p)
-        for p in args.percentiles.split(",")
-    ]
+    percentiles = [int(p) for p in args.percentiles.split(",")]
+    percentiles = sorted({int(p.strip()) for p in args.percentiles.split(",") if p.strip()}, reverse=True)
 
     os.makedirs(os.path.dirname(args.log_file), exist_ok=True)
 
