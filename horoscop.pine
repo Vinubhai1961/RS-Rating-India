@@ -1,0 +1,223 @@
+//@version=6
+indicator("Dipen-MI", overlay=true)
+
+// === INPUTS ===
+volThreshold = input.int(1000000, "Volume threshold (e.g. 1M)")
+rocThreshold = input.float(5.0, "% ROC threshold (e.g. 5%)")
+atrLength = input.int(14, "ATR Length", minval=1)
+rvolLength = input.int(20, "Relative Volume Length", minval=1)
+indexSymbol = input.string("SPY", "Index Symbol", options=["SPY", "NSE:NIFTY", "NSE:NIFTYMIDSML400", "Custom"])
+customIndex = input.string("NSE:BANKNIFTY", "Custom Index Symbol (if Custom selected)")
+useLookahead = input.bool(true, "Include Realtime in Weekly Data?")  // New toggle for lookahead
+lookaheadMode = useLookahead ? barmerge.lookahead_on : barmerge.lookahead_off
+
+// === Logic: Volume > 1M AND ROC ≥ 5% AND Daily Timeframe Only
+roc = math.abs(ta.roc(close, 1)) >= rocThreshold
+vol = volume >= volThreshold
+showDot = roc and vol and timeframe.isdaily
+
+// === Plotting Tiny Purple Dot
+plotshape(showDot, title="Tiny Purple Dot", style=shape.circle, location=location.belowbar, color=color.purple, size=size.tiny)
+
+// === HVE Logic ===
+var float maxVol = na
+maxVol := na(maxVol) ? volume : math.max(maxVol, volume)
+isHVE = volume == maxVol
+
+// === Plotting HVE Marker (on volume chart)
+plotshape(isHVE, title="High Volume Ever", style=shape.triangleup, location=location.bottom, color=color.red, size=size.small)
+
+// === Conditional Moving Averages ===
+sma10_weekly = timeframe.isweekly ? ta.sma(close, 10) : na
+sma10_daily = timeframe.isdaily ? ta.sma(close, 10) : na
+dma20 = timeframe.isdaily ? ta.sma(close, 20) : na
+daily_50_sma = timeframe.isdaily ? ta.sma(close, 50) : na
+weekly_30_sma = timeframe.isweekly ? ta.sma(close, 30) : na
+
+plot(sma10_weekly, color=color.orange, linewidth=2, title="10 SMA (Weekly)")
+plot(sma10_daily, color=color.orange, linewidth=1, title="10 SMA (Daily)")
+plot(dma20, color=color.blue, linewidth=2, title="20 SMA (Daily)")
+plot(daily_50_sma, color=color.purple, linewidth=2, title="50 SMA (Daily)")
+plot(weekly_30_sma, color=color.maroon, linewidth=2, title="30 SMA (Weekly)")
+
+// === ATR on Daily Only ===
+atrValue = timeframe.isdaily ? ta.atr(atrLength) : na
+//plot(atrValue, color=color.green, linewidth=1, title="ATR (Daily)")
+
+// === ADR on Daily Only ===
+adrValue = timeframe.isdaily ? ta.sma(high - low, atrLength) : na
+
+// === Enhanced RVol on Daily Only (Works on Intraday via request.security) ===
+avgVol = request.security(syminfo.tickerid, "1D", ta.sma(volume[1], rvolLength))
+todayVol = request.security(syminfo.tickerid, "1D", volume)
+rvolPct = math.round((todayVol / avgVol) * 100)
+rvolColor = rvolPct <= 20 ? color.new(color.red, 0) : color.new(color.green, 0)
+
+// === Weekly 10 SMA Check ===
+weekly_close = request.security(syminfo.tickerid, "1W", close, lookahead=lookaheadMode)
+weekly_sma10 = request.security(syminfo.tickerid, "1W", ta.sma(close, 10), lookahead=lookaheadMode)
+above_w_sma10 = weekly_close > weekly_sma10
+w_sma10_text = above_w_sma10 ? "●" : "N/A"
+w_sma10_color = above_w_sma10 ? color.green : color.gray
+
+// === Weekly 10 SMA Distance % ===
+distFromWSMA10 = ((weekly_close - weekly_sma10) / weekly_sma10) * 100
+
+// === Stage 2: 10WK SMA vs 30WK SMA ===
+weekly_sma30 = request.security(syminfo.tickerid, "1W", ta.sma(close, 30), lookahead=lookaheadMode)
+stage2_up = not na(weekly_sma10) and not na(weekly_sma30) and weekly_sma10 > weekly_sma30  // Added NaN check
+stage2_pct = ((weekly_sma10 - weekly_sma30) / weekly_sma30) * 100
+stage2_text = "Stage-2 (10WK-30WK): " + (stage2_up ? "UP" : "DOWN") + " | " + str.tostring(stage2_pct, "#.##") + "%"
+stage2_color = stage2_up ? color.green : color.red
+
+// === Daily Inside Bar (Previous Day) ===
+d_inside_today  = timeframe.isdaily and high < high[1] and low > low[1]
+d_inside_yest   = timeframe.isdaily and high[1] < high[2] and low[1] > low[2]
+
+d_ib_text = ""
+d_ib_text := d_inside_today  ? d_ib_text + "Today IB ● " : d_ib_text
+d_ib_text := d_inside_yest   ? d_ib_text + "Prev IB ●"   : d_ib_text
+d_ib_text := d_ib_text == "" ? "N/A" : d_ib_text
+
+d_ib_color = (d_inside_today or d_inside_yest) ? color.green : color.gray
+
+// === Weekly Inside Bar (Last Week - Previous Week) ===
+lw_inside = request.security(syminfo.tickerid, "1W", high[1] < high[2] and low[1] > low[2], lookahead=lookaheadMode)
+lw_ib_text = lw_inside ? "●" : "N/A"
+lw_ib_color = lw_inside ? color.green : color.gray
+
+// === Weekly Inside Bar (2 Weeks Ago - Last to Last Week) ===
+two_w_inside = request.security(syminfo.tickerid, "1W", high[2] < high[3] and low[2] > low[3], lookahead=lookaheadMode)
+two_w_ib_text = two_w_inside ? "⬤" : "N/A"  // Larger filled circle for better visibility
+two_w_ib_color = two_w_inside ? color.green : color.gray
+
+// === Monthly Inside Bar (Last Month - Previous Month) ===
+lm_inside = request.security(syminfo.tickerid, "1M", high[1] < high[2] and low[1] > low[2], lookahead=barmerge.lookahead_on)
+lm_ib_text = lm_inside ? "●" : "N/A"
+lm_ib_color = lm_inside ? color.green : color.gray
+
+// === Monthly Inside Bar (2 Months Ago - Last to Last Month) ===
+two_lm_inside = request.security(syminfo.tickerid, "1M", high[2] < high[3] and low[2] > low[3], lookahead=barmerge.lookahead_on)
+two_lm_ib_text = two_lm_inside ? "●" : "N/A"
+two_lm_ib_color = two_lm_inside ? color.green : color.gray
+
+// === Monthly Inside Bar (3 Months Ago - 3 Last Months) ===
+three_lm_inside = request.security(syminfo.tickerid, "1M", high[3] < high[4] and low[3] > low[4], lookahead=barmerge.lookahead_on)
+three_lm_ib_text = three_lm_inside ? "●" : "N/A"
+three_lm_ib_color = three_lm_inside ? color.green : color.gray
+
+// === 52 Week High/Low ===
+fiftyTwoWeekHigh = ta.highest(high, 252)
+fiftyTwoWeekLow = ta.lowest(low, 252)
+
+// === Distance from 20 SMA % ===
+distFromSMA = ((close - dma20) / dma20) * 100
+
+// === Distance from 52W High/Low % ===
+distFrom52High = ((fiftyTwoWeekHigh - close) / fiftyTwoWeekHigh) * 100
+distFrom52Low = ((close - fiftyTwoWeekLow) / fiftyTwoWeekLow) * 100
+
+// === Performance Metrics ===
+weeklyPerf = ta.change(close, 5) / close[5] * 100
+monthlyPerf = ta.change(close, 20) / close[20] * 100
+threeMonthlyPerf = ta.change(close, 60) / close[60] * 100
+
+// === VIX vs 20SMA and 10SMA (Updated: Uses TVC:VIX for spot data, D timeframe, gaps=off, lookahead=on to sync realtime/close and avoid lag/mismatches on non-US charts) ===
+vix_close = request.security("TVC:VIX", "D", close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+vix_sma20 = request.security("TVC:VIX", "D", ta.sma(close, 20), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+vix_sma10 = request.security("TVC:VIX", "D", ta.sma(close, 10), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+vix_pct20 = (vix_close - vix_sma20) / vix_sma20 * 100
+vix_pct10 = (vix_close - vix_sma10) / vix_sma10 * 100
+vix_above20 = vix_close > vix_sma20
+vix_above10 = vix_close > vix_sma10
+vix_color20 = vix_above20 ? color.red : color.green
+vix_color10 = vix_above10 ? color.red : color.green
+vix_dot = "●"
+
+// === INDIAVIX vs 20SMA and 10SMA (Added: Uses NSE:INDIAVIX for Indian volatility index, same logic as VIX for consistency) ===
+indiavix_close = request.security("NSE:INDIAVIX", "D", close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+indiavix_sma20 = request.security("NSE:INDIAVIX", "D", ta.sma(close, 20), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+indiavix_sma10 = request.security("NSE:INDIAVIX", "D", ta.sma(close, 10), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+indiavix_pct20 = (indiavix_close - indiavix_sma20) / indiavix_sma20 * 100
+indiavix_pct10 = (indiavix_close - indiavix_sma10) / indiavix_sma10 * 100
+indiavix_above20 = indiavix_close > indiavix_sma20
+indiavix_above10 = indiavix_close > indiavix_sma10
+indiavix_color20 = indiavix_above20 ? color.red : color.green
+indiavix_color10 = indiavix_above10 ? color.red : color.green
+indiavix_dot = "●"
+
+// === Index (e.g., SPY or NIFTY) vs 20SMA and 10SMA (Updated: Added gaps=off, lookahead=on, D timeframe for consistency with VIX and to handle any data gaps) ===
+effectiveIndex = indexSymbol == "Custom" ? customIndex : indexSymbol
+index_close = request.security(effectiveIndex, "D", close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+index_sma20 = request.security(effectiveIndex, "D", ta.sma(close, 20), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+index_sma10 = request.security(effectiveIndex, "D", ta.sma(close, 10), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+index_pct20 = (index_close - index_sma20) / index_sma20 * 100
+index_pct10 = (index_close - index_sma10) / index_sma10 * 100
+index_above20 = index_close > index_sma20
+index_above10 = index_close > index_sma10
+index_color20 = index_above20 ? color.green : color.red
+index_color10 = index_above10 ? color.green : color.red
+index_dot = "●"
+
+// === Relative Strength Ratio vs Index (Index / Ticker) ===
+ratio = index_close / close
+ratio_sma = ta.sma(ratio, 20)
+rs_status = ratio < ratio_sma ? "Strong" : "Weak"
+rs_pct = ((ratio - ratio_sma) / ratio_sma) * 100
+rs_color = ratio < ratio_sma ? color.green : color.red
+rs_text = "RS vs " + effectiveIndex + ": " + str.tostring(ratio, "#.####") + " | " + rs_status + " (" + str.tostring(math.abs(rs_pct), "#.##") + "%)"
+
+// === Extended Info Display in Bottom Right Corner ===
+var table infoTable = table.new(position.bottom_right, 1, 19, bgcolor=color.new(color.white, 80), border_width=1, border_color=color.gray)  // Expanded to 19 rows for INDIAVIX
+isIntraday = timeframe.in_seconds() <= 600  // 10 min or less
+showFullTable = timeframe.isdaily and not na(atrValue) and barstate.islast
+showRVolOnly = isIntraday and barstate.islast
+
+if showFullTable
+    // Full table for daily
+    // Row 0: ATR/ADR
+    table.cell(infoTable, 0, 0, "ATR: " + str.tostring(atrValue, "#.##") + " | ADR: " + str.tostring(adrValue, "#.##"), text_color=color.black, text_size=size.normal, text_halign=text.align_left)
+    // Row 1: 52W High
+    table.cell(infoTable, 0, 1, "52W High: " + str.tostring(fiftyTwoWeekHigh, "#.##") + " | " + str.tostring(distFrom52High, "#.##") + "%", text_color=color.black, text_size=size.normal, text_halign=text.align_left)
+    // Row 2: 52W Low
+    table.cell(infoTable, 0, 2, "52W Low: " + str.tostring(fiftyTwoWeekLow, "#.##") + " | " + str.tostring(distFrom52Low, "#.##") + "%", text_color=color.black, text_size=size.normal, text_halign=text.align_left)
+    // Row 3: Dist 20SMA
+    table.cell(infoTable, 0, 3, "Dist 20SMA %: " + str.tostring(distFromSMA, "#.##") + "%", text_color=color.black, text_size=size.normal, text_halign=text.align_left)
+    // Row 4: Dist 10SMA (W) %
+    table.cell(infoTable, 0, 4, "Dist 10SMA (W) %: " + str.tostring(distFromWSMA10, "#.##") + "%", text_color=color.black, text_size=size.normal, text_halign=text.align_left)
+    // Row 5: Performance
+    table.cell(infoTable, 0, 5, "W: " + str.tostring(weeklyPerf, "#.##") + "% | M: " + str.tostring(monthlyPerf, "#.##") + "% | 3M: " + str.tostring(threeMonthlyPerf, "#.##") + "%", text_color=color.black, text_size=size.normal, text_halign=text.align_left)
+    // Row 6: D_IB (Daily Inside Bar - Previous Day)
+    table.cell(infoTable, 0, 6, "D_IB: " + d_ib_text, text_color=d_ib_color, text_size=size.normal, text_halign=text.align_left)
+    // Row 7: Stage-2 (10WK-30WK)
+    table.cell(infoTable, 0, 7, stage2_text, text_color=stage2_color, text_size=size.normal, text_halign=text.align_left)
+    // Row 8: RVol
+    table.cell(infoTable, 0, 8, "D_RVol: " + str.tostring(rvolPct) + "%", bgcolor=rvolColor, text_color=color.white, text_size=size.normal, text_halign=text.align_left)
+    // Row 9: LW_IB | 2W_IB (Weekly Inside Bars - Last Week / 2 Weeks Ago) - Updated with larger circle for 2W_IB
+    weeklyIBText = "LW_IB: " + lw_ib_text + " | 2W_IB: " + two_w_ib_text
+    table.cell(infoTable, 0, 9, weeklyIBText, text_color=color.black, text_size=size.normal, text_halign=text.align_left)
+    // Row 10: LM_IB | 2LM_IB | 3LM_IB (Monthly Inside Bars - Last Month / 2 Last Months / 3 Last Months)
+    monthlyIBText = "LM_IB: " + lm_ib_text + " | 2LM_IB: " + two_lm_ib_text + " | 3LM_IB: " + three_lm_ib_text
+    table.cell(infoTable, 0, 10, monthlyIBText, text_color=color.black, text_size=size.normal, text_halign=text.align_left)
+    // Row 11: VIX (combined) - Updated to include closing price
+    vixText = "VIX Close: " + str.tostring(vix_close, "#.##") + " | vs 20SMA: " + vix_dot + " " + str.tostring(vix_pct20, "#.##") + "% | vs 10SMA: " + vix_dot + " " + str.tostring(vix_pct10, "#.##") + "%"
+    table.cell(infoTable, 0, 11, vixText, text_color=color.black, text_size=size.normal, text_halign=text.align_left)
+    // Row 12: INDIAVIX (combined) - Added row for INDIAVIX with closing price for consistency
+    indiavixText = "INDIAVIX Close: " + str.tostring(indiavix_close, "#.##") + " | vs 20SMA: " + indiavix_dot + " " + str.tostring(indiavix_pct20, "#.##") + "% | vs 10SMA: " + indiavix_dot + " " + str.tostring(indiavix_pct10, "#.##") + "%"
+    table.cell(infoTable, 0, 12, indiavixText, text_color=color.black, text_size=size.normal, text_halign=text.align_left)
+    // Row 13: Index (combined)
+    indexText = effectiveIndex + " vs 20SMA: " + index_dot + " " + str.tostring(index_pct20, "#.##") + "% | vs 10SMA: " + index_dot + " " + str.tostring(index_pct10, "#.##") + "%"
+    table.cell(infoTable, 0, 13, indexText, text_color=color.black, text_size=size.normal, text_halign=text.align_left)
+    // Row 14: RS vs Index
+    table.cell(infoTable, 0, 14, rs_text, text_color=rs_color, text_size=size.normal, text_halign=text.align_left)
+    // Row 15: Sector
+    table.cell(infoTable, 0, 15, "Sector: " + syminfo.sector, text_color=color.blue, text_size=size.normal, text_halign=text.align_left)
+    // Row 16: Industry
+    table.cell(infoTable, 0, 16, "Industry: " + syminfo.industry, text_color=color.blue, text_size=size.normal, text_halign=text.align_left)
+    // Row 17: Empty for space
+    table.cell(infoTable, 0, 17, "", text_color=color.black, text_size=size.normal, text_halign=text.align_left)
+    // Row 18: Empty for space
+    table.cell(infoTable, 0, 18, "", text_color=color.black, text_size=size.normal, text_halign=text.align_left)
+else if showRVolOnly
+    // Minimal table for intraday: Just D_RVol
+    table.cell(infoTable, 0, 0, "D_RVol: " + str.tostring(rvolPct) + "%", bgcolor=rvolColor, text_color=color.white, text_size=size.normal, text_halign=text.align_left)
