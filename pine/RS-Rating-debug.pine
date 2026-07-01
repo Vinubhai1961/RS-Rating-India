@@ -1,0 +1,608 @@
+//@version=6
+indicator('RS-Rating', shorttitle='RS-Rating', overlay=true, max_bars_back=500)
+//import TradingView/ta/12
+
+// ────────────────────── MARKET SELECTION ──────────────────────
+market = input.string("USA", "Market", options=["USA", "India"], group="Market Selection")
+indiaBenchmark = input.symbol("NSE:CNX500", "India Benchmark", group="Market Selection")
+benchmark = market == "India" ? indiaBenchmark : "SPY"
+
+// ────────────────────── THRESHOLDS (AUTO SWITCHED) ──────────────────────
+// Auto-generated RS Rating thresholds - do not edit manually
+// Last updated: 2026-06-30 22:30 UTC
+
+// RS thresholds
+usa99 = input.float(308.18, "USA 99th → RS ≥", group="USA Thresholds")
+usa98 = input.float(238.62, "USA 98th → RS ≥", group="USA Thresholds")
+usa95 = input.float(159.36, "USA 95th → RS ≥", group="USA Thresholds")
+usa90 = input.float(126.49, "USA 90th → RS ≥", group="USA Thresholds")
+usa85 = input.float(115.05, "USA 85th → RS ≥", group="USA Thresholds")
+usa80 = input.float(109.46, "USA 80th → RS ≥", group="USA Thresholds")
+usa75 = input.float(105.35, "USA 75th → RS ≥", group="USA Thresholds")
+usa70 = input.float(102.28, "USA 70th → RS ≥", group="USA Thresholds")
+usa60 = input.float(98.27, "USA 60th → RS ≥", group="USA Thresholds")
+usa50 = input.float(94.64, "USA 50th → RS ≥", group="USA Thresholds")
+usa40 = input.float(90.58, "USA 40th → RS ≥", group="USA Thresholds")
+usa30 = input.float(87.07, "USA 30th → RS ≥", group="USA Thresholds")
+usa20 = input.float(85.86, "USA 20th → RS ≥", group="USA Thresholds")
+usa10 = input.float(80.12, "USA 10th → RS ≥", group="USA Thresholds")
+usa05 = input.float(71.12, "USA 5th → RS ≥", group="USA Thresholds")
+usa01 = input.float(52.19, "USA 1th → RS ≥", group="USA Thresholds")
+
+// 1M_RS thresholds
+usa1m99 = input.float(148.79, "USA1M 99th → RS ≥", group="USA1M Thresholds")
+usa1m98 = input.float(135.08, "USA1M 98th → RS ≥", group="USA1M Thresholds")
+usa1m95 = input.float(121.98, "USA1M 95th → RS ≥", group="USA1M Thresholds")
+usa1m90 = input.float(113.87, "USA1M 90th → RS ≥", group="USA1M Thresholds")
+usa1m85 = input.float(110.28, "USA1M 85th → RS ≥", group="USA1M Thresholds")
+usa1m80 = input.float(107.88, "USA1M 80th → RS ≥", group="USA1M Thresholds")
+usa1m75 = input.float(106.21, "USA1M 75th → RS ≥", group="USA1M Thresholds")
+usa1m70 = input.float(104.66, "USA1M 70th → RS ≥", group="USA1M Thresholds")
+usa1m60 = input.float(102.48, "USA1M 60th → RS ≥", group="USA1M Thresholds")
+usa1m50 = input.float(101.46, "USA1M 50th → RS ≥", group="USA1M Thresholds")
+usa1m40 = input.float(101.04, "USA1M 40th → RS ≥", group="USA1M Thresholds")
+usa1m30 = input.float(100.11, "USA1M 30th → RS ≥", group="USA1M Thresholds")
+usa1m20 = input.float(97.92, "USA1M 20th → RS ≥", group="USA1M Thresholds")
+usa1m10 = input.float(92.12, "USA1M 10th → RS ≥", group="USA1M Thresholds")
+usa1m05 = input.float(85.79, "USA1M 5th → RS ≥", group="USA1M Thresholds")
+usa1m01 = input.float(70.65, "USA1M 1th → RS ≥", group="USA1M Thresholds")
+
+// 3M_RS thresholds
+usa3m99 = input.float(267.45, "USA3M 99th → RS ≥", group="USA3M Thresholds")
+usa3m98 = input.float(192.29, "USA3M 98th → RS ≥", group="USA3M Thresholds")
+usa3m95 = input.float(144.65, "USA3M 95th → RS ≥", group="USA3M Thresholds")
+usa3m90 = input.float(122.39, "USA3M 90th → RS ≥", group="USA3M Thresholds")
+usa3m85 = input.float(112.08, "USA3M 85th → RS ≥", group="USA3M Thresholds")
+usa3m80 = input.float(106.76, "USA3M 80th → RS ≥", group="USA3M Thresholds")
+usa3m75 = input.float(103.50, "USA3M 75th → RS ≥", group="USA3M Thresholds")
+usa3m70 = input.float(100.90, "USA3M 70th → RS ≥", group="USA3M Thresholds")
+usa3m60 = input.float(97.22, "USA3M 60th → RS ≥", group="USA3M Thresholds")
+usa3m50 = input.float(93.45, "USA3M 50th → RS ≥", group="USA3M Thresholds")
+usa3m40 = input.float(89.57, "USA3M 40th → RS ≥", group="USA3M Thresholds")
+usa3m30 = input.float(86.17, "USA3M 30th → RS ≥", group="USA3M Thresholds")
+usa3m20 = input.float(84.63, "USA3M 20th → RS ≥", group="USA3M Thresholds")
+usa3m10 = input.float(79.83, "USA3M 10th → RS ≥", group="USA3M Thresholds")
+usa3m05 = input.float(72.44, "USA3M 5th → RS ≥", group="USA3M Thresholds")
+usa3m01 = input.float(59.57, "USA3M 1th → RS ≥", group="USA3M Thresholds")
+
+// 6M_RS thresholds
+usa6m99 = input.float(302.91, "USA6M 99th → RS ≥", group="USA6M Thresholds")
+usa6m98 = input.float(222.14, "USA6M 98th → RS ≥", group="USA6M Thresholds")
+usa6m95 = input.float(156.90, "USA6M 95th → RS ≥", group="USA6M Thresholds")
+usa6m90 = input.float(128.80, "USA6M 90th → RS ≥", group="USA6M Thresholds")
+usa6m85 = input.float(118.52, "USA6M 85th → RS ≥", group="USA6M Thresholds")
+usa6m80 = input.float(112.35, "USA6M 80th → RS ≥", group="USA6M Thresholds")
+usa6m75 = input.float(108.80, "USA6M 75th → RS ≥", group="USA6M Thresholds")
+usa6m70 = input.float(105.75, "USA6M 70th → RS ≥", group="USA6M Thresholds")
+usa6m60 = input.float(101.45, "USA6M 60th → RS ≥", group="USA6M Thresholds")
+usa6m50 = input.float(98.06, "USA6M 50th → RS ≥", group="USA6M Thresholds")
+usa6m40 = input.float(94.42, "USA6M 40th → RS ≥", group="USA6M Thresholds")
+usa6m30 = input.float(92.04, "USA6M 30th → RS ≥", group="USA6M Thresholds")
+usa6m20 = input.float(90.25, "USA6M 20th → RS ≥", group="USA6M Thresholds")
+usa6m10 = input.float(79.60, "USA6M 10th → RS ≥", group="USA6M Thresholds")
+usa6m05 = input.float(68.62, "USA6M 5th → RS ≥", group="USA6M Thresholds")
+usa6m01 = input.float(45.79, "USA6M 1th → RS ≥", group="USA6M Thresholds")
+
+
+// Auto-generated RS Rating thresholds - do not edit manually
+// Last updated: 2026-06-30 12:31 UTC
+
+// RS thresholds
+ind99 = input.float(388.52, "IND 99th → RS ≥", group="IND Thresholds")
+ind98 = input.float(267.30, "IND 98th → RS ≥", group="IND Thresholds")
+ind95 = input.float(182.24, "IND 95th → RS ≥", group="IND Thresholds")
+ind90 = input.float(150.83, "IND 90th → RS ≥", group="IND Thresholds")
+ind85 = input.float(135.23, "IND 85th → RS ≥", group="IND Thresholds")
+ind80 = input.float(126.11, "IND 80th → RS ≥", group="IND Thresholds")
+ind75 = input.float(119.46, "IND 75th → RS ≥", group="IND Thresholds")
+ind70 = input.float(114.28, "IND 70th → RS ≥", group="IND Thresholds")
+ind60 = input.float(106.52, "IND 60th → RS ≥", group="IND Thresholds")
+ind50 = input.float(100.48, "IND 50th → RS ≥", group="IND Thresholds")
+ind40 = input.float(95.60, "IND 40th → RS ≥", group="IND Thresholds")
+ind30 = input.float(91.14, "IND 30th → RS ≥", group="IND Thresholds")
+ind20 = input.float(86.45, "IND 20th → RS ≥", group="IND Thresholds")
+ind10 = input.float(79.50, "IND 10th → RS ≥", group="IND Thresholds")
+ind05 = input.float(73.49, "IND 5th → RS ≥", group="IND Thresholds")
+ind01 = input.float(58.48, "IND 1th → RS ≥", group="IND Thresholds")
+
+// 1M_RS thresholds
+ind1m99 = input.float(154.77, "IND1M 99th → RS ≥", group="IND1M Thresholds")
+ind1m98 = input.float(142.16, "IND1M 98th → RS ≥", group="IND1M Thresholds")
+ind1m95 = input.float(127.63, "IND1M 95th → RS ≥", group="IND1M Thresholds")
+ind1m90 = input.float(118.10, "IND1M 90th → RS ≥", group="IND1M Thresholds")
+ind1m85 = input.float(113.08, "IND1M 85th → RS ≥", group="IND1M Thresholds")
+ind1m80 = input.float(109.53, "IND1M 80th → RS ≥", group="IND1M Thresholds")
+ind1m75 = input.float(107.10, "IND1M 75th → RS ≥", group="IND1M Thresholds")
+ind1m70 = input.float(105.07, "IND1M 70th → RS ≥", group="IND1M Thresholds")
+ind1m60 = input.float(101.99, "IND1M 60th → RS ≥", group="IND1M Thresholds")
+ind1m50 = input.float(99.46, "IND1M 50th → RS ≥", group="IND1M Thresholds")
+ind1m40 = input.float(97.23, "IND1M 40th → RS ≥", group="IND1M Thresholds")
+ind1m30 = input.float(95.02, "IND1M 30th → RS ≥", group="IND1M Thresholds")
+ind1m20 = input.float(92.48, "IND1M 20th → RS ≥", group="IND1M Thresholds")
+ind1m10 = input.float(87.90, "IND1M 10th → RS ≥", group="IND1M Thresholds")
+ind1m05 = input.float(83.58, "IND1M 5th → RS ≥", group="IND1M Thresholds")
+ind1m01 = input.float(73.14, "IND1M 1th → RS ≥", group="IND1M Thresholds")
+
+// 3M_RS thresholds
+ind3m99 = input.float(235.93, "IND3M 99th → RS ≥", group="IND3M Thresholds")
+ind3m98 = input.float(202.00, "IND3M 98th → RS ≥", group="IND3M Thresholds")
+ind3m95 = input.float(167.71, "IND3M 95th → RS ≥", group="IND3M Thresholds")
+ind3m90 = input.float(144.16, "IND3M 90th → RS ≥", group="IND3M Thresholds")
+ind3m85 = input.float(133.63, "IND3M 85th → RS ≥", group="IND3M Thresholds")
+ind3m80 = input.float(127.76, "IND3M 80th → RS ≥", group="IND3M Thresholds")
+ind3m75 = input.float(121.92, "IND3M 75th → RS ≥", group="IND3M Thresholds")
+ind3m70 = input.float(117.83, "IND3M 70th → RS ≥", group="IND3M Thresholds")
+ind3m60 = input.float(110.77, "IND3M 60th → RS ≥", group="IND3M Thresholds")
+ind3m50 = input.float(105.84, "IND3M 50th → RS ≥", group="IND3M Thresholds")
+ind3m40 = input.float(101.08, "IND3M 40th → RS ≥", group="IND3M Thresholds")
+ind3m30 = input.float(96.54, "IND3M 30th → RS ≥", group="IND3M Thresholds")
+ind3m20 = input.float(91.62, "IND3M 20th → RS ≥", group="IND3M Thresholds")
+ind3m10 = input.float(85.19, "IND3M 10th → RS ≥", group="IND3M Thresholds")
+ind3m05 = input.float(78.29, "IND3M 5th → RS ≥", group="IND3M Thresholds")
+ind3m01 = input.float(60.58, "IND3M 1th → RS ≥", group="IND3M Thresholds")
+
+// 6M_RS thresholds
+ind6m99 = input.float(360.93, "IND6M 99th → RS ≥", group="IND6M Thresholds")
+ind6m98 = input.float(247.17, "IND6M 98th → RS ≥", group="IND6M Thresholds")
+ind6m95 = input.float(184.00, "IND6M 95th → RS ≥", group="IND6M Thresholds")
+ind6m90 = input.float(152.11, "IND6M 90th → RS ≥", group="IND6M Thresholds")
+ind6m85 = input.float(138.07, "IND6M 85th → RS ≥", group="IND6M Thresholds")
+ind6m80 = input.float(128.74, "IND6M 80th → RS ≥", group="IND6M Thresholds")
+ind6m75 = input.float(121.74, "IND6M 75th → RS ≥", group="IND6M Thresholds")
+ind6m70 = input.float(116.38, "IND6M 70th → RS ≥", group="IND6M Thresholds")
+ind6m60 = input.float(108.11, "IND6M 60th → RS ≥", group="IND6M Thresholds")
+ind6m50 = input.float(101.48, "IND6M 50th → RS ≥", group="IND6M Thresholds")
+ind6m40 = input.float(95.97, "IND6M 40th → RS ≥", group="IND6M Thresholds")
+ind6m30 = input.float(90.62, "IND6M 30th → RS ≥", group="IND6M Thresholds")
+ind6m20 = input.float(84.65, "IND6M 20th → RS ≥", group="IND6M Thresholds")
+ind6m10 = input.float(75.73, "IND6M 10th → RS ≥", group="IND6M Thresholds")
+ind6m05 = input.float(67.59, "IND6M 5th → RS ≥", group="IND6M Thresholds")
+ind6m01 = input.float(48.97, "IND6M 1th → RS ≥", group="IND6M Thresholds")
+
+
+// ────────────────────── ACTIVE THRESHOLD MAPS ──────────────────────
+// Aligned to generated buckets:
+// 99,98,95,90,85,80,75,70,60,50,40,30,20,10,5,1
+
+p99 = market == "India" ? ind99 : usa99
+p98 = market == "India" ? ind98 : usa98
+p95 = market == "India" ? ind95 : usa95
+p90 = market == "India" ? ind90 : usa90
+p85 = market == "India" ? ind85 : usa85
+p80 = market == "India" ? ind80 : usa80
+p75 = market == "India" ? ind75 : usa75
+p70 = market == "India" ? ind70 : usa70
+p60 = market == "India" ? ind60 : usa60
+p50 = market == "India" ? ind50 : usa50
+p40 = market == "India" ? ind40 : usa40
+p30 = market == "India" ? ind30 : usa30
+p20 = market == "India" ? ind20 : usa20
+p10 = market == "India" ? ind10 : usa10
+p05 = market == "India" ? ind05 : usa05
+p01 = market == "India" ? ind01 : usa01
+
+p1m99 = market == "India" ? ind1m99 : usa1m99
+p1m98 = market == "India" ? ind1m98 : usa1m98
+p1m95 = market == "India" ? ind1m95 : usa1m95
+p1m90 = market == "India" ? ind1m90 : usa1m90
+p1m85 = market == "India" ? ind1m85 : usa1m85
+p1m80 = market == "India" ? ind1m80 : usa1m80
+p1m75 = market == "India" ? ind1m75 : usa1m75
+p1m70 = market == "India" ? ind1m70 : usa1m70
+p1m60 = market == "India" ? ind1m60 : usa1m60
+p1m50 = market == "India" ? ind1m50 : usa1m50
+p1m40 = market == "India" ? ind1m40 : usa1m40
+p1m30 = market == "India" ? ind1m30 : usa1m30
+p1m20 = market == "India" ? ind1m20 : usa1m20
+p1m10 = market == "India" ? ind1m10 : usa1m10
+p1m05 = market == "India" ? ind1m05 : usa1m05
+p1m01 = market == "India" ? ind1m01 : usa1m01
+
+p3m99 = market == "India" ? ind3m99 : usa3m99
+p3m98 = market == "India" ? ind3m98 : usa3m98
+p3m95 = market == "India" ? ind3m95 : usa3m95
+p3m90 = market == "India" ? ind3m90 : usa3m90
+p3m85 = market == "India" ? ind3m85 : usa3m85
+p3m80 = market == "India" ? ind3m80 : usa3m80
+p3m75 = market == "India" ? ind3m75 : usa3m75
+p3m70 = market == "India" ? ind3m70 : usa3m70
+p3m60 = market == "India" ? ind3m60 : usa3m60
+p3m50 = market == "India" ? ind3m50 : usa3m50
+p3m40 = market == "India" ? ind3m40 : usa3m40
+p3m30 = market == "India" ? ind3m30 : usa3m30
+p3m20 = market == "India" ? ind3m20 : usa3m20
+p3m10 = market == "India" ? ind3m10 : usa3m10
+p3m05 = market == "India" ? ind3m05 : usa3m05
+p3m01 = market == "India" ? ind3m01 : usa3m01
+
+p6m99 = market == "India" ? ind6m99 : usa6m99
+p6m98 = market == "India" ? ind6m98 : usa6m98
+p6m95 = market == "India" ? ind6m95 : usa6m95
+p6m90 = market == "India" ? ind6m90 : usa6m90
+p6m85 = market == "India" ? ind6m85 : usa6m85
+p6m80 = market == "India" ? ind6m80 : usa6m80
+p6m75 = market == "India" ? ind6m75 : usa6m75
+p6m70 = market == "India" ? ind6m70 : usa6m70
+p6m60 = market == "India" ? ind6m60 : usa6m60
+p6m50 = market == "India" ? ind6m50 : usa6m50
+p6m40 = market == "India" ? ind6m40 : usa6m40
+p6m30 = market == "India" ? ind6m30 : usa6m30
+p6m20 = market == "India" ? ind6m20 : usa6m20
+p6m10 = market == "India" ? ind6m10 : usa6m10
+p6m05 = market == "India" ? ind6m05 : usa6m05
+p6m01 = market == "India" ? ind6m01 : usa6m01
+
+// ────────────────────── DISPLAY OPTIONS ──────────────────────
+showLabelNearLine = input.bool(true,  "Show small RS on line", group="Display")
+showTopCenter     = input.bool(true,  "Show RS (USA/INDIA) : XX at top center", group="Display")
+showRSLine        = input.bool(true,  "Plot RS Line", group="Display")
+show21EMA         = input.bool(true,  "Plot 21 EMA on RS Line", group="Display")
+lineColor         = input.color(color.blue, "RS Line Color", group="Display")
+emaColor          = input.color(color.orange, "21 EMA Color", group="Display")
+topLabelColor     = input.color(color.new(#1E90FF, 0), "Top Label Color", group="Display")
+
+// ────────────────────── CORE CALCULATION ──────────────────────
+tf      = "D"
+
+// ────────────────────── RS LOOKBACKS ──────────────────────
+// These stay standard, but now they are counted on STOCK+BENCHMARK aligned bars.
+// This is closer to your GitHub logic: stock/ref aligned rows first, then lookback.
+lb1M  = input.int(21,  "1M Lookback Aligned Bars",  group="RS Lookbacks")
+lb3M  = input.int(63,  "3M Lookback Aligned Bars",  group="RS Lookbacks")
+//lb6M  = input.int(128, "6M Lookback Aligned Bars",  group="RS Lookbacks")
+lb6M  = market == "India" ? 128 : 126
+lb9M  = input.int(189, "9M Lookback Aligned Bars",  group="RS Lookbacks")
+lb12M = input.int(252, "12M Lookback Aligned Bars", group="RS Lookbacks")
+
+// Stock close
+closeD = request.security(syminfo.tickerid, tf, close, barmerge.gaps_off, barmerge.lookahead_off)
+dailyTimeD = request.security(syminfo.tickerid, tf, time, barmerge.gaps_off, barmerge.lookahead_off)
+
+// Benchmark close with gaps_on for alignment.
+// This prevents Pine from silently carrying benchmark values across missing benchmark dates.
+benchD = request.security(benchmark, tf, close, barmerge.gaps_on, barmerge.lookahead_off)
+
+// Alignment row = stock has close and benchmark has real close on same DAILY date.
+alignedBar = not na(closeD) and not na(benchD)
+
+// Count only one aligned event per daily bar. This prevents lower-timeframe charts
+// from counting the same daily close many times.
+newDailyBar  = timeframe.change(tf)
+alignedEvent = alignedBar and newDailyBar
+
+// Latest aligned daily values. If current chart bar is not aligned, this uses the most recent aligned row.
+curCloseD = ta.valuewhen(alignedEvent, closeD, 0)
+curBenchD = ta.valuewhen(alignedEvent, benchD, 0)
+curTimeD  = ta.valuewhen(alignedEvent, dailyTimeD, 0)
+
+// Count aligned daily rows, similar to GitHub aligned rows.
+alignedRows = ta.cum(alignedEvent ? 1 : 0)
+alignedBars = int(alignedRows) - 1
+
+// Lookback values from aligned daily rows.
+close1M  = ta.valuewhen(alignedEvent, closeD, lb1M)
+bench1M  = ta.valuewhen(alignedEvent, benchD, lb1M)
+time1M   = ta.valuewhen(alignedEvent, dailyTimeD, lb1M)
+
+close3M  = ta.valuewhen(alignedEvent, closeD, lb3M)
+bench3M  = ta.valuewhen(alignedEvent, benchD, lb3M)
+time3M   = ta.valuewhen(alignedEvent, dailyTimeD, lb3M)
+
+close6M  = ta.valuewhen(alignedEvent, closeD, lb6M)
+bench6M  = ta.valuewhen(alignedEvent, benchD, lb6M)
+time6M   = ta.valuewhen(alignedEvent, dailyTimeD, lb6M)
+
+close9M  = ta.valuewhen(alignedEvent, closeD, lb9M)
+bench9M  = ta.valuewhen(alignedEvent, benchD, lb9M)
+time9M   = ta.valuewhen(alignedEvent, dailyTimeD, lb9M)
+
+close12M = ta.valuewhen(alignedEvent, closeD, lb12M)
+bench12M = ta.valuewhen(alignedEvent, benchD, lb12M)
+time12M  = ta.valuewhen(alignedEvent, dailyTimeD, lb12M)
+
+has1M  = alignedRows > lb1M  and not na(close1M)  and not na(bench1M)  and bench1M  > 0 and curBenchD > 0
+has3M  = alignedRows > lb3M  and not na(close3M)  and not na(bench3M)  and bench3M  > 0 and curBenchD > 0
+has6M  = alignedRows > lb6M  and not na(close6M)  and not na(bench6M)  and bench6M  > 0 and curBenchD > 0
+has9M  = alignedRows > lb9M  and not na(close9M)  and not na(bench9M)  and bench9M  > 0 and curBenchD > 0
+has12M = alignedRows > lb12M and not na(close12M) and not na(bench12M) and bench12M > 0 and curBenchD > 0
+
+valid = has3M and not na(curCloseD) and not na(curBenchD) and curBenchD > 0
+
+perfS = has3M and has6M and has9M and has12M ?
+     0.4 * (curCloseD / close3M) +
+     0.2 * (curCloseD / close6M) +
+     0.2 * (curCloseD / close9M) +
+     0.2 * (curCloseD / close12M)
+     : na
+
+perfR = has3M and has6M and has9M and has12M ?
+     0.4 * (curBenchD / bench3M) +
+     0.2 * (curBenchD / bench6M) +
+     0.2 * (curBenchD / bench9M) +
+     0.2 * (curBenchD / bench12M)
+     : na
+
+rsRaw   = not na(perfS) and not na(perfR) and perfR > 0 ? perfS / perfR * 100 : na
+rsScore = not na(rsRaw) ? math.min(rsRaw, 700) : na
+
+// ────────────────────── SHORT TERM RS ──────────────────────
+rs1m = has1M ? (curCloseD / close1M) / (curBenchD / bench1M) * 100 : na
+rs3m = has3M ? (curCloseD / close3M) / (curBenchD / bench3M) * 100 : na
+rs6m = has6M ? (curCloseD / close6M) / (curBenchD / bench6M) * 100 : na
+
+// ────────────────────── RS HIGH DETECTION ──────────────────────
+rsHighPrev = ta.highest(rsScore[1], 252)
+
+rsBreakout = not na(rsScore) and not na(rsHighPrev) and rsScore > rsHighPrev
+     // and rsRating >= 90
+
+// ────────────────────── RATING ──────────────────────
+// Enhanced to match new generated threshold buckets:
+// 99,98,95,90,85,80,75,70,60,50,40,30,20,10,5,1
+
+f_interp(score, loScore, hiScore, loRank, hiRank) =>
+    hiScore != loScore
+     ? loRank + int(math.round((hiRank - loRank) * (score - loScore) / (hiScore - loScore)))
+     : hiRank
+
+f_rsRating_custom(score, x99, x98, x95, x90, x85, x80, x75, x70, x60, x50, x40, x30, x20, x10, x05, x01) =>
+    int r = 1
+
+    if na(score)
+        r := na
+    else if score >= x99
+        r := 99
+    else if score >= x98
+        r := f_interp(score, x98, x99, 98, 99)
+    else if score >= x95
+        r := f_interp(score, x95, x98, 95, 98)
+    else if score >= x90
+        r := f_interp(score, x90, x95, 90, 95)
+    else if score >= x85
+        r := f_interp(score, x85, x90, 85, 90)
+    else if score >= x80
+        r := f_interp(score, x80, x85, 80, 85)
+    else if score >= x75
+        r := f_interp(score, x75, x80, 75, 80)
+    else if score >= x70
+        r := f_interp(score, x70, x75, 70, 75)
+    else if score >= x60
+        r := f_interp(score, x60, x70, 60, 70)
+    else if score >= x50
+        r := f_interp(score, x50, x60, 50, 60)
+    else if score >= x40
+        r := f_interp(score, x40, x50, 40, 50)
+    else if score >= x30
+        r := f_interp(score, x30, x40, 30, 40)
+    else if score >= x20
+        r := f_interp(score, x20, x30, 20, 30)
+    else if score >= x10
+        r := f_interp(score, x10, x20, 10, 20)
+    else if score >= x05
+        r := f_interp(score, x05, x10, 5, 10)
+    else if score >= x01
+        r := f_interp(score, x01, x05, 1, 5)
+    else
+        r := 1
+
+    math.min(99, math.max(1, r))
+
+f_rsRating(score) =>
+    f_rsRating_custom(score, p99, p98, p95, p90, p85, p80, p75, p70, p60, p50, p40, p30, p20, p10, p05, p01)
+
+rsRating = valid and not na(rsScore) ? f_rsRating(rsScore) : na
+
+rsRating_1M = valid and not na(rs1m) ?
+     f_rsRating_custom(rs1m, p1m99, p1m98, p1m95, p1m90, p1m85, p1m80, p1m75, p1m70, p1m60, p1m50, p1m40, p1m30, p1m20, p1m10, p1m05, p1m01)
+     : na
+
+rsRating_3M = valid and not na(rs3m) ?
+     f_rsRating_custom(rs3m, p3m99, p3m98, p3m95, p3m90, p3m85, p3m80, p3m75, p3m70, p3m60, p3m50, p3m40, p3m30, p3m20, p3m10, p3m05, p3m01)
+     : na
+
+rsRating_6M = valid and not na(rs6m) ?
+     f_rsRating_custom(rs6m, p6m99, p6m98, p6m95, p6m90, p6m85, p6m80, p6m75, p6m70, p6m60, p6m50, p6m40, p6m30, p6m20, p6m10, p6m05, p6m01)
+     : na
+// ────────────────────── IPO RS (ALIGNED + PROGRESSIVE) ──────────────────────
+bars       = alignedBars
+isIPOPhase = bars > 5 and bars < 200
+
+// Progressive weights (aligned with main RS: 0.4 / 0.2 / 0.2 / 0.2)
+w1 = bars >= 21  ? 0.4 : 0.0   // ~1M (replaces 3M slot)
+w2 = bars >= 63  ? 0.3 : 0.0   // ~3M (replaces 6M slot)
+w3 = bars >= 126 ? 0.2 : 0.0   // ~6M (replaces 9M slot)
+w4 = bars >= 189 ? 0.1 : 0.0   // ~9M (replaces 12M slot)
+
+// Normalize active weights
+sumW = w1 + w2 + w3 + w4
+
+// Stock performance from aligned rows
+perfS_IPO =
+     sumW > 0 ?
+     ((w1 > 0 and has1M ? w1 * (curCloseD / close1M) : 0) +
+      (w2 > 0 and has3M ? w2 * (curCloseD / close3M) : 0) +
+      (w3 > 0 and has6M ? w3 * (curCloseD / close6M) : 0) +
+      (w4 > 0 and has9M ? w4 * (curCloseD / close9M) : 0)) / sumW
+     : na
+
+// Benchmark performance from aligned rows
+perfR_IPO =
+     sumW > 0 ?
+     ((w1 > 0 and has1M ? w1 * (curBenchD / bench1M) : 0) +
+      (w2 > 0 and has3M ? w2 * (curBenchD / bench3M) : 0) +
+      (w3 > 0 and has6M ? w3 * (curBenchD / bench6M) : 0) +
+      (w4 > 0 and has9M ? w4 * (curBenchD / bench9M) : 0)) / sumW
+     : na
+
+// Relative Strength
+rsRaw_IPO =
+     isIPOPhase and not na(perfS_IPO) and not na(perfR_IPO) and perfR_IPO > 0
+     ? (perfS_IPO / perfR_IPO) * 100
+     : na
+
+// Cap to match main RS scale
+IPO_CAP     = 700.0
+rsScore_IPO = isIPOPhase and not na(rsRaw_IPO) ? math.min(rsRaw_IPO, IPO_CAP) : na
+
+// Convert to 1–99 using sqrt scaling (smooth early behavior)
+//f_rsRating_IPO(score) =>
+    //na(score) ? na : math.round(math.min(99, math.max(1, 1 + 98 * math.sqrt(score / IPO_CAP))))
+f_rsRating_IPO(score) => na(score) ? na : f_rsRating(score)
+rsRating_IPO = f_rsRating_IPO(rsScore_IPO)
+
+finalRS = bars < 200 ? rsRating_IPO : rsRating
+finalRSScore = bars < 200 ? rsScore_IPO : rsScore
+
+// ────────────────────── SMART RS LINE ──────────────────────
+priceLow   = ta.lowest(low, 50)
+priceRange = ta.highest(high, 100) - priceLow
+baseOffset = priceLow * 0.92
+rsLineY    = baseOffset + (finalRSScore / 700) * priceRange * 0.6
+
+plot(showRSLine ? rsLineY : na, "RS Line", color=lineColor, linewidth=2)
+
+// EMA
+rsEMA = ta.ema(rsLineY, 21)
+plot(show21EMA ? rsEMA : na, "21 EMA", color=emaColor, linewidth=2)
+
+// RS vs EMA
+rsDistPct = not na(rsLineY) and not na(rsEMA) and rsEMA != 0
+     ? ((rsLineY - rsEMA) / rsEMA) * 100
+     : na
+
+rsEMAText =
+     not na(rsDistPct)
+     ? (rsDistPct >= 0
+         ? "RS > EMA ✅ (" + str.tostring(rsDistPct, "#.##") + "%)"
+         : "RS < EMA ❌ (" + str.tostring(rsDistPct, "#.##") + "%)")
+     : "RS vs EMA: n/a"
+
+// ────────────────────── LABELS ──────────────────────
+//if showLabelNearLine and barstate.islast and not na(rsRating)
+    //label.new(bar_index, rsLineY, str.tostring(rsRating),
+if showLabelNearLine and barstate.islast and not na(finalRS)
+    label.new(bar_index, rsLineY, str.tostring(finalRS),
+         style=label.style_label_left, color=color.new(color.black, 80),
+         textcolor=topLabelColor, size=size.small)
+
+if rsBreakout and barstate.islast
+    label.new(bar_index, rsLineY, "RS High",
+         style=label.style_label_up,
+         color=color.green,
+         textcolor=color.white,
+         size=size.small)
+
+// ────────────────────── STAGE-2 (WEEKLY TREND CHECK) ──────────────────────
+// === Stage 2: 10WK SMA vs 30WK SMA ===
+// (Enhanced & Consistent with rest of your script)
+useLookahead = input.bool(true, "Include Realtime in Weekly Data?")
+lookaheadMode = useLookahead ? barmerge.lookahead_on : barmerge.lookahead_off
+weekly_sma10 = request.security(syminfo.tickerid, "1W", ta.sma(close, 10), lookahead=lookaheadMode)
+weekly_sma30 = request.security(syminfo.tickerid, "1W", ta.sma(close, 30), lookahead=lookaheadMode)
+
+stage2_up = not na(weekly_sma10) and not na(weekly_sma30) and weekly_sma10 > weekly_sma30
+
+stage2_pct = not na(weekly_sma10) and not na(weekly_sma30) and weekly_sma30 != 0 ?
+     ((weekly_sma10 - weekly_sma30) / weekly_sma30) * 100 : na
+
+stage2Text = "Stage-2 (10W-30W): " + 
+     (stage2_up ? "✅ UP" : "❌ DOWN") + 
+     (not na(stage2_pct) ? " | " + str.tostring(stage2_pct, "#.##") + "%" : " | n/a")
+
+stage2Color = stage2_up ? color.green : color.red
+
+// === Weekly 10 SMA Distance % ===
+weekly_close = request.security(syminfo.tickerid, "1W", close, lookahead=lookaheadMode)
+distFromWSMA10 = ((weekly_close - weekly_sma10) / weekly_sma10) * 100
+
+// === Daily Inside Bar (Previous Day) ===
+d_inside_today  = timeframe.isdaily and high < high[1] and low > low[1]
+d_inside_yest   = timeframe.isdaily and high[1] < high[2] and low[1] > low[2]
+
+d_ib_text = ""
+d_ib_text := d_inside_today  ? d_ib_text + "Today IB ● " : d_ib_text
+d_ib_text := d_inside_yest   ? d_ib_text + "Prev IB ●"   : d_ib_text
+d_ib_text := d_ib_text == "" ? "N/A" : d_ib_text
+
+d_ib_color = (d_inside_today or d_inside_yest) ? color.green : color.gray
+
+// === Weekly Inside Bar (Last Week - Previous Week) ===
+lw_inside = request.security(syminfo.tickerid, "1W", high[1] < high[2] and low[1] > low[2], lookahead=lookaheadMode)
+lw_ib_text = lw_inside ? "●" : "N/A"
+lw_ib_color = lw_inside ? color.green : color.gray
+
+// === Weekly Inside Bar (2 Weeks Ago - Last to Last Week) ===
+two_w_inside = request.security(syminfo.tickerid, "1W", high[2] < high[3] and low[2] > low[3], lookahead=lookaheadMode)
+two_w_ib_text = two_w_inside ? "⬤" : "N/A"  // Larger filled circle for better visibility
+two_w_ib_color = two_w_inside ? color.green : color.gray
+
+// === Monthly Inside Bar (Last Month - Previous Month) ===
+lm_inside = request.security(syminfo.tickerid, "1M", high[1] < high[2] and low[1] > low[2], lookahead=barmerge.lookahead_on)
+lm_ib_text = lm_inside ? "●" : "N/A"
+lm_ib_color = lm_inside ? color.green : color.gray
+
+// === Monthly Inside Bar (2 Months Ago - Last to Last Month) ===
+two_lm_inside = request.security(syminfo.tickerid, "1M", high[2] < high[3] and low[2] > low[3], lookahead=barmerge.lookahead_on)
+two_lm_ib_text = two_lm_inside ? "●" : "N/A"
+two_lm_ib_color = two_lm_inside ? color.green : color.gray
+
+// === Monthly Inside Bar (3 Months Ago - 3 Last Months) ===
+three_lm_inside = request.security(syminfo.tickerid, "1M", high[3] < high[4] and low[3] > low[4], lookahead=barmerge.lookahead_on)
+three_lm_ib_text = three_lm_inside ? "●" : "N/A"
+three_lm_ib_color = three_lm_inside ? color.green : color.gray
+
+// ────────────────────── VIX & INDIAVIX ──────────────────────
+// === VIX vs 20SMA and 10SMA ===
+vix_close = request.security("TVC:VIX", "D", close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+vix_sma20 = request.security("TVC:VIX", "D", ta.sma(close, 20), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+vix_sma10 = request.security("TVC:VIX", "D", ta.sma(close, 10), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+
+vix_pct20 = (vix_close - vix_sma20) / vix_sma20 * 100
+vix_pct10 = (vix_close - vix_sma10) / vix_sma10 * 100
+vix_dot = "●"
+
+// === INDIAVIX vs 20SMA and 10SMA ===
+indiavix_close = request.security("NSE:INDIAVIX", "D", close, gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+indiavix_sma20 = request.security("NSE:INDIAVIX", "D", ta.sma(close, 20), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+indiavix_sma10 = request.security("NSE:INDIAVIX", "D", ta.sma(close, 10), gaps=barmerge.gaps_off, lookahead=barmerge.lookahead_on)
+
+indiavix_pct20 = (indiavix_close - indiavix_sma20) / indiavix_sma20 * 100
+indiavix_pct10 = (indiavix_close - indiavix_sma10) / indiavix_sma10 * 100
+indiavix_dot = "●"
+// ────────────────────── TABLE ──────────────────────
+var table t = table.new(position.top_right, 1, 1, border_width = 15)
+
+if showTopCenter and barstate.islast //and not na(rsRating)
+    sectorTxt   = na(syminfo.sector)   ? "Sector: n/a"   : "Sector: " + syminfo.sector
+    industryTxt = na(syminfo.industry) ? "Industry: n/a" : "Industry: " + syminfo.industry
+
+    //baseLine = "RS (" + market + ") : " + str.tostring(rsRating)
+    baseLine = bars < 200 ? "IPO RS (" + market + ") : " + str.tostring(finalRS) : "RS (" + market + ") : " + str.tostring(finalRS)
+    
+    ipoLine  = not na(rsRating_IPO) ? "\nIPO RS: " + str.tostring(rsRating_IPO) : ""
+
+    rsMultiLine =
+         not na(rsRating_1M) and not na(rsRating_3M) and not na(rsRating_6M)
+         ? "\n1M: " + str.tostring(rsRating_1M) +
+           " | 3M: " + str.tostring(rsRating_3M) +
+           " | 6M: " + str.tostring(rsRating_6M)
+         : ""
+    ib_text = "\nD.IB: " + d_ib_text +
+              "\nLW_IB: " + lw_ib_text + " | 2W_IB: " + two_w_ib_text +
+              "\nLM_IB: " + lm_ib_text + " | 2LM_IB: " + two_lm_ib_text + " | 3LM_IB: " + three_lm_ib_text
+              
+    vix_text = "\nVIX Close: " + str.tostring(vix_close, "#.##") + 
+               " | vs20: " + vix_dot + " " + str.tostring(vix_pct20, "#.##") + "%" +
+               " | vs10: " + vix_dot + " " + str.tostring(vix_pct10, "#.##") + "%"
+
+    indiavix_text = "\nINDIAVIX Close: " + str.tostring(indiavix_close, "#.##") + " | vs20: " + indiavix_dot + " " + str.tostring(indiavix_pct20, "#.##") + "%" +" | vs10: " + indiavix_dot + " " + str.tostring(indiavix_pct10, "#.##") + "%"
+
+    //displayText = baseLine + ipoLine + rsMultiLine + "\n" + rsEMAText + "\n" + sectorTxt + "\n" + industryTxt
+    displayText = baseLine + ipoLine + rsMultiLine + "\n" + rsEMAText + "\n" + stage2Text + "\n" + sectorTxt + "\n" + industryTxt +"\n"+ "Dist 10SMA (W) %: " + str.tostring(distFromWSMA10, "#.##") + "%" + ib_text + vix_text +indiavix_text
+    table.cell(
+         t, 0, 0, displayText,
+         text_color  = topLabelColor,
+         bgcolor     = color.new(color.white, 100),
+         text_halign = text.align_left,
+         text_valign = text.align_center
+    )
