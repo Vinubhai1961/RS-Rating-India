@@ -1,0 +1,154 @@
+//@version=6
+indicator("Dot • SMAs • RelVol • ADR • 52WH + PreGap + Avg10V + Pocket Pivot", overlay=true, max_boxes_count=500)
+
+// === INPUTS ===
+volThreshold   = input.int(1000000,    "Daily Volume Threshold (e.g. 1M)", minval=1000)
+rocThreshold   = input.float(5.0,      "Daily ROC Threshold (%)", minval=0.1, step=0.1)
+rvolLength     = input.int(20,         "Relative Volume Length", minval=1)
+atrLength = input.int(14, "ATR Length", minval=1)
+//wkhLength      = input.int(252,        "52-Week High Length (Trading Days)", minval=50)
+wkhLength      = input.int(252,        "52-Week High Lookback", minval=100)
+showPreGap     = input.bool(true,      "Show Pre-Market Gap Info")
+
+// ── Pocket Pivot Inputs ──
+pp_barsize     = input.int(3,          "% change for green day", minval=0)
+pp_lookback    = input.int(10,         "Pocket Pivot Lookback Days", minval=3)
+pp_gapcandle   = input.bool(false,     "Require Gap-up Bar for signal")
+pp_gapvalue    = input.float(0.5,      "Gap-up Value in %", minval=0.0, step=0.1)
+
+// === MOVING AVERAGES ===
+d10  = request.security(syminfo.tickerid, "D", ta.sma(close, 10))
+d20  = request.security(syminfo.tickerid, "D", ta.sma(close, 20))
+d50  = request.security(syminfo.tickerid, "D", ta.sma(close, 50))
+d200 = request.security(syminfo.tickerid, "D", ta.sma(close, 200))
+w8  = request.security(syminfo.tickerid, "W", ta.sma(close, 8))
+w10  = request.security(syminfo.tickerid, "W", ta.sma(close, 10))
+w30  = request.security(syminfo.tickerid, "W", ta.sma(close, 30))
+
+plot(timeframe.isdaily  ? d10  : na, title="Daily 10 SMA",  color=color.blue,   linewidth=1)
+plot(timeframe.isdaily  ? d20  : na, title="Daily 20 SMA",  color=color.orange, linewidth=1)
+plot(timeframe.isdaily  ? d50  : na, title="Daily 50 SMA",  color=color.red,    linewidth=2)
+plot(timeframe.isdaily  ? d200 : na, title="Daily 200 SMA", color=color.black,  linewidth=2)
+plot(timeframe.isweekly ? w8  : na, title="Weekly 8 SMA", color=color.rgb(141, 134, 236),  linewidth=2)
+plot(timeframe.isweekly ? w10  : na, title="Weekly 10 SMA", color=color.green,  linewidth=2)
+plot(timeframe.isweekly ? w30  : na, title="Weekly 30 SMA", color=color.rgb(236, 213, 5), linewidth=2)
+
+// === RELATIVE VOLUME ===
+dailyVol    = request.security(syminfo.tickerid, "D", volume)
+avgDailyVol = ta.sma(dailyVol[1], rvolLength)
+relVolPct   = (dailyVol / avgDailyVol) * 100
+
+relVolColor = relVolPct >= 300 ? color.new(#ff00ff, 0) :     // ≥300% → Magenta
+              relVolPct >= 250 ? color.new(#ff0088, 0) :     // 250–299% → Hot Pink
+              relVolPct >= 200 ? color.new(#00ff00, 0) :     // ≥200% → Lime Green
+              relVolPct >= 150 ? color.new(#00ff88, 0) :     // 150–199% → Spring Green
+              relVolPct >= 100 ? color.new(#88ff00, 0) :     // 100–149% → Light Lime
+              relVolPct >=  70 ? color.new(#ffaa00, 0) :     // 70–99% → Orange
+                                 color.new(#ff4444, 0)       // <70%  → Red
+
+// === 10-DAY AVG VOLUME ===
+avg10dVol = ta.sma(dailyVol[1], 10)
+
+// === ADR on Daily Only ===
+adrValue = timeframe.isdaily ? ta.sma(high - low, atrLength) : na
+
+// === 52-WEEK HIGH % ===
+// === 52-WEEK HIGH % ===
+//wkhLength = input.int(252, "52-Week High Lookback", minval=100)
+
+// Get 52-week high
+wkh = request.security(syminfo.tickerid, "D", ta.highest(high, wkhLength))
+
+// Clean internal calculation
+wkhPctInternal = (close - wkh) / wkh * 100                     // Positive = new high
+
+// For Table Display - Positive number = Pullback %
+wkhPctDisplay  = math.round(math.max(0, (wkh - close) / wkh * 100), 1)
+
+// Color based on how close to 52WH (including new highs)
+wkhColor = wkhPctInternal >= 0 ? color.new(#00ff00, 0) : wkhPctInternal >= -5   ? color.new(#00cc00, 0) : wkhPctInternal >= -15  ? color.new(#ffaa00, 0) :color.new(#ff4444, 0)
+
+// === PRE-MARKET GAP ===
+prevDailyClose = request.security(syminfo.tickerid, "D", close[1], lookahead=barmerge.lookahead_on)
+currentPrice   = close
+
+preGapDollar   = currentPrice - prevDailyClose
+preGapPercent  = (currentPrice / prevDailyClose - 1) * 100
+
+gapSign        = preGapDollar >= 0 ? "+" : "-"
+gapColor       = preGapDollar >  0 ? color.new(#00ff88, 0) : 
+                 preGapDollar <  0 ? color.new(#ff4444, 0) : 
+                                     color.gray
+
+gapTextDollar  = gapSign + str.tostring(math.abs(preGapDollar),   "#.##")
+gapTextPercent = gapSign + str.tostring(math.abs(preGapPercent), "#.##") + "%"
+
+// === POCKET PIVOT LOGIC ===
+greenday = close > open and (((close - open) / close) * 100) > pp_barsize
+
+gapup = low > high[1] and ((low - high[1]) / low) * 100 > pp_gapvalue and pp_gapcandle
+
+var float max_down_day_vol = 0.0
+ispp = false
+
+if greenday
+    max_down_day_vol := 0.0
+    for i = 1 to pp_lookback
+        if close[i] <= open[i]
+            max_down_day_vol := math.max(max_down_day_vol, volume[i])
+    
+    if volume > max_down_day_vol
+        ispp := true
+
+// === PLOTS / SHAPES ===
+plotshape(ispp, title="Pocket Pivot", style=shape.circle, location=location.belowbar, color=color.blue, size=size.tiny)
+
+// Optional: color the whole bar when gap-up condition is met
+barcolor(pp_gapcandle and gapup ? color.blue : na, title="Gap-up Bar Color")
+
+// === ALERTS ===
+alertcondition(ispp,  title="Pocket Pivot Breakout Alert", message="Pocket Pivot Breakout Alert - {{ticker}}")
+alertcondition(gapup, title="Gap-Up Alert",              message="Gap-Up Alert - {{ticker}}")
+
+// === TABLE ===
+var table t = table.new(position.bottom_right, 1, 7,
+     bgcolor=color.new(color.black, 85), border_width=1, border_color=color.gray)
+
+if barstate.islast
+    int row = 0
+    
+    if showPreGap
+        table.cell(t, 0, row, 
+             "PreGap: " + gapTextDollar + "  (" + gapTextPercent + ")",
+             bgcolor=gapColor, text_color=color.white, text_size=size.normal)
+        row += 1
+    
+    table.cell(t, 0, row, 
+         "RelVol: " + str.tostring(relVolPct, "0") + "%",
+         bgcolor=relVolColor, text_color=color.white, text_size=size.normal)
+    row += 1
+    
+    table.cell(t, 0, row, 
+         "Avg10d Vol: " + str.tostring(math.round(avg10dVol/1000)) + "k",
+         bgcolor=color.new(color.gray, 65), text_color=color.white, text_size=size.normal)
+    row += 1
+    
+    table.cell(t, 0, row, 
+         "ADR: " + str.tostring(adrValue, "#.##"),
+         bgcolor=color.new(color.gray, 70), text_color=color.white)
+    row += 1
+    
+    table.cell(t, 0, row, "52WH: -" + str.tostring(wkhPctDisplay) + "%", bgcolor = wkhColor,  text_color = color.white, text_size = size.normal)
+
+    row += 1
+    
+    // Optional Pocket Pivot status in table
+    table.cell(t, 0, row, 
+         ispp ? "Pocket Pivot ✓" : " ",
+         bgcolor = ispp ? color.new(color.blue, 40) : color.new(color.gray, 80),
+         text_color = ispp ? color.white : color.gray)
+    row += 1
+    
+    table.cell(t, 0, row, 
+         syminfo.ticker + " • " + timeframe.period,
+         bgcolor=color.new(color.navy, 85), text_color=color.aqua, text_size=size.small)
