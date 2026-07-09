@@ -10,6 +10,8 @@ on:
 
 jobs:
   fetch-rs:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    
     strategy:
       matrix:
         partition: [0, 1, 2, 3]
