@@ -31,7 +31,7 @@ jobs:
         run: |
           pip install pandas_market_calendars pytz
 
-      - name: Check NYSE status
+      - name: Check Indian Stock Market (NSE-BSE) status
         id: market
         run: |
           python scripts/check_market_open.py
