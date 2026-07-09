@@ -1,5 +1,5 @@
 // Auto-generated RS Rating thresholds - do not edit manually
-// Last updated: 2026-07-09 13:20 UTC
+// Last updated: 2026-07-09 16:32 UTC
 ind98 = input.float(372.47, "INDIA 98th → RS ≥", group="INDIA Thresholds")
 ind89 = input.float(259.96, "INDIA 89th → RS ≥", group="INDIA Thresholds")
 ind69 = input.float(177.66, "INDIA 69th → RS ≥", group="INDIA Thresholds")
