@@ -191,3 +191,13 @@ jobs:
             echo "Latest pushed commit:"
             git log -1 --oneline
           fi
+          
+      - name: Trigger  7-master.yml
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh workflow run "7-master.yml"
+
+      - name: Print workflow end time (EDT)
+        run: |
+          echo "Workflow ended at $(date -u -d '4 hours ago' +'%I:%M %p EDT on %A, %B %d, %Y')"
