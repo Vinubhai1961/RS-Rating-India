@@ -1,15 +1,16 @@
 name: 📊 Calculate RS Ratings (India - NIFTY)
 
 on:
-  #workflow_run:
-    #workflows: ["Build Tickers and Price Data"]
-    #types: [completed]
-    #branches: [main]
+  workflow_run:
+    workflows: ["Build Tickers and Price Data"]
+    types: [completed]
+    branches: [main]
   workflow_dispatch:   # allow manual run
 
 
 jobs:
   fetch-rs:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     strategy:
       matrix:
         partition: [0, 1, 2, 3]
