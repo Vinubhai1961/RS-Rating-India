@@ -17,6 +17,10 @@ jobs:
     needs: generate-ipo
     uses: ./.github/workflows/5-rs-52wh-filter.yml
 
+  filter-52wl:
+    needs: filter-52wh
+    uses: ./.github/workflows/8-rs-52wl-filter.yml
+
   update-rs-thresholds:
     needs: filter-52wh
     uses: ./.github/workflows/6-RS-TV.yml
