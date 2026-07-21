@@ -18,8 +18,8 @@ MIN_RECOVERY_PCT  = 60.0
 MAX_PCT_TO_HIGH   = -27.0
 
 MIN_AVGVOL10 = 300_000
-MIN_ATR = 2.5
-MIN_ADR = 2.5
+MIN_ATR = 1
+MIN_ADR = 1
 
 # ────────────────────────────────────────────────
 
