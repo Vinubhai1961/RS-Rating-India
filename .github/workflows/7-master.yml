@@ -22,5 +22,5 @@ jobs:
     uses: ./.github/workflows/8-rs-52wl-filter.yml
 
   update-rs-thresholds:
-    needs: filter-52wh
+    needs: filter-52wl
     uses: ./.github/workflows/6-RS-TV.yml
