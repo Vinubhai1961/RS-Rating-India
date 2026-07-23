@@ -1,5 +1,6 @@
 # =============================================================================
 #   RS70 + 60%+ Recovery from 52W Low + Stage 2 (Price > SMA10W > SMA30W)
+#   WITH DETAILED DEBUG LOGGING
 # =============================================================================
 import pandas as pd
 from pathlib import Path
@@ -11,6 +12,7 @@ from datetime import date
 INPUT_PATH   = Path("RS_Data/rs_stocks.csv")
 OUTPUT_PATH  = Path("RS_Data/RS70_Price30_52WKL.csv")
 ARCHIVE_DIR  = Path("52wkl")
+DEBUG_LOG    = Path("52wkl/debug_filter.log")
 
 RS_THRESHOLD      = 70.0
 PRICE_THRESHOLD   = 30.0
@@ -33,10 +35,21 @@ def parse_volume(x):
     return float(x)
 
 
+def log_debug(ticker: str, message: str):
+    """Append debug info to log file"""
+    DEBUG_LOG.parent.mkdir(parents=True, exist_ok=True)
+    with open(DEBUG_LOG, "a", encoding="utf-8") as f:
+        f.write(f"[{ticker}] {message}\n")
+
+
 def main():
     if not INPUT_PATH.exists():
         print(f"Error: Input file not found → {INPUT_PATH}")
         return
+
+    # Clear previous debug log
+    if DEBUG_LOG.exists():
+        DEBUG_LOG.unlink()
 
     print("Reading source file ...")
     df = pd.read_csv(INPUT_PATH)
@@ -67,26 +80,52 @@ def main():
         (df['SMA10W'] > df['SMA30W'])
     )
 
-    # Main Filter + Stage 2
-    mask = (
-        (df['RS Percentile'] >= RS_THRESHOLD) &
-        (df['Price'] >= PRICE_THRESHOLD) &
-        (df['%_From_52WKL'] >= MIN_RECOVERY_PCT) &
-        (df['%_From_52WKH'] <= MAX_PCT_TO_HIGH) &
-        (df['AvgVol10'] >= MIN_AVGVOL10) &
-        (df['52WKL'] > 1) &
-        (df['In_Stage2'] == True)                     # ← New Stage 2 Filter
-    )
+    print("\n=== Starting Filter Debug ===")
+    passed = []
+    debug_count = 0
 
-    # ATR/ADR Filter
-    stock_mask = (df['Sector'] != 'ETF') & (df['Sector'].notna())
-    df.loc[stock_mask, 'Passes_ATR_ADR'] = (
-        (df.loc[stock_mask, 'ATR'] >= MIN_ATR) & 
-        (df.loc[stock_mask, 'ADR'] >= MIN_ADR)
-    )
-    df['Passes_ATR_ADR'] = df['Passes_ATR_ADR'].fillna(True)
+    for idx, row in df.iterrows():
+        ticker = row['Ticker']
+        debug_count += 1
+        reasons = []
 
-    filtered = df[mask & df['Passes_ATR_ADR']].copy()
+        # RS Check
+        if row['RS Percentile'] < RS_THRESHOLD:
+            reasons.append(f"RS {row['RS Percentile']:.0f} < {RS_THRESHOLD}")
+        # Price Check
+        if row['Price'] < PRICE_THRESHOLD:
+            reasons.append(f"Price ${row['Price']:.2f} < ${PRICE_THRESHOLD}")
+        # Recovery from 52W Low
+        if row['%_From_52WKL'] < MIN_RECOVERY_PCT:
+            reasons.append(f"Recovery {row['%_From_52WKL']}% < {MIN_RECOVERY_PCT}%")
+        # Distance from 52W High
+        if row['%_From_52WKH'] > MAX_PCT_TO_HIGH:
+            reasons.append(f"Too close to 52WH: {row['%_From_52WKH']}%")
+        # Volume
+        if row['AvgVol10'] < MIN_AVGVOL10:
+            reasons.append(f"AvgVol10 {row['AvgVol10']:,.0f} < {MIN_AVGVOL10:,}")
+        # 52WKL > 1
+        if row['52WKL'] <= 1:
+            reasons.append(f"52WKL <= 1")
+        # Stage 2
+        if not row['In_Stage2']:
+            reasons.append("Not in Stage 2 (Price > SMA10W > SMA30W)")
+
+        # ATR/ADR for non-ETFs
+        if row.get('Sector') != 'ETF' and pd.notna(row.get('Sector')):
+            if row['ATR'] < MIN_ATR or row['ADR'] < MIN_ADR:
+                reasons.append(f"ATR/ADR too low")
+
+        if not reasons:
+            passed.append(row)
+            log_debug(ticker, "✅ PASSED ALL FILTERS")
+        else:
+            log_debug(ticker, "❌ FAILED: " + " | ".join(reasons))
+
+        if debug_count % 500 == 0:
+            print(f"Processed {debug_count:,} stocks...")
+
+    filtered = pd.DataFrame(passed)
 
     print(f"\nAfter filters:")
     print(f"  • RS ≥ {RS_THRESHOLD}")
@@ -97,16 +136,15 @@ def main():
     print(f"→ {len(filtered):,} stocks remain")
 
     if len(filtered) == 0:
-        print("No stocks match criteria.")
+        print("No stocks match criteria. Check debug_filter.log for details.")
         return
 
     # Match original column structure
     desired = [
         'Rank', 'Ticker', 'Price', 'Prev_Close', 'DVol', 'Sector', 'Industry',
         'RS Percentile', '1M_RS Percentile', '3M_RS Percentile', '6M_RS Percentile',
-        'ATR', 'ADR', 'AvgVol', 'AvgVol10', '52WKH', '52WKL', 'Earning_Date', 'MCAP',
-        'IPO', 'SMA20', 'SMA50', 'SMA200', 'SMA10W', 'SMA30W', 'History_Days',
-        'Gap (%)', 'Latest Volume', '9M+ Volume', 'HVE', 'HVE Date', 'HVE Volume',
+        'ATR', 'ADR', 'AvgVol', 'AvgVol10', '52WKH', '52WKL', 'MCAP',
+        'IPO', 'SMA20', 'SMA50', 'SMA200', 'SMA10W', 'SMA30W',
         '%_From_52WKL', '%_From_52WKH'
     ]
 
@@ -125,6 +163,7 @@ def main():
     result.to_csv(archive_path, index=False)
     print(f"Archive saved → {archive_path}")
 
+    print(f"\nDetailed debug log → {DEBUG_LOG}")
     print("\nFirst 10 rows:")
     preview_cols = ['Rank', 'Ticker', 'Price', '%_From_52WKL', '%_From_52WKH', 
                    'RS Percentile', 'SMA10W', 'SMA30W', 'ATR', 'ADR']
