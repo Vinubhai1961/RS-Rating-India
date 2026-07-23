@@ -1037,9 +1037,224 @@ def main(
         index=False,
         na_rep=""
     )
+    # ====================== INDUSTRY TABLE ======================
+    # Ensure required fields exist before groupby.
+    for col in [
+        "Industry",
+        "Sector",
+        "RS Percentile",
+        "1M_RS Percentile",
+        "3M_RS Percentile",
+        "6M_RS Percentile"
+    ]:
+        if col not in df_stocks.columns:
+            df_stocks[col] = np.nan
 
-    # Industry Table (simplified - full original logic preserved)
-    # ... (the rest of the original script for industries, sectors, leaders, generate functions, etc. is the same)
+    df_industries = df_stocks.groupby("Industry", dropna=False).agg({
+        "RS Percentile": "mean",
+        "1M_RS Percentile": "mean",
+        "3M_RS Percentile": "mean",
+        "6M_RS Percentile": "mean",
+        "Sector": "first",
+        "Ticker": lambda x: ",".join(
+            df_stocks[
+                df_stocks["Ticker"].isin(x)
+            ].sort_values(
+                "RS",
+                ascending=False
+            )["Ticker"]
+        )
+    }).reset_index()
+
+    for col in [
+        "RS Percentile",
+        "1M_RS Percentile",
+        "3M_RS Percentile",
+        "6M_RS Percentile"
+    ]:
+        df_industries[col] = (
+            df_industries[col]
+            .fillna(0)
+            .round()
+            .astype(int)
+        )
+
+    df_industries = (
+        df_industries
+        .sort_values("RS Percentile", ascending=False)
+        .reset_index(drop=True)
+    )
+
+    df_industries["Rank"] = df_industries.index + 1
+
+    df_industries.rename(
+        columns={
+            "RS Percentile": "RS",
+            "1M_RS Percentile": "1 M_RS",
+            "3M_RS Percentile": "3M_RS",
+            "6M_RS Percentile": "6M_RS"
+        },
+        inplace=True
+    )
+
+    df_industries[
+        [
+            "Rank",
+            "Industry",
+            "Sector",
+            "RS",
+            "1 M_RS",
+            "3M_RS",
+            "6M_RS",
+            "Ticker"
+        ]
+    ].to_csv(
+        os.path.join(output_dir, "rs_industries.csv"),
+        index=False
+    )
+
+    # ====================== SECTOR TABLE ======================
+    # Similar to rs_industries.csv:
+    # Rank, Sector, RS, 1 M_RS, 3M_RS, 6M_RS, Ticker
+    df_sectors = df_stocks.groupby("Sector", dropna=False).agg({
+        "RS Percentile": "mean",
+        "1M_RS Percentile": "mean",
+        "3M_RS Percentile": "mean",
+        "6M_RS Percentile": "mean",
+        "Ticker": lambda x: ",".join(
+            df_stocks[
+                df_stocks["Ticker"].isin(x)
+            ].sort_values(
+                "RS",
+                ascending=False
+            )["Ticker"]
+        )
+    }).reset_index()
+
+    for col in [
+        "RS Percentile",
+        "1M_RS Percentile",
+        "3M_RS Percentile",
+        "6M_RS Percentile"
+    ]:
+        df_sectors[col] = (
+            df_sectors[col]
+            .fillna(0)
+            .round()
+            .astype(int)
+        )
+
+    df_sectors = (
+        df_sectors
+        .sort_values("RS Percentile", ascending=False)
+        .reset_index(drop=True)
+    )
+
+    df_sectors["Rank"] = df_sectors.index + 1
+
+    df_sectors.rename(
+        columns={
+            "RS Percentile": "RS",
+            "1M_RS Percentile": "1 M_RS",
+            "3M_RS Percentile": "3M_RS",
+            "6M_RS Percentile": "6M_RS"
+        },
+        inplace=True
+    )
+
+    df_sectors[
+        [
+            "Rank",
+            "Sector",
+            "RS",
+            "1 M_RS",
+            "3M_RS",
+            "6M_RS",
+            "Ticker"
+        ]
+    ].to_csv(
+        os.path.join(output_dir, "rs_sectors.csv"),
+        index=False
+    )
+
+    # ====================== INDUSTRY LEADERS ======================
+    # Top 5 RS stocks within each industry.
+    # This is meant for manual review and does not alter rs_stocks.csv.
+    leader_source = df_stocks.copy()
+
+    leader_source["Industry"] = leader_source["Industry"].fillna("Unknown")
+    leader_source["Sector"] = leader_source["Sector"].fillna("Unknown")
+
+    leader_source = leader_source.dropna(subset=["RS Percentile"])
+
+    industry_leaders = (
+        leader_source
+        .sort_values(
+            [
+                "Industry",
+                "RS Percentile",
+                "3M_RS Percentile",
+                "1M_RS Percentile"
+            ],
+            ascending=[True, False, False, False],
+            na_position="last"
+        )
+        .groupby("Industry", group_keys=False)
+        .head(5)
+        .copy()
+    )
+
+    industry_leaders["IndustryRank"] = (
+        industry_leaders
+        .groupby("Industry")
+        .cumcount() + 1
+    )
+
+    leader_columns = [
+        "IndustryRank",
+        "Ticker",
+        "Price",
+        "Sector",
+        "Industry",
+        "RS Percentile",
+        "1M_RS Percentile",
+        "3M_RS Percentile",
+        "6M_RS Percentile",
+        "ATR",
+        "ADR",
+        "AvgVol10",
+        "52WKH",
+        "52WKL",
+        "MCAP",
+        "SMA50",
+        "SMA200",
+        "SMA10W",
+        "SMA30W"
+    ]
+
+    industry_leader_cols = [
+        col for col in leader_columns
+        if col in industry_leaders.columns
+    ]
+
+    industry_leaders[industry_leader_cols].to_csv(
+        os.path.join(output_dir, "industry_leaders.csv"),
+        index=False,
+        na_rep=""
+    )
+
+    generate_tradingview_csv(
+        df_stocks,
+        output_dir,
+        ref_data,
+        percentiles
+    )
+    
+    generate_pine_thresholds(
+    df_stocks,
+    output_dir,
+    percentiles
+    ) 
 
     logging.info(
         f"NSE RS calculation completed. "
