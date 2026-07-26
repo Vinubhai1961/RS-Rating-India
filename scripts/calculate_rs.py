@@ -95,7 +95,7 @@ def fetch_historical_data(tickers, arctic, log_file):
             try:
                 #data = Ticker(batch).history(period="2y")
                 #data = Ticker(batch).history(period="max")
-                data = Ticker(batch).history(period="16y")
+                data = Ticker(batch).history(period="10y")
                 break
 
             except Exception as e:
