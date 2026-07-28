@@ -22,7 +22,8 @@ OUTPUT_PATH = Path("RS_Data/RS80_Price30_within25pct_52wh.csv")
 RS_THRESHOLD = 75.0
 PRICE_THRESHOLD = 30.0
 MAX_PCT_BELOW = 25.0
-MIN_AVGVOL10 = 300_000
+#MIN_AVGVOL10 = 300_000
+MIN_AVGVOL10 = 100_000
 
 DEBUG_TICKER = "HINDCOPPER.NS"
 # ────────────────────────────────────────────────
