@@ -24,3 +24,7 @@ jobs:
   update-rs-thresholds:
     needs: filter-52wl
     uses: ./.github/workflows/6-RS-TV.yml
+ 
+  find-gainers:
+    needs: update-rs-thresholds
+    uses: ./.github/workflows/9-find-gainers.yml
