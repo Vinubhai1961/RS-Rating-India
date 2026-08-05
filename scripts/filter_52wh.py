@@ -137,6 +137,12 @@ def main():
 
     print("Reading source file ...")
     df = pd.read_csv(INPUT_PATH)
+
+    # Remember the source schema exactly as-is (order included).
+    # Output will mirror this, so any NEW column added upstream
+    # flows through automatically with no code change here.
+    source_columns = list(df.columns)
+
     print(f"→ Loaded {len(df):,} rows")
     print(f"→ Columns found: {list(df.columns)}")
 
@@ -157,33 +163,23 @@ def main():
         print(f"Error: Missing required columns: {missing_required}")
         return
 
-    # Convert required numeric/filter columns.
-    numeric_cols = [
-        "Price",
-        "52WKH",
-        "52WKL",
-        "RS Percentile",
-        "1M_RS Percentile",
-        "3M_RS Percentile",
-        "6M_RS Percentile",
-        "AvgVol",
-        "AvgVol10",
-        "DVol",
-        "MCAP",
-        "ATR",
-        "ADR",
-        "SMA50",
-        "SMA200",
-        "SMA10W",
-        "SMA30W",
-    ]
+    # Only the columns the FILTER actually needs are converted.
+    # Every other column (including any future ones) is passed
+    # through untouched, exactly as it appears in the source.
+    volume_like_cols = {"AvgVol", "AvgVol10", "DVol", "MCAP"}
+    filter_numeric_cols = ["Price", "52WKH", "RS Percentile", "AvgVol10"]
 
-    for col in numeric_cols:
+    for col in filter_numeric_cols:
         if col in df.columns:
-            if col in {"AvgVol", "AvgVol10", "DVol", "MCAP"}:
+            if col in volume_like_cols:
                 df[col] = df[col].apply(parse_number)
             else:
                 df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    # Sort keys need to be numeric too, if present.
+    for col in ["3M_RS Percentile", "1M_RS Percentile"]:
+        if col in df.columns:
+            df[col] = pd.to_numeric(df[col], errors="coerce")
 
     before_drop = len(df)
 
@@ -226,35 +222,13 @@ def main():
     print(f"  • 10-day Avg Volume ≥ {MIN_AVGVOL10:,} shares")
     print(f"→ {len(filtered):,} rows remain")
 
-    # Output exactly same style/source columns only.
-    desired = [
-        "Rank",
-        "Ticker",
-        "Price",
-        "DVol",
-        "Sector",
-        "Industry",
-        "RS Percentile",
-        "1M_RS Percentile",
-        "3M_RS Percentile",
-        "6M_RS Percentile",
-        "ATR",
-        "ADR",
-        "AvgVol",
-        "AvgVol10",
-        "52WKH",
-        "52WKL",
-        "MCAP",
-        "IPO",
-        "SMA50",
-        "SMA200",
-        "SMA10W",
-        "SMA30W",
-    ]
+    # Output = the SOURCE schema, same columns, same order.
+    # Internal helper columns created here are excluded.
+    internal_cols = {"%_From_52WKH"}
 
     available = [
-        col for col in desired
-        if col in filtered.columns
+        col for col in source_columns
+        if col in filtered.columns and col not in internal_cols
     ]
 
     # Keep sorting simple and close to original behavior.
@@ -293,8 +267,13 @@ def main():
     print(f"\nOutput overwritten → {OUTPUT_PATH}")
     print(f"Archive saved     → {archive_file}")
     print(f"Total rows saved: {len(result):,}")
+    preview_cols = [
+        c for c in ["Rank", "Ticker", "Price", "ATR", "ADR", "RS Percentile"]
+        if c in result.columns
+    ] or list(result.columns[:6])
+
     print("\nFirst 10 rows:")
-    print(result.head(10)[['Rank', 'Ticker', 'Price', 'ATR', 'ADR', 'RS Percentile']].to_string(index=False))
+    print(result.head(10)[preview_cols].to_string(index=False))
 
 if __name__ == "__main__":
     main()
