@@ -1,10 +1,37 @@
 name: Find Top Gainers
 
-# Manual trigger only. Run this after the RS workflow has committed a fresh
-# RS_Data/rs_stocks.csv, since the gainer scan is a pure post-processing pass
-# over that file and does not fetch any market data itself.
+# Two ways in:
+#   workflow_call     - called from the master/RS workflow. Passing inputs is
+#                       optional; every input has a default, so a bare
+#                       `uses: ./.github/workflows/find_gainers.yml` works.
+#   workflow_dispatch - manual run from the Actions tab.
+#
+# IMPORTANT: workflow_dispatch defaults do NOT carry over to workflow_call runs.
+# The inputs must be declared under both triggers, which is why the block below
+# is duplicated. Keep the two default sets in sync if you change them.
 on:
   workflow_call:
+    inputs:
+      min_gain:
+        description: "Minimum percent gain to qualify"
+        required: false
+        default: "5"
+        type: string
+      min_price:
+        description: "Optional price floor to drop penny-stock noise (0 = off)"
+        required: false
+        default: "0"
+        type: string
+      exclude_etf:
+        description: "Exclude ETFs from the scan"
+        required: false
+        default: false
+        type: boolean
+      commit_results:
+        description: "Commit the gainer/ output back to the repo"
+        required: false
+        default: true
+        type: boolean
   workflow_dispatch:
     inputs:
       min_gain:
@@ -39,6 +66,12 @@ jobs:
   gainers:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+
+    # Belt-and-braces defaults. If this workflow is ever invoked in a way that
+    # leaves the string inputs empty, these keep the CLI args valid.
+    env:
+      MIN_GAIN: ${{ inputs.min_gain || '5' }}
+      MIN_PRICE: ${{ inputs.min_price || '0' }}
 
     steps:
       - name: Checkout repository
@@ -75,11 +108,10 @@ jobs:
           fi
 
       - name: Run gainer scan
-        id: scan
         run: |
           ARGS="--input RS_Data/rs_stocks.csv --output-dir gainer"
-          ARGS="$ARGS --min-gain ${{ inputs.min_gain }}"
-          ARGS="$ARGS --min-price ${{ inputs.min_price }}"
+          ARGS="$ARGS --min-gain ${MIN_GAIN}"
+          ARGS="$ARGS --min-price ${MIN_PRICE}"
           if [ "${{ inputs.exclude_etf }}" = "true" ]; then
             ARGS="$ARGS --exclude-etf"
           fi
@@ -112,8 +144,8 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
-            git commit -m "Gainers scan (>= ${{ inputs.min_gain }}%) - $(date -u +'%Y-%m-%d')"
-            # Rebase in case the RS workflow committed while this job ran.
+            git commit -m "Gainers scan (>= ${MIN_GAIN}%) - $(date -u +'%Y-%m-%d')"
+            # Rebase in case the master workflow committed while this job ran.
             git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
             git push
           fi
