@@ -4,6 +4,7 @@ name: Find Top Gainers
 # RS_Data/rs_stocks.csv, since the gainer scan is a pure post-processing pass
 # over that file and does not fetch any market data itself.
 on:
+  workflow_call:
   workflow_dispatch:
     inputs:
       min_gain:
