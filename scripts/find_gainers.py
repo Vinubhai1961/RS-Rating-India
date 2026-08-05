@@ -69,7 +69,6 @@ CARRY_COLUMNS = [
 ]
 
 NEW_COLUMNS = [
-    "Rank",
     "Gain_%",
     "Dist_52WH_%",
     "Above_SMA20",
@@ -151,19 +150,17 @@ def compute_gainers(df: pd.DataFrame, min_gain: float) -> pd.DataFrame:
         na_position="last",
     ).reset_index(drop=True)
 
-    # Renumber Rank 1..N in gain order so the output reads as a standalone
-    # leaderboard (1 = biggest gainer). The original universe-wide RS rank from
-    # rs_stocks.csv is preserved as RS_Rank rather than being overwritten.
+    # Keep the universe-wide RS rank from rs_stocks.csv exactly as it is, just
+    # renamed to RS_Rank for clarity. No per-file renumbering.
     if "Rank" in gainers.columns:
         gainers = gainers.rename(columns={"Rank": "RS_Rank"})
-    gainers["Rank"] = gainers.index + 1
 
     return gainers
 
 
 def order_columns(gainers: pd.DataFrame) -> list:
     """Gain fields first (that's the point of the file), then the RS context."""
-    lead = ["Rank", "Ticker", "Price", "Prev_Close", "Gain_%", "Dist_52WH_%", "RS_Rank"]
+    lead = ["RS_Rank", "Ticker", "Price", "Prev_Close", "Gain_%", "Dist_52WH_%"]
     tail = [c for c in NEW_COLUMNS if c not in lead]
     carry = [c for c in CARRY_COLUMNS if c not in lead]
     ordered = lead + tail + carry
@@ -260,7 +257,7 @@ def main():
     print("\nTop 10:")
     show = [
         c
-        for c in ["Rank", "Ticker", "Price", "Gain_%", "Dist_52WH_%", "RS Percentile", "Sector"]
+        for c in ["RS_Rank", "Ticker", "Price", "Gain_%", "Dist_52WH_%", "RS Percentile", "Sector"]
         if c in gainers.columns
     ]
     print(gainers.head(10)[show].to_string(index=False))
