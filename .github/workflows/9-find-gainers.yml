@@ -1,0 +1,118 @@
+name: Find Top Gainers
+
+# Manual trigger only. Run this after the RS workflow has committed a fresh
+# RS_Data/rs_stocks.csv, since the gainer scan is a pure post-processing pass
+# over that file and does not fetch any market data itself.
+on:
+  workflow_dispatch:
+    inputs:
+      min_gain:
+        description: "Minimum percent gain to qualify"
+        required: false
+        default: "5"
+        type: string
+      min_price:
+        description: "Optional price floor to drop penny-stock noise (0 = off)"
+        required: false
+        default: "0"
+        type: string
+      exclude_etf:
+        description: "Exclude ETFs from the scan"
+        required: false
+        default: false
+        type: boolean
+      commit_results:
+        description: "Commit the gainer/ output back to the repo"
+        required: false
+        default: true
+        type: boolean
+
+permissions:
+  contents: write
+
+concurrency:
+  group: find-gainers
+  cancel-in-progress: false
+
+jobs:
+  gainers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pandas numpy
+
+      - name: Verify source file exists
+        run: |
+          if [ ! -f "RS_Data/rs_stocks.csv" ]; then
+            echo "::error::RS_Data/rs_stocks.csv not found. Run the RS workflow first."
+            exit 1
+          fi
+          echo "Source rows: $(( $(wc -l < RS_Data/rs_stocks.csv) - 1 ))"
+          head -1 RS_Data/rs_stocks.csv
+
+      - name: Prepare gainer output folder
+        run: |
+          # Created on the first run, reused on every run after that.
+          if [ -d "gainer" ]; then
+            echo "gainer/ already exists - reusing it."
+            echo "Existing files: $(ls -1 gainer | wc -l)"
+          else
+            mkdir -p gainer
+            echo "Created gainer/ folder."
+          fi
+
+      - name: Run gainer scan
+        id: scan
+        run: |
+          ARGS="--input RS_Data/rs_stocks.csv --output-dir gainer"
+          ARGS="$ARGS --min-gain ${{ inputs.min_gain }}"
+          ARGS="$ARGS --min-price ${{ inputs.min_price }}"
+          if [ "${{ inputs.exclude_etf }}" = "true" ]; then
+            ARGS="$ARGS --exclude-etf"
+          fi
+          echo "Running: python scripts/find_gainers.py $ARGS"
+          python scripts/find_gainers.py $ARGS | tee gainer_run.log
+
+          # Surface the headline numbers in the Actions run summary.
+          {
+            echo "## Top Gainers Scan"
+            echo ""
+            echo '```'
+            sed -n '/=== GAINERS/,$p' gainer_run.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload gainer artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: gainers-${{ github.run_number }}
+          path: gainer/
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Commit results
+        if: ${{ inputs.commit_results }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add gainer/
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+          else
+            git commit -m "Gainers scan (>= ${{ inputs.min_gain }}%) - $(date -u +'%Y-%m-%d')"
+            # Rebase in case the RS workflow committed while this job ran.
+            git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
+            git push
+          fi
