@@ -22,6 +22,11 @@ on:
         required: false
         default: "0"
         type: string
+      min_rs_percentile:
+        description: "Minimum RS Percentile to keep (0 = off)"
+        required: false
+        default: "60"
+        type: string
       exclude_etf:
         description: "Exclude ETFs from the scan"
         required: false
@@ -43,6 +48,11 @@ on:
         description: "Optional price floor to drop penny-stock noise (0 = off)"
         required: false
         default: "0"
+        type: string
+      min_rs_percentile:
+        description: "Minimum RS Percentile to keep (0 = off)"
+        required: false
+        default: "60"
         type: string
       exclude_etf:
         description: "Exclude ETFs from the scan"
@@ -72,6 +82,7 @@ jobs:
     env:
       MIN_GAIN: ${{ inputs.min_gain || '5' }}
       MIN_PRICE: ${{ inputs.min_price || '0' }}
+      MIN_RS_PERCENTILE: ${{ inputs.min_rs_percentile || '60' }}
 
     steps:
       - name: Checkout repository
@@ -112,6 +123,7 @@ jobs:
           ARGS="--input RS_Data/rs_stocks.csv --output-dir gainer"
           ARGS="$ARGS --min-gain ${MIN_GAIN}"
           ARGS="$ARGS --min-price ${MIN_PRICE}"
+          ARGS="$ARGS --min-rs-percentile ${MIN_RS_PERCENTILE}"
           if [ "${{ inputs.exclude_etf }}" = "true" ]; then
             ARGS="$ARGS --exclude-etf"
           fi
@@ -144,7 +156,7 @@ jobs:
           if git diff --staged --quiet; then
             echo "No changes to commit."
           else
-            git commit -m "Gainers scan (>= ${MIN_GAIN}%) - $(date -u +'%Y-%m-%d')"
+            git commit -m "Gainers scan (>= ${MIN_GAIN}%, RS > ${MIN_RS_PERCENTILE}) - $(date -u +'%Y-%m-%d')"
             # Rebase in case the master workflow committed while this job ran.
             git pull --rebase --autostash origin "${GITHUB_REF_NAME}"
             git push
