@@ -3,7 +3,8 @@
 Find the day's top gainers from RS_Data/rs_stocks.csv.
 
 A gainer is any ticker whose latest close is at least --min-gain percent above
-the previous session's close:
+the previous session's close, and whose RS Percentile is at least
+--min-rs-percentile (default 60; pass 0 to turn the RS gate off):
 
     Gain_% = (Price - Prev_Close) / Prev_Close * 100
 
@@ -194,6 +195,12 @@ def main():
         help="Optional floor on Price to drop penny-stock noise (default: 0 = off)",
     )
     parser.add_argument(
+        "--min-rs-percentile",
+        type=float,
+        default=60.0,
+        help="Minimum RS Percentile to qualify (default: 60.0, 0 = off)",
+    )
+    parser.add_argument(
         "--exclude-etf",
         action="store_true",
         help="Drop rows whose Sector is ETF",
@@ -229,18 +236,43 @@ def main():
             "Excluded %s rows below price floor %.2f", f"{before - len(df):,}", args.min_price
         )
 
+    # RS Percentile gate. Rows with a missing/unparseable RS Percentile are
+    # dropped when the filter is on, since we can't confirm they qualify.
+    if args.min_rs_percentile > 0:
+        if "RS Percentile" in df.columns:
+            before = len(df)
+            rs_pct = pd.to_numeric(df["RS Percentile"], errors="coerce")
+            df = df[rs_pct >= args.min_rs_percentile]
+            logging.info(
+                "Excluded %s rows below RS Percentile %.2f",
+                f"{before - len(df):,}",
+                args.min_rs_percentile,
+            )
+        else:
+            logging.warning(
+                "RS Percentile column not found - skipping the RS Percentile filter."
+            )
+
     gainers = compute_gainers(df, args.min_gain)
 
     output_dir = ensure_output_dir(args.output_dir)
     stamp = datetime.now().strftime("%m%d%Y")
     out_path = os.path.join(output_dir, f"gainers_{stamp}.csv")
 
+    label = f">= {args.min_gain}%"
+    if args.min_rs_percentile > 0:
+        label += f", RS Percentile >= {args.min_rs_percentile:g}"
+
     if gainers.empty:
-        logging.warning("No tickers gained %.2f%% or more today.", args.min_gain)
+        logging.warning(
+            "No tickers gained %.2f%% or more today (RS Percentile floor: %g).",
+            args.min_gain,
+            args.min_rs_percentile,
+        )
         # Still write a header-only file so downstream readers never 404.
         cols = list(dict.fromkeys(CARRY_COLUMNS + NEW_COLUMNS))
         pd.DataFrame(columns=cols).to_csv(out_path, index=False)
-        print(f"\n=== GAINERS (>= {args.min_gain}%) ===")
+        print(f"\n=== GAINERS ({label}) ===")
         print("No qualifying tickers today.")
         print(f"Wrote: {out_path}")
         return
@@ -248,7 +280,7 @@ def main():
     cols = order_columns(gainers)
     gainers[cols].to_csv(out_path, index=False, na_rep="")
 
-    print(f"\n=== GAINERS (>= {args.min_gain}%) ===")
+    print(f"\n=== GAINERS ({label}) ===")
     print(f"Universe scanned      : {len(df):,}")
     print(f"Qualifying gainers    : {len(gainers):,}")
     print(f"Best gain             : {gainers['Gain_%'].iloc[0]:.2f}%  ({gainers['Ticker'].iloc[0]})")
