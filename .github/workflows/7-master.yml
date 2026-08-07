@@ -28,3 +28,7 @@ jobs:
   find-gainers:
     needs: update-rs-thresholds
     uses: ./.github/workflows/9-find-gainers.yml
+    
+  market_breadth:
+    needs: find-gainers
+    uses: ./.github/workflows/97-market_breadth.yml
