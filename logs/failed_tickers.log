@@ -3337,3 +3337,35 @@ Sectors generated                : 21
 Industry leader rows             : 528
 ======================================================
 
+2026-09-02 14:35:59,567 - Starting NSE India RS calculation
+2026-09-02 14:35:59,568 - Missing RS debug log: logs/debug_rs/Missing_RS.log
+2026-09-02 14:35:59,572 - Found 3677 symbols in tmp/arctic_db
+2026-09-02 14:35:59,610 - Metadata loaded: 3,695 tickers
+2026-09-02 14:35:59,611 - Starting RS calculation for 3677 tickers vs ^CRSLDX
+2026-09-02 14:36:51,618 - Prev_Close missing: 0 | SMA20 missing: 205
+2026-09-02 14:36:51,696 - Latest market date (NSE): 2026-09-02
+2026-09-02 14:36:51,703 - NSE trading days used: 20260827T, 20260828T, 20260831T, 20260901T, 20260902T
+2026-09-02 14:36:51,704 - RSRATING.csv (NSE) generated → RS_Data/RSRATING.csv
+2026-09-02 14:36:51,706 - NSE RS calculation completed. 3676 tickers, 3676 with valid RS.
+2026-09-02 14:36:51,706 - 
+================ DATA QUALITY SUMMARY ================
+Total ArcticDB symbols processed : 3,676
+Rows in rs_stocks.csv            : 3,676
+Valid RS                         : 3,676
+Missing RS                       : 0
+Missing 1M_RS                    : 218
+Missing 3M_RS                    : 268
+Missing 6M_RS                    : 341
+Missing ATR                      : 193
+Missing ADR                      : 193
+Missing SMA20                    : 205
+Missing SMA50                    : 248
+Missing Prev_Close               : 0
+Missing SMA200                   : 422
+Short history <252 days          : 527
+Exceptions                       : 0
+Industries generated             : 123
+Sectors generated                : 21
+Industry leader rows             : 544
+======================================================
+
