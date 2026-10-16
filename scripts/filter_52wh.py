@@ -25,7 +25,7 @@ MAX_PCT_BELOW = 25.0
 #MIN_AVGVOL10 = 300_000
 MIN_AVGVOL10 = 200_000
 
-DEBUG_TICKER = "HINDCOPPER.NS"
+DEBUG_TICKER = "ONWARDTEC.NS"
 # ────────────────────────────────────────────────
 
 
