@@ -81,6 +81,11 @@ jobs:
 
       - name: ⬇️ Checkout repo
         uses: actions/checkout@v4
+        
+      - name: 🔬 Setup Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"   # match the other jobs; 3.12 is also fine
 
       - name: 🗃️ Restore cached merged ArcticDB # 🆕
         uses: actions/cache@v4
