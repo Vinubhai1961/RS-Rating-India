@@ -79,7 +79,7 @@ jobs:
           final_columns = [
               'Rank', 'Ticker', 'Price', 'DVol', 'Sector', 'Industry',
               'RS', '1M_RS', '3M_RS', '6M_RS',
-              'AvgVol', 'AvgVol10', '52WKH', '52WKL', '%Dist_52H'
+              'AvgVol', 'AvgVol10', '52WKH', '52WKL', '%Dist_52H', 'RVOL', 'RVOL_Pct'
           ]
           for col in final_columns:
               if col not in nse_75.columns and col != '%Dist_52H':
