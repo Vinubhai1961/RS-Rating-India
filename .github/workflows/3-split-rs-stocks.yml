@@ -196,7 +196,7 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          #gh workflow run "7-master.yml"
+          gh workflow run "7-master.yml"
 
       - name: Print workflow end time (EDT)
         run: |
