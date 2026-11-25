@@ -5,7 +5,7 @@ on:
 
   schedule:
   # EDT (Mar-Nov)
-  - cron: "17 07 * * 1-5"
+  - cron: "17 04 * * 1-5"
   
 
   # EST (Nov-Mar)
